@@ -1,9 +1,13 @@
-require_relative "utils.rb"
-
 module Klank
+    require_relative "deck.rb"
+    require_relative "dragon.rb"
+    require_relative "dungeon.rb"
+    require_relative "utils.rb"
+
     class Game
 
         attr_reader :name
+        attr_reader :num
         attr_reader :shutdown
 
         def initialize(name, num)
@@ -13,8 +17,6 @@ module Klank
 
             @shutdown = false 
             @game_over = false
-
-
         end
 
         def status 
@@ -48,12 +50,15 @@ module Klank
         private 
 
         def start()
+            @dragon = Dragon.new(self)
+            @dungeon = Dungeon.new(self)
             @player = Klank.randomize(@player)
+            @line = 0
 
             msg = "Randomizing play order...\n"
             @player.each_with_index do |p, i|
                 msg += "#{i}: #{p.name}\n"
-                p.start(self)
+                p.start(self, i)
             end
             broadcast(msg)
 
@@ -65,6 +70,7 @@ module Klank
 
             loop do 
                 @player.each do |p|
+                    @dungeon.replenish()
                     broadcast("Starting #{p.name}'s turn...")
                     @game_over = p.turn(reserve)
                     break if @game_over

@@ -3,6 +3,7 @@ module Klank
 
         attr_reader :name
         attr_reader :cost 
+        attr_reader :defeat
         attr_reader :points
         attr_reader :skill
         attr_reader :move 
@@ -10,17 +11,26 @@ module Klank
         attr_reader :clank 
         attr_reader :coins
         attr_reader :teleport
+        attr_reader :danger
+        attr_reader :dragon
 
         def initialize(hash)
             @name = hash["name"]
             @cost = hash["cost"] || 0
+            @defeat = hash["defeat"] || 0
             @points = hash["points"] || 0
             @skill = hash["skill"] || 0
             @move = hash["move"] || 0
             @attack = hash["attack"] || 0
             @clank = hash["clank"] || 0
             @coins = hash["coins"] || 0
-            @teleport = hash["teleport"] || 0
+            @teleport = hash["teleport"] || false
+            @danger = hash["danger"] || false
+            @dragon = hash["dragon"] || false
+            @arrive = {
+                clank: hash["arrive"]["clank"] || false,
+                dragon: hash["arrive"]["dragon"] || false,
+            }
         end 
 
         def play_desc()

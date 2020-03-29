@@ -4,6 +4,8 @@ module Klank
     class Player
 
         attr_reader :name
+        attr_reader :skill
+        attr_reader :attack
 
         def initialize(client)
             @client = client
@@ -56,101 +58,127 @@ module Klank
             @coins
         end
 
-        def start(game)
+        def start(game, index)
             @game = game
             @deck = Deck.new("player.yml")
             @coins = 0
+            @clank = 30
+            @health = 10
+            @index = index
         end
 
         def turn(reserve)
-            output("Drawing cards...")
-            @hand = @deck.draw(5)
-            msg = []
-            @hand.each_with_index do |c, i|
-                msg << c.play_desc
+            if !dead?()
+                output("Drawing cards...")
+                @hand = @deck.draw(5)
+                msg = []
+                @hand.each_with_index do |c, i|
+                    msg << c.play_desc
+                end
+                output(msg.join("\n"))
+
+                @played = []
+                @skill = 0
+                @move = 0
+                @attack = 0
+                @teleport = 0
+                @remove = 0
+
+                loop do 
+                    menu = []
+
+                    if @hand.count != 0
+                        menu << ["E", "Equip card(s)"]
+                    end
+
+                    if (reserve[:x].remaining > 0) and (@skill >= reserve[:x].peek.cost)
+                        menu << ["X", "Buy an explore card"]
+                    end
+
+                    if (reserve[:c].remaining > 0) and (@skill >= reserve[:c].peek.cost)
+                        menu << ["C", "Buy a mercenary card"]
+                    end
+
+                    if (reserve[:t].remaining > 0) and (@skill >= reserve[:t].peek.cost)
+                        menu << ["T", "Buy a tome card"]
+                    end
+
+                    if @skill > 0
+                        menu << ["B", "Buy a card from the dungeon"]
+                    end
+
+                    if @move > 0 
+                        menu << ["M", "Move"]
+                    end
+
+                    if @attack > 0
+                        menu << ["A", "Attack a monster from the dungeon"]
+                    end
+
+                    if @attack > 1
+                        menu << ["G", "Kill the goblin"]
+                    end
+
+                    if @hand.count == 0
+                        menu << ["D", "End Turn"]
+                    end
+
+                    option = menu(menu)
+                    
+                    case option
+                    when "E"
+                        equip()
+                    when "X"
+                        x = reserve[:x].draw(1)
+                        @deck.discard(x)
+                        @skill -= x[0].cost
+                    when "C"
+                        c = reserve[:c].draw(1)
+                        @deck.discard(c)
+                        @skill -= c[0].cost
+                    when "T"
+                        t = reserve[:t].draw(1)
+                        @deck.discard(t)
+                        @skill -= t[0].cost
+                    when "B"
+                        buy()
+                    when "M"
+                        move()
+                    when "A"
+                        attack()
+                    when "G"
+                        @coins += 1
+                        @attack -= 2
+                    when "D"
+                        @deck.discard(@played)
+                        break
+                    else
+                        output("Hmmm... something went wrong")
+                    end
+
+                    break if dead?()
+
+                    output_abilities()
+                end
             end
-            output(msg.join("\n"))
+        end
 
-            @played = []
-            @skill = 0
-            @move = 0
-            @attack = 0
-            @teleport = 0
-
-            loop do 
-                menu = []
-
-                if @hand.count != 0
-                    menu << ["E", "Equip card(s)"]
-                end
-
-                if (reserve[:x].remaining > 0) and (@skill >= reserve[:x].peek.cost)
-                    menu << ["X", "Buy an explore card"]
-                end
-
-                if (reserve[:c].remaining > 0) and (@skill >= reserve[:c].peek.cost)
-                    menu << ["C", "Buy a mercenary card"]
-                end
-
-                if (reserve[:t].remaining > 0) and (@skill >= reserve[:t].peek.cost)
-                    menu << ["T", "Buy a tome card"]
-                end
-
-                if @skill > 0
-                    menu << ["B", "Buy a card from the dungeon"]
-                end
-
-                if @move > 0 
-                    menu << ["M", "Move"]
-                end
-
-                if @attack > 0
-                    menu << ["A", "Attack a monster from the dungeon"]
-                end
-
-                if @attack > 1
-                    menu << ["G", "Kill the goblin"]
-                end
-
-                if @hand.count == 0
-                    menu << ["D", "End Turn"]
-                end
-
-                option = menu(menu)
-                
-                case option
-                when "E"
-                    equip()
-                when "X"
-                    x = reserve[:x].draw(1)
-                    @deck.discard(x)
-                    @skill -= x[0].cost
-                when "C"
-                    c = reserve[:c].draw(1)
-                    @deck.discard(c)
-                    @skill -= c[0].cost
-                when "T"
-                    t = reserve[:t].draw(1)
-                    @deck.discard(t)
-                    @skill -= t[0].cost
-                when "B"
-
-                when "M"
-
-                when "A"
-
-                when "G"
-                    @coins += 1
-                    @attack -= 2
-                when "D"
-                    @deck.discard(@played)
-                    break
-                else
-                    output("Hmmm... something went wrong")
-                end
-
-                output_abilities()
+        def damage(direct = false)
+            @health -= 1
+            if direct 
+                @clank -= 1
             end
+        end
+
+        def dead?()
+            (@health <= 0)
+        end
+
+        def clank(count = 1)
+            actual = [@clank, count].min 
+            @clank -= actual 
+
+            @game.dragon.add(@index, actual)
         end
 
         private 
@@ -219,5 +247,24 @@ module Klank
             @played += play
         end
 
+        def buy()
+            card = @game.dungeon.buy(self)
+            if card 
+                @deck.discard(card)
+                @skill -= card.cost
+            end
+        end
+
+        def move()
+
+        end
+
+        def attack()
+            card = @game.dungeon.monster(self)
+            if card 
+                @move += card.move 
+                @coins += card.coins
+            end
+        end
     end
 end

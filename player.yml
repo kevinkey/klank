@@ -1,6 +1,6 @@
 - name: Stumble
   count: 2
-  clank: -1
+  clank: 1
 - name: Burgle
   count: 6
   skill: 1
