@@ -9,6 +9,7 @@ module Klank
         attr_reader :name
         attr_reader :num
         attr_reader :shutdown
+        attr_reader :dungeon
 
         def initialize(name, num)
             @name = name

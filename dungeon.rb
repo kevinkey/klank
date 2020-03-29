@@ -8,12 +8,12 @@ module Klank
             @hand = []
 
             while @hand.count < 6
-                card = @deck.draw(1)
-
-                if card.
+                if @deck.peek.dragon 
+                    @deck.reshuffle!()
+                else
+                    @hand << @deck.draw(1)[0]
+                end
             end
-
-            status()
         end
 
         def danger()
@@ -62,7 +62,11 @@ module Klank
                 end
             end
 
-            status()
+            msg = ["DUNGEON:"]
+            @hand.each_with_index do |c, i|
+                msg << c.buy_desc
+            end
+            @game.broadcast(msg.join("\n"))
         end
 
         def buy(player)
@@ -80,6 +84,8 @@ module Klank
                     player.output("Not enough skill!")
                 end
             end
+
+            card
         end
 
         def monster(player)
@@ -88,7 +94,7 @@ module Klank
                 c = menu(player)
                 break if c == "N"
                 temp = @hand[c.to_i]
-                if temp.cost == 0
+                if temp.defeat == 0
                     player.output("That's not a monster!")
                 elsif player.attack >= temp.defeat
                     card = @hand.delete_at(c.to_i)
@@ -97,6 +103,8 @@ module Klank
                     player.output("Not enough attack!")
                 end
             end
+
+            card
         end
 
         private 
@@ -108,14 +116,6 @@ module Klank
             end
             options << ["N", "None of the cards"]
             card = player.menu(options)
-        end
-
-        def status()
-            msg = ["DUNGEON:"]
-            @hand.each_with_index do |c, i|
-                msg << c.buy_desc
-            end
-            @game.broadcast(msg.join("\n"))
         end
     end
 end

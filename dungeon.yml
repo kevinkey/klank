@@ -1,5 +1,9 @@
 - name: Brilliance
+  cost: 6
   draw: 3
 - name: Tunnel Guide
+  count: 10
+  cost: 1
   move: 1
   attack: 1
+

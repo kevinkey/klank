@@ -237,7 +237,7 @@ module Klank
                 @attack += card.attack 
                 @move += card.move
                 @coins += card.coins
-                @teleport += card.teleport
+                @teleport += 1 if card.teleport
 
                 msg << "#{@name} played #{card.name}"
             end
@@ -250,8 +250,9 @@ module Klank
         def buy()
             card = @game.dungeon.buy(self)
             if card 
-                @deck.discard(card)
+                @deck.discard([card])
                 @skill -= card.cost
+                @game.broadcast("#{@name} bought #{card.name} from the dungeon!")
             end
         end
 
@@ -264,6 +265,8 @@ module Klank
             if card 
                 @move += card.move 
                 @coins += card.coins
+                @attack -= card.defeat
+                @game.broadcast("#{@name} killed #{card.name} in the dungeon!")
             end
         end
     end

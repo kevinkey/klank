@@ -13,6 +13,7 @@ module Klank
         attr_reader :teleport
         attr_reader :danger
         attr_reader :dragon
+        attr_reader :arrive
 
         def initialize(hash)
             @name = hash["name"]
@@ -24,13 +25,17 @@ module Klank
             @attack = hash["attack"] || 0
             @clank = hash["clank"] || 0
             @coins = hash["coins"] || 0
-            @teleport = hash["teleport"] || false
-            @danger = hash["danger"] || false
-            @dragon = hash["dragon"] || false
-            @arrive = {
-                clank: hash["arrive"]["clank"] || false,
-                dragon: hash["arrive"]["dragon"] || false,
-            }
+            @teleport = hash.key?("teleport")
+            @danger = hash.key?("danger")
+            @dragon = hash.key?("dragon")
+            if hash.key?("arrive")
+                @arrive = {
+                    clank: hash["arrive"].key?("clank"),
+                    dragon: hash["arrive"].key?("dragon")
+                }
+            else
+                @arrive = {clank: false, dragon: false}
+            end
         end 
 
         def play_desc()
@@ -56,8 +61,8 @@ module Klank
                 string << "COINS: #{@coins}"
             end
 
-            if @teleport != 0
-                string << "TELEPORT: #{@teleport}"
+            if @teleport
+                string << "TELEPORT"
             end
 
             string.join(" | ")

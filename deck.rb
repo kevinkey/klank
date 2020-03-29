@@ -10,7 +10,7 @@ module Klank
             @pile = []
 
             YAML.load(File.read(yml)).each do |c|
-                c["count"].times do 
+                (c["count"] || 1).times do 
                     @stack << Card.new(c)
                 end
             end
@@ -41,6 +41,10 @@ module Klank
 
         def peek(index = 0)
             @stack[index]
+        end
+
+        def reshuffle!()
+            @stack = Klank.randomize(@stack)
         end
     end
 end
