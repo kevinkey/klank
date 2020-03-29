@@ -1,0 +1,5 @@
+- name: Mercenary
+  count: 12
+  cost: 2 
+  skill: 1
+  attack: 1

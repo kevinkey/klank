@@ -1,0 +1,4 @@
+- name: Tome
+  count: 12
+  cost: 7
+  points: 7

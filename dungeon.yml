@@ -1,0 +1,5 @@
+- name: Brilliance
+  draw: 3
+- name: Tunnel Guide
+  move: 1
+  attack: 1
