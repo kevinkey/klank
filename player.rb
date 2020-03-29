@@ -13,20 +13,26 @@ module Klank
         end
 
         def input(msg)
-            @client.write "#{msg }: "
+            @client.write "\n#{msg }: "
             resp = @client.gets.strip
 
             resp
         end
 
         def input_num(msg, range)
-            loop do 
+            n = 0
 
+            loop do 
+                n = input("#{msg} [#{range.min}, #{range.max}]")
+                break if n =~ /^\d+/ and range.include?(n.to_i)
+                output("Oops!")
             end
+
+            return n.to_i
         end
 
         def output(msg)
-            @client.puts "#{msg}"
+            @client.puts "\n#{msg}"
         end
 
         def menu(options)
@@ -34,12 +40,12 @@ module Klank
             options.each do |o|
                 msg << "#{o[0]}: #{o[1]}"
             end
-            msg.join("\n")
-            output(msg)
+            output(msg.join("\n"))
 
+            choice = ""
             loop do
                 choice = input("Choose an option").upcase
-                break if options.any? { |o| o.upcase == choice }
+                break if options.any? { |o| o[0].to_s.upcase == choice }
                 output("Oops!")
             end
 
@@ -47,76 +53,170 @@ module Klank
         end
 
         def score()
-            0
+            @coins
         end
 
-        def start()
+        def start(game)
+            @game = game
             @deck = Deck.new("player.yml")
             @coins = 0
         end
 
         def turn(reserve)
             output("Drawing cards...")
-            hand = @deck.draw(5)
+            @hand = @deck.draw(5)
+            msg = []
+            @hand.each_with_index do |c, i|
+                msg << c.play_desc
+            end
+            output(msg.join("\n"))
 
-            skill = 0
-            move = 0
-            attack = 0
+            @played = []
+            @skill = 0
+            @move = 0
+            @attack = 0
+            @teleport = 0
 
             loop do 
                 menu = []
 
-                hand.each_with_index do |c, i|
-                    menu << "#{i}: #{c.play_desc}"
+                if @hand.count != 0
+                    menu << ["E", "Equip card(s)"]
                 end
 
-                if hand.count != 0
-                    menu << "E: Equip all cards"
+                if (reserve[:x].remaining > 0) and (@skill >= reserve[:x].peek.cost)
+                    menu << ["X", "Buy an explore card"]
                 end
 
-                if (skill >= 3) and reserve[:explore].remaining > 0
-                    menu << "X: Buy an explore card"
+                if (reserve[:c].remaining > 0) and (@skill >= reserve[:c].peek.cost)
+                    menu << ["C", "Buy a mercenary card"]
                 end
 
-                if (skill >= 2) and reserve[:mercenary].remaining > 0
-                    menu << "C: Buy a mercenary card"
+                if (reserve[:t].remaining > 0) and (@skill >= reserve[:t].peek.cost)
+                    menu << ["T", "Buy a tome card"]
                 end
 
-                if (skill >= 7) and reserve[:tome].remaining > 0
-                    menu << "T: Buy a tome card"
+                if @skill > 0
+                    menu << ["B", "Buy a card from the dungeon"]
                 end
 
-                if skill > 0
-                    menu << "D: Buy a card from the dungeon"
+                if @move > 0 
+                    menu << ["M", "Move"]
                 end
 
-                if move > 0 
-                    menu << "M: Move"
+                if @attack > 0
+                    menu << ["A", "Attack a monster from the dungeon"]
                 end
 
-                if attack > 0
-                    menu << "A: Attack a monster from the dungeon"
+                if @attack > 1
+                    menu << ["G", "Kill the goblin"]
                 end
 
-                if attack > 1
-                    menu << "G: Kill the goblin"
+                if @hand.count == 0
+                    menu << ["D", "End Turn"]
                 end
 
-                if hand.count == 0
-                    menu << "D: End Turn"
+                option = menu(menu)
+                
+                case option
+                when "E"
+                    equip()
+                when "X"
+                    x = reserve[:x].draw(1)
+                    @deck.discard(x)
+                    @skill -= x[0].cost
+                when "C"
+                    c = reserve[:c].draw(1)
+                    @deck.discard(c)
+                    @skill -= c[0].cost
+                when "T"
+                    t = reserve[:t].draw(1)
+                    @deck.discard(t)
+                    @skill -= t[0].cost
+                when "B"
+
+                when "M"
+
+                when "A"
+
+                when "G"
+                    @coins += 1
+                    @attack -= 2
+                when "D"
+                    @deck.discard(@played)
+                    break
+                else
+                    output("Hmmm... something went wrong")
                 end
 
-                output(menu.join("\n"))
-                option = input("Choose an action").upcase 
-
-                if menu.any? { |m| m.start_with?("#{option}:") }
-                    case option
-                    when "E"
-                    else
-
-                    end
-                end
+                output_abilities()
             end
+        end
+
+        private 
+
+        def output_abilities()
+            string = []
+
+            if @skill != 0
+                string << "SKILL: #{@skill}"
+            end 
+
+            if @move != 0
+                string << "MOVE: #{@move}"
+            end 
+
+            if @attack != 0
+                string << "ATTACK: #{@attack}"
+            end
+
+            if @coins != 0
+                string << "COINS: #{@coins}"
+            end
+
+            if @teleport != 0
+                string << "TELEPORT: #{@teleport}"
+            end
+
+            output(string.join(" | "))
+        end
+
+        def equip()
+            cards = []
+            @hand.each_with_index do |c, i|
+                cards << [i, c.play_desc]
+            end
+            cards << ["A", "All of the cards"]
+            cards << ["N", "None of the cards"]
+            c = menu(cards)
+
+            play = []
+
+            if c == "A"
+                play = @hand 
+                @hand = []
+            elsif c == "N"
+
+            else
+                play = @hand[c.to_i]
+                @hand.delete_at(c.to_i)
+            end
+
+            msg = []
+
+            play.each do |card|
+                @skill += card.skill
+                @attack += card.attack 
+                @move += card.move
+                @coins += card.coins
+                @teleport += card.teleport
+
+                msg << "#{@name} played #{card.name}"
+            end
+
+            @game.broadcast(msg.join("\n"))
+
+            @played += play
         end
 
     end

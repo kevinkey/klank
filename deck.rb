@@ -38,5 +38,9 @@ module Klank
         def discard(hand)
             @pile += hand
         end
+
+        def peek(index = 0)
+            @stack[index]
+        end
     end
 end

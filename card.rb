@@ -8,6 +8,7 @@ module Klank
         attr_reader :move 
         attr_reader :attack
         attr_reader :clank 
+        attr_reader :coins
         attr_reader :teleport
 
         def initialize(hash)
@@ -18,7 +19,8 @@ module Klank
             @move = hash["move"] || 0
             @attack = hash["attack"] || 0
             @clank = hash["clank"] || 0
-            @teleport = hash.key?("teleport")
+            @coins = hash["coins"] || 0
+            @teleport = hash["teleport"] || 0
         end 
 
         def play_desc()
@@ -40,8 +42,12 @@ module Klank
                 string << "CLANK: #{@clank}"
             end
 
-            if @teleport
-                string << "TELEPORT"
+            if @coins != 0
+                string << "COINS: #{@coins}"
+            end
+
+            if @teleport != 0
+                string << "TELEPORT: #{@teleport}"
             end
 
             string.join(" | ")

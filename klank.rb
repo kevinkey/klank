@@ -26,23 +26,15 @@ module Klank
         case option 
         when "N"
           name = player.input("Name")
-          num = player.input("Players").to_i
+          num = player.input_num("Players", 2..4)
+          player.output("Created #{name}, waiting for players...")
 
-          if (num >= 2) and (num <= 4)
-            player.output("Created #{name}, waiting for players...")
-
-            game = Game.new(name, num)
-            games << game 
-            game.join(player)
-          end
-
-        if (game.to_i > 0) and (game.to_i < (games.count + 1))
-          player.output("Joining #{games[game.to_i - 1].name}...")
-          games[game.to_i - 1].join(player)
-        end
-
-        if game.upcase == 'N'
-          
+          game = Game.new(name, num)
+          games << game 
+          game.join(player)
+        else
+          player.output("Joining #{games[option.to_i].name}...")
+          games[option.to_i].join(player)
         end
       end
 

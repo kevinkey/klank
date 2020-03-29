@@ -53,14 +53,14 @@ module Klank
             msg = "Randomizing play order...\n"
             @player.each_with_index do |p, i|
                 msg += "#{i}: #{p.name}\n"
-                p.start
+                p.start(self)
             end
             broadcast(msg)
 
             reserve = {
-                explore: Deck.new("explore.yml"),
-                mercenary: Deck.new("mercenary.yml"),
-                tome: Deck.new("tome.yml"),
+                x: Deck.new("explore.yml"),
+                c: Deck.new("mercenary.yml"),
+                t: Deck.new("tome.yml"),
             }
 
             loop do 
