@@ -2,6 +2,7 @@ module Klank
     class Card
 
         attr_reader :name
+        attr_reader :type
         attr_reader :cost 
         attr_reader :defeat
         attr_reader :points
@@ -17,6 +18,7 @@ module Klank
 
         def initialize(hash)
             @name = hash["name"]
+            @type = hash["type"] || :normal
             @cost = hash["cost"] || 0
             @defeat = hash["defeat"] || 0
             @points = hash["points"] || 0
@@ -36,10 +38,15 @@ module Klank
             else
                 @arrive = {clank: false, dragon: false}
             end
+            @special = hash["special"] || ""
         end 
 
         def play_desc()
             string = ["#{@name}"]
+
+            if @type != :normal
+                string << @type.to_s.upcase
+            end
 
             if @skill != 0
                 string << "SKILL: #{@skill}"
@@ -65,18 +72,26 @@ module Klank
                 string << "TELEPORT"
             end
 
+            if @special != ""
+                string << @special
+            end
+
             string.join(" | ")
         end
 
         def buy_desc()
             string = [play_desc]
 
+            if @points != 0
+                string << "POINTS: #{@points}"
+            end
+
             if @cost != 0
                 string << "COST: #{@cost}"
             end
 
-            if @points != 0
-                string << "POINTS: #{@points}"
+            if @defeat != 0
+                string << "DEFEAT: #{@defeat}"
             end
 
             string.join(" | ")

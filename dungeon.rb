@@ -20,7 +20,7 @@ module Klank
             count = 0
 
             @hand.each do |c|
-                count += c.danger
+                count += 1 if c.danger
             end
 
             count
@@ -30,7 +30,7 @@ module Klank
             count = 6 - @hand.count
 
             if count > 0
-                msg = ["Replenishing the dungeon..."]
+                msg = ["\nReplenishing the dungeon..."]
                 attack = false
 
                 cards = @deck.draw(count)
@@ -62,7 +62,7 @@ module Klank
                 end
             end
 
-            msg = ["DUNGEON:"]
+            msg = ["\nDUNGEON"]
             @hand.each_with_index do |c, i|
                 msg << c.buy_desc
             end
@@ -115,7 +115,7 @@ module Klank
                 options << [i, c.buy_desc]
             end
             options << ["N", "None of the cards"]
-            card = player.menu(options)
+            card = player.menu("DUNGEON", options)
         end
     end
 end

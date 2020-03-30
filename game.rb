@@ -9,7 +9,9 @@ module Klank
         attr_reader :name
         attr_reader :num
         attr_reader :shutdown
+        attr_reader :reserve
         attr_reader :dungeon
+        attr_reader :dragon
 
         def initialize(name, num)
             @name = name
@@ -56,14 +58,14 @@ module Klank
             @player = Klank.randomize(@player)
             @line = 0
 
-            msg = "Randomizing play order...\n"
+            msg = "\nGAME STARTING\nRandomizing play order...\n"
             @player.each_with_index do |p, i|
                 msg += "#{i}: #{p.name}\n"
                 p.start(self, i)
             end
             broadcast(msg)
 
-            reserve = {
+            @reserve = {
                 x: Deck.new("explore.yml"),
                 c: Deck.new("mercenary.yml"),
                 t: Deck.new("tome.yml"),
@@ -72,8 +74,8 @@ module Klank
             loop do 
                 @player.each do |p|
                     @dungeon.replenish()
-                    broadcast("Starting #{p.name}'s turn...")
-                    @game_over = p.turn(reserve)
+                    broadcast("\nStarting #{p.name}'s turn...")
+                    @game_over = p.turn()
                     break if @game_over
                 end
 

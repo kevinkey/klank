@@ -15,7 +15,7 @@ module Klank
         end
 
         def input(msg)
-            @client.write "\n#{msg }: "
+            @client.write "#{msg }: "
             resp = @client.gets.strip
 
             resp
@@ -34,11 +34,11 @@ module Klank
         end
 
         def output(msg)
-            @client.puts "\n#{msg}"
+            @client.puts "#{msg}"
         end
 
-        def menu(options)
-            msg = []
+        def menu(title, options)
+            msg = ["\n#{title}"]
             options.each do |o|
                 msg << "#{o[0]}: #{o[1]}"
             end
@@ -67,9 +67,9 @@ module Klank
             @index = index
         end
 
-        def turn(reserve)
+        def turn()
             if !dead?()
-                output("Drawing cards...")
+                output("\nDrawing cards...")
                 @hand = @deck.draw(5)
                 msg = []
                 @hand.each_with_index do |c, i|
@@ -91,15 +91,15 @@ module Klank
                         menu << ["E", "Equip card(s)"]
                     end
 
-                    if (reserve[:x].remaining > 0) and (@skill >= reserve[:x].peek.cost)
+                    if (@game.reserve[:x].remaining > 0) and (@skill >= @game.reserve[:x].peek.cost)
                         menu << ["X", "Buy an explore card"]
                     end
 
-                    if (reserve[:c].remaining > 0) and (@skill >= reserve[:c].peek.cost)
+                    if (@game.reserve[:c].remaining > 0) and (@skill >= @game.reserve[:c].peek.cost)
                         menu << ["C", "Buy a mercenary card"]
                     end
 
-                    if (reserve[:t].remaining > 0) and (@skill >= reserve[:t].peek.cost)
+                    if (@game.reserve[:t].remaining > 0) and (@skill >= @game.reserve[:t].peek.cost)
                         menu << ["T", "Buy a tome card"]
                     end
 
@@ -123,21 +123,21 @@ module Klank
                         menu << ["D", "End Turn"]
                     end
 
-                    option = menu(menu)
+                    option = menu("ACTION LIST", menu)
                     
                     case option
                     when "E"
                         equip()
                     when "X"
-                        x = reserve[:x].draw(1)
+                        x = @game.reserve[:x].draw(1)
                         @deck.discard(x)
                         @skill -= x[0].cost
                     when "C"
-                        c = reserve[:c].draw(1)
+                        c = @game.reserve[:c].draw(1)
                         @deck.discard(c)
                         @skill -= c[0].cost
                     when "T"
-                        t = reserve[:t].draw(1)
+                        t = @game.reserve[:t].draw(1)
                         @deck.discard(t)
                         @skill -= t[0].cost
                     when "B"
@@ -206,7 +206,7 @@ module Klank
                 string << "TELEPORT: #{@teleport}"
             end
 
-            output(string.join(" | "))
+            output("\n" + string.join(" | "))
         end
 
         def equip()
@@ -216,7 +216,7 @@ module Klank
             end
             cards << ["A", "All of the cards"]
             cards << ["N", "None of the cards"]
-            c = menu(cards)
+            c = menu("HAND", cards)
 
             play = []
 
@@ -230,7 +230,7 @@ module Klank
                 @hand.delete_at(c.to_i)
             end
 
-            msg = []
+            msg = [""]
 
             play.each do |card|
                 @skill += card.skill
