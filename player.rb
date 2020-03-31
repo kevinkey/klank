@@ -4,8 +4,11 @@ module Klank
     class Player
 
         attr_reader :name
-        attr_reader :skill
-        attr_reader :attack
+
+        attr_accessor :skill
+        attr_accessor :attack
+        attr_accessor :move
+        attr_accessor :coins
 
         def initialize(client)
             @client = client
@@ -224,7 +227,7 @@ module Klank
                 play = @hand 
                 @hand = []
             elsif c == "N"
-
+                # do nothing
             else
                 play = @hand[c.to_i]
                 @hand.delete_at(c.to_i)
@@ -233,12 +236,7 @@ module Klank
             msg = [""]
 
             play.each do |card|
-                @skill += card.skill
-                @attack += card.attack 
-                @move += card.move
-                @coins += card.coins
-                @teleport += 1 if card.teleport
-
+                card.equip(self)
                 msg << "#{@name} played #{card.name}"
             end
 
@@ -251,7 +249,6 @@ module Klank
             card = @game.dungeon.buy(self)
             if card 
                 @deck.discard([card])
-                @skill -= card.cost
                 @game.broadcast("#{@name} bought #{card.name} from the dungeon!")
             end
         end
@@ -263,9 +260,6 @@ module Klank
         def attack()
             card = @game.dungeon.monster(self)
             if card 
-                @move += card.move 
-                @coins += card.coins
-                @attack -= card.defeat
                 @game.broadcast("#{@name} killed #{card.name} in the dungeon!")
             end
         end

@@ -17,13 +17,7 @@ module Klank
         end
 
         def danger()
-            count = 0
-
-            @hand.each do |c|
-                count += 1 if c.danger
-            end
-
-            count
+            @hand.select { |c| c.danger }.count
         end
 
         def replenish()
@@ -71,17 +65,14 @@ module Klank
 
         def buy(player)
             card = nil
+
             loop do 
                 c = menu(player)
                 break if c == "N"
-                temp = @hand[c.to_i]
-                if temp.defeat != 0
-                    player.output("Can't buy a monster!")
-                elsif player.skill >= temp.cost
+
+                if @hand[c.to_i].acquire(player)
                     card = @hand.delete_at(c.to_i)
                     break
-                else
-                    player.output("Not enough skill!")
                 end
             end
 
@@ -90,17 +81,14 @@ module Klank
 
         def monster(player)
             card = nil
+
             loop do 
                 c = menu(player)
                 break if c == "N"
-                temp = @hand[c.to_i]
-                if temp.defeat == 0
-                    player.output("That's not a monster!")
-                elsif player.attack >= temp.defeat
+
+                if @hand[c.to_i].defeat(player)
                     card = @hand.delete_at(c.to_i)
                     break
-                else
-                    player.output("Not enough attack!")
                 end
             end
 

@@ -41,6 +41,53 @@ module Klank
             @special = hash["special"] || ""
         end 
 
+        def arrive()
+
+        end
+
+        def acquire(player)
+            success = false 
+
+            if @type == :monster
+                player.output("Can't buy a monster!")
+            elsif player.skill >= @cost
+                success = true
+
+                player.skill -= @cost
+            else
+                player.output("Not enough skill!")
+            end
+
+            success
+        end
+
+        def defeat(player)
+            success = false
+
+            if @type != :monster
+                player.output("That's not a monster!")
+            elsif player.attack >= @defeat
+                success = true
+
+                player.move += @move 
+                player.coins += @coins
+                player.clank(@clank)
+                player.attack -= @defeat
+            else
+                player.output("Not enough attack!")
+            end
+
+            success
+        end
+
+        def equip(player)
+            player.skill += @skill
+            player.attack += @attack 
+            player.move += @move
+            player.coins += @coins
+            player.teleport += 1 if @teleport
+        end
+
         def play_desc()
             string = ["#{@name}"]
 
@@ -96,6 +143,5 @@ module Klank
 
             string.join(" | ")
         end
-
     end
 end
