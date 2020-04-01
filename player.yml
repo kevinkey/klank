@@ -1,13 +1,17 @@
 - name: Stumble
   count: 2
-  clank: 1
+  equip:
+    clank: 1
 - name: Burgle
   count: 6
-  skill: 1
+  equip:
+    skill: 1
 - name: Side Step
   count: 1
-  move: 1
+  equip:
+    move: 1
 - name: Scramble
   count: 1
-  skill: 1
-  move: 1
+  equip:
+    skill: 1
+    move: 1

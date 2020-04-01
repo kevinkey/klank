@@ -2,6 +2,7 @@ module Klank
     require_relative "deck.rb"
 
     class Player
+        FULL_HEALTH = 10
 
         attr_reader :name
 
@@ -9,6 +10,7 @@ module Klank
         attr_accessor :attack
         attr_accessor :move
         attr_accessor :coins
+        attr_accessor :teleport
 
         def initialize(client)
             @client = client
@@ -65,27 +67,38 @@ module Klank
             @game = game
             @deck = Deck.new("player.yml")
             @coins = 0
-            @clank = 30
-            @health = 10
+            @cubes = 30
+            @health = FULL_HEALTH
             @index = index
+            @artifact = []
+        end
+
+        def draw(count = 5)
+            output("\nDrawing cards...")
+            cards = @deck.draw(count)
+            msg = []
+            cards.each_with_index do |c, i|
+                msg << c.play_desc
+            end
+            output(msg.join("\n"))
+
+            @hand += cards
         end
 
         def turn()
             if !dead?()
-                output("\nDrawing cards...")
-                @hand = @deck.draw(5)
-                msg = []
-                @hand.each_with_index do |c, i|
-                    msg << c.play_desc
-                end
-                output(msg.join("\n"))
-
+                @hand = []
                 @played = []
                 @skill = 0
                 @move = 0
                 @attack = 0
                 @teleport = 0
-                @remove = 0
+                @clank_added = 0
+                @clank_remove = 0
+
+                @game.broadcast("HEALTH: #{@health} | CLANK: #{@cubes} | COINS: #{@coins}")
+
+                draw()
 
                 loop do 
                     menu = []
@@ -144,11 +157,18 @@ module Klank
                         @deck.discard(t)
                         @skill -= t[0].cost
                     when "B"
-                        buy()
+                        card = @game.dungeon.buy(self)
+                        if card 
+                            @deck.discard([card])
+                            @game.broadcast("#{@name} bought #{card.name} from the dungeon!")
+                        end
                     when "M"
-                        move()
+                    
                     when "A"
-                        attack()
+                        card = @game.dungeon.monster(self)
+                        if card 
+                            @game.broadcast("#{@name} killed #{card.name} in the dungeon!")
+                        end
                     when "G"
                         @coins += 1
                         @attack -= 2
@@ -163,6 +183,8 @@ module Klank
 
                     output_abilities()
                 end
+
+                @game.dragon.remove(@index, -1 * @clank_remove)
             end
         end
 
@@ -173,15 +195,30 @@ module Klank
             end
         end
 
+        def heal(count = 1)
+            @health = [FULL_HEALTH, @health + count].min
+        end
+
         def dead?()
-            (@health <= 0)
+            @health <= 0
         end
 
         def clank(count = 1)
-            actual = [@clank, count].min 
-            @clank -= actual 
+            if count > 0
+                actual = [@cubes, count].min 
+                @cubes -= actual 
+                @game.dragon.add(@index, actual)
+            else
+                @clank_remove += count
+            end
+        end
 
-            @game.dragon.add(@index, actual)
+        def depths?()
+            false
+        end
+
+        def artifact?()
+            @artifact.count > 0
         end
 
         private 
@@ -229,8 +266,7 @@ module Klank
             elsif c == "N"
                 # do nothing
             else
-                play = @hand[c.to_i]
-                @hand.delete_at(c.to_i)
+                play = [@hand.delete_at(c.to_i)]
             end
 
             msg = [""]
@@ -243,25 +279,6 @@ module Klank
             @game.broadcast(msg.join("\n"))
 
             @played += play
-        end
-
-        def buy()
-            card = @game.dungeon.buy(self)
-            if card 
-                @deck.discard([card])
-                @game.broadcast("#{@name} bought #{card.name} from the dungeon!")
-            end
-        end
-
-        def move()
-
-        end
-
-        def attack()
-            card = @game.dungeon.monster(self)
-            if card 
-                @game.broadcast("#{@name} killed #{card.name} in the dungeon!")
-            end
         end
     end
 end

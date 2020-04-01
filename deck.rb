@@ -29,7 +29,7 @@ module Klank
                     @stack = Klank.randomize(@pile)
                     @pile = []
                 end 
-                hand << @stack.pop
+                hand << @stack.shift
             end
 
             hand

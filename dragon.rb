@@ -40,13 +40,13 @@ module Klank
             @bank = []
             @bag = Klank.randomize(@bag)
 
-            draw = DRAW[@anger] + @game.dungeon.danger() + @game.line
+            draw = DRAW[@anger] + @game.dungeon.danger() + @game.escalation
 
             msg = ["The dragon attacks, drawing #{draw} cubes..."]
             draw.times do 
                 c = @bag.pop
                 if c == "D"
-
+                    @dragon_cubes += 1
                 else
                     msg << "+1 damage to #{@game.player[c].name}"
                     @game.player[c].damage()

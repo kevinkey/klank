@@ -1,0 +1,27 @@
+- name: Potion of Healing
+  description: Use during your turn to heal 1 damage. (Keep until you use it, then return it to the box).
+  count: 3
+  heal: 1
+- name: Potion of Swiftness
+  description: Use during your turn to gain 1 Boot. (Keep until you use it, then return it to the box).
+  count: 2
+  move: 1
+- name: Potion of Strength
+  description: Use during your turn to gain 2 Swords. (Keep until you use it, then return it to the box).
+  count: 2
+  attack: 2
+- name: Skill Boost
+  description: Immediately gain 2 Skill, then return the token to the box.
+  count: 3
+  skill: 2
+- name: Treasure
+  description: This token counts as 2 Gold. You may keep it until the end of the game or spend it normally.
+  count: 3
+  coins: 2
+- name: Magic Spring
+  description: At the end of this turn, trash a card from your discard pile or play area. Return the card and this token to the box.
+  count: 2
+- name: Dragon Egg
+  description: Keep this token-it is worth 3 points at the end of the game. Advance the Dragon marker one space along the Rage Track.
+  count: 3
+  points: 3

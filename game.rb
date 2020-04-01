@@ -12,6 +12,8 @@ module Klank
         attr_reader :reserve
         attr_reader :dungeon
         attr_reader :dragon
+        attr_reader :player
+        attr_reader :escalation
 
         def initialize(name, num)
             @name = name
@@ -56,7 +58,7 @@ module Klank
             @dragon = Dragon.new(self)
             @dungeon = Dungeon.new(self)
             @player = Klank.randomize(@player)
-            @line = 0
+            @escalation = 0
 
             msg = "\nGAME STARTING\nRandomizing play order...\n"
             @player.each_with_index do |p, i|
@@ -75,7 +77,7 @@ module Klank
                 @player.each do |p|
                     @dungeon.replenish()
                     broadcast("\nStarting #{p.name}'s turn...")
-                    @game_over = p.turn()
+                    p.turn()
                     break if @game_over
                 end
 
@@ -91,7 +93,7 @@ module Klank
 
         def scores()
             msg = "Scores\n"
-            player.sort_by { |p| p.score }.reverse.each_with_index do |p, i|
+            @player.sort_by { |p| p.score }.reverse.each_with_index do |p, i|
                 msg += "#{p.name}: #{p.score}\n"
             end
             broadcast(msg)

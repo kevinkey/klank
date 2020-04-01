@@ -2,12 +2,14 @@ module Klank
     require_relative "deck.rb"
 
     class Dungeon
+        COUNT = 6
+
         def initialize(game)
             @game = game
             @deck = Deck.new("dungeon.yml")
             @hand = []
 
-            while @hand.count < 6
+            while @hand.count < COUNT
                 if @deck.peek.dragon 
                     @deck.reshuffle!()
                 else
@@ -21,7 +23,7 @@ module Klank
         end
 
         def replenish()
-            count = 6 - @hand.count
+            count = COUNT - @hand.count
 
             if count > 0
                 msg = ["\nReplenishing the dungeon..."]
@@ -29,25 +31,14 @@ module Klank
 
                 cards = @deck.draw(count)
                 
+                string = []
                 cards.each do |c|
-                    string = [c.name]
+                    string << c.name
                     if c.dragon
-                        string << "DRAGON ATTACK"
                         attack = true
-                    end 
-                    if c.arrive[:clank]
-                        string << "All players +1 clank"
-                        @game.player.each do |p|
-                            p.clank()
-                        end
-                    end
-                    if c.arrive[:dragon]
-                        string << "Put 3 dragon cubes back"
-                        @game.dragon.add_dragon_cubes()
-                    end
-
-                    msg << string.join(" | ")
+                    end              
                 end
+                msg << string.join(" | ")
                 @game.broadcast(msg.join("\n"))
                 @hand += cards
 

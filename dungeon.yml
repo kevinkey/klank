@@ -1,276 +1,303 @@
 - name: Animated Door
   count: 2
-  defeat: 1
-  move: 1
-  dragon: true
   type: :monster
+  attack: 1
+  defeat:
+    move: 1
+  dragon: true
 
 - name: Belcher
   count: 2
-  defeat: 2
-  coins: 4
-  clank: 2
-  dragon: true
   type: :monster
+  attack: 2
+  defeat:
+    coins: 4
+    clank: 2
+  dragon: true
 
 - name: Cave Troll
   count: 1
-  defeat: 4
-  coins: 3
-  draw: 2
+  type: :monster
+  attack: 4
+  defeat:
+    coins: 3
+    draw: 2
   depths: true
   dragon: true
-  type: :monster
 
 - name: Crystal Golem
   count: 2
-  defeat: 3
-  skill: 3
+  type: :monster
+  attack: 3
+  defeat:
+    skill: 3
   crystal cave: true
   dragon: true
-  type: :monster
 
 - name: Kobold
   count: 3
-  defeat: 1
-  skill: 1
+  type: :monster
+  attack: 1
+  defeat:
+    skill: 1
   danger: true
   dragon: true
-  type: :monster
 
 - name: Ogre
   count: 2
-  defeat: 3
-  coins: 5
-  dragon: true
   type: :monster
+  attack: 3
+  defeat:
+    coins: 5
+  dragon: true
 
 - name: Orc Grunt
   count: 3
-  defeat: 2
-  coins: 3
-  dragon: true
   type: :monster
+  attack: 2
+  defeat:
+    coins: 3
+  dragon: true
 
 - name: Overlord
   count: 2
-  defeat: 2
-  draw: 2
-  arrive:
-    clank: true
-  dragon: true
   type: :monster
+  attack: 2
+  defeat:
+    draw: 2
+  special: ARRIVE All players +1 clank
+  dragon: true
 
 - name: Watcher
   count: 3
-  coins: 3
-  special: All other players +1 clank
-  arrive:
-    clank: true
-  dragon: true
   type: :monster
+  defeat:
+    coins: 3
+  special: ARRIVE All players +1 clank | DEFEAT All other players +1 clank
+  dragon: true
 
 - name: Dragon Shrine
   count: 2
+  type: :device
   cost: 4
   danger: true
   special: Choose 2 coins or trash a card
-  type: :device
 
 - name: Ladder
   count: 2
-  cost: 3
-  move: 2
   type: :device
+  cost: 3
+  acquire:
+    move: 2
 
 - name: Shrine
   count: 3
-  cost: 2
-  special: Choose 1 coin or 1 heal
-  arrive:
-    dragon cubes: true
   type: :device
+  cost: 2
+  special: ARRIVE Put 3 dragon cubes back in the bag | Choose 1 coin or 1 heal
 
 - name: Teleporter
   count: 2
-  cost: 4
-  teleport: true
   type: :device
+  cost: 4
+  acquire:
+    teleport: 1
 
 - name: The Vault
   count: 1
+  type: :device
   cost: 3
-  coins: 5
-  clank: 3
+  acquire:
+    coins: 5
+    clank: 3
   dragon: true
   depths: true
-  type: :device
 
 - name: Amulet of Vigor
   count: 1
   cost: 7
   points: 3
-  skill: 4
   acquire:
     heal: 1
+  equip:
+    skill: 4
 
 - name: Apothecary
   count: 1
+  type: :companion
   cost: 3
   points: 2
-  type: :companion
   special: Discard a card for 3 attack or 2 coins or 1 heal
 
 - name: Archaeologist
   count: 2
+  type: :companion
   cost: 2
   points: 1
-  draw: 1
-  type: :companion
   special: 2 skill if you have a monkey idol
+  equip:
+    draw: 1
 
 - name: Boots of Swiftness
   count: 1
   cost: 5
   points: 3
-  move: 3
   acquire:
     move: 1
+  equip:
+    move: 3
 
 - name: Bracers of Agility
   count: 2
   cost: 5
   points: 2
-  draw: 2
+  equip:
+    draw: 2
 
 - name: Brilliance
   count: 1
   cost: 6
-  draw: 3
+  equip:
+    draw: 3
 
 - name: Cleric of the Sun
   count: 2
+  type: :companion
   cost: 3
   points: 1
-  skill: 2
-  attack: 1
   acquire:
     heal: 1 
-  type: :companion
+  equip:
+    skill: 2
+    attack: 1
 
 - name: Dead Run
   count: 2
   cost: 3
-  clank: 2
-  move: 2
   special: Ignore crystal caves
+  equip:
+    clank: 2
+    move: 2
 
 - name: Diamond
   count: 1
+  type: :gem
   cost: 8
   points: 8
-  draw: 1
   acquire:
     clank: 2
-  type: :gem
+  equip:
+    draw: 1
 
 - name: Dragon's Eye
   count: 1
+  type: :gem
   cost: 5
   depths: true 
-  draw: 1
   special: Worth 10 points if you have a mastery token 
   acquire:
     clank: 2
-  type: :gem
+  equip:
+    draw: 1
 
 - name: Dwarven Peddler
   count: 1
-  cost: 4
-  move: 1
-  coins: 2
   type: :companion
+  cost: 4
   special: 4 points if you have two of chalice, dragon, egg, or monkey idol
+  equip:
+    move: 1
+    coins: 2
 
 - name: Elven Boots
   count: 1
   cost: 4
   points: 2
-  skill: 1
-  move: 1
-  draw: 1
+  equip:
+    skill: 1
+    move: 1
+    draw: 1
 
 - name: Elven Cloak
   count: 1
   cost: 4
   points: 2
-  skill: 1
-  clank: -2
-  draw: 1
+  equip:
+    skill: 1
+    clank: -2
+    draw: 1
 
 - name: Elven Dagger
   count: 1
   cost: 4
   points: 2
-  skill: 1
-  attack: 1
-  draw: 1
+  equip:
+    skill: 1
+    attack: 1
+    draw: 1
 
 - name: Emerald
   count: 2
+  type: :gem 
   cost: 5
   points: 5
-  type: :gem 
-  draw: 1
   acquire:
     clank: 2
+  equip:
+    draw: 1
 
 - name: Flying Carpet
   count: 1
   cost: 6
   points: 2
-  move: 2
   special: Ignore monsters and crystal caves 
+  equip:
+    move: 2
 
 - name: Gem Collector
   count: 1
-  skill: 2
   type: :companion
   points: 2
   cost: 4
-  clank: -2
   special: Gems cost -2 skill
+  equip:
+    skill: 2
+    clank: -2
 
 - name: Invoker of the Ancients
   count: 1
+  type: :companion
   cost: 4
   points: 1
-  clank: 1
-  teleport: true 
-  type: :companion
+  equip:
+    clank: 1
+    teleport: 1 
 
 - name: Kobold Merchant
   count: 1
+  type: :companion
   cost: 3
   points: 1
-  coins: 2
-  type: :companion
   special: +2 skill if you have an artifact
+  equip:
+    coins: 2
 
 - name: Lucky Coin
   count: 2
   cost: 1
   points: 1
-  clank: 1
-  draw: 1
+  equip:
+    clank: 1
+    draw: 1
 
 - name: Master Burglar
   count: 2
+  type: :companion
   cost: 3
   points: 2
-  type: :companion
-  skill: 2
   special: Trash a burgle
+  equip:
+    skill: 2
 
 - name: Mister Whiskers
   count: 1
@@ -283,104 +310,118 @@
   count: 1
   cost: 5
   points: 1
-  clank: 3
-  draw: 3
   dragon: true
+  equip:
+    clank: 3
+    draw: 3
   
 - name: Move Silently
   count: 2
   cost: 3
-  move: 2
-  clank: -2
+  equip:
+    move: 2
+    clank: -2
 
 - name: Pickaxe
   count: 2
   cost: 4
-  attack: 2
-  coins: 2
   points: 2
+  equip:
+    attack: 2
+    coins: 2
 
 - name: Rebel Captain
   count: 1
+  type: :companion 
   cost: 3
   points: 1
-  skill: 2
-  type: :companion 
   special: Draw a card if you have another companion 
+  equip:
+    skill: 2
 
 - name: Rebel Miner
   count: 1
+  type: :companion 
   cost: 2
   points: 1 
-  type: :companion 
-  coins: 2
   special: Draw a card if you have another companion 
+  equip:
+    coins: 2
 
 - name: Rebel Scout
   count: 1
-  cost: 3
-  move: 2
-  points: 1
   type: :companion 
+  cost: 3
+  points: 1
   special: Draw a card if you have another companion 
+  equip:
+    move: 2
 
 - name: Rebel Soldier
   count: 1
+  type: :companion 
   cost: 2
   points: 1
-  attack: 2
-  type: :companion 
   special: Draw a card if you have another companion 
+  equip:
+    attack: 2
 
 - name: Ruby
   count: 2
+  type: :gem
   cost: 6
   points: 6
-  draw: 1
-  acquire:
-    clank: 2
-  type: :gem
-
-- name: Sapphire
-  count: 3
-  cost: 4
-  type: :gem
-  points: 4
-  draw: 1
   acquire:
     clank: 2
   dragon: true
+  equip:
+    draw: 1
+
+- name: Sapphire
+  count: 3
+  type: :gem
+  cost: 4
+  points: 4
+  acquire:
+    clank: 2
+  dragon: true
+  equip:
+    draw: 1
 
 - name: Scepter of the Ape Lord
   count: 1
   cost: 3
-  skill: 3
-  clank: 3
   points: 3
+  equip:  
+    skill: 3
+    clank: 3
 
 - name: Search
   count: 2
   cost: 4
-  skill: 2
-  move: 1
   special: Each time you gain coins, get +1 coin
+  equip:
+    skill: 2
+    move: 1
 
 - name: Silver Spear
   count: 2
   cost: 3
-  attack: 3
   points: 2
   acquire:
     attack: 1
+  equip:
+    attack: 3
 
 - name: Singing Sword
   count: 1
   cost: 5
   points: 2
-  skill: 3
-  attack: 2
-  clank: 1
   dragon: true
+  equip:
+    skill: 3
+    attack: 2
+    clank: 1
 
 - name: Sleight of Hands
   count: 2
@@ -390,68 +431,79 @@
 - name: Sneak
   count: 2
   cost: 2
-  move: 1
-  skill: 1
-  clank: -2
+  equip:
+    move: 1
+    skill: 1
+    clank: -2
 
 - name: Swagger
   count: 2
   cost: 2
-  move: 1
   special: +1 skill for each clank you make
+  equip:
+    move: 1
 
 - name: Tattle
   count: 2
   cost: 3
-  skill: 2
   special: All other players +1 clank
+  equip:
+    skill: 2
 
 - name: The Duke
   count: 1
-  cost: 5
-  skill: 2
-  attack: 2
-  special: Worth 1 for every 5 coins you have
   type: :companion
+  cost: 5
+  special: Worth 1 for every 5 coins you have
+  equip:
+    skill: 2
+    attack: 2
 
 - name: The Mountain King
   count: 1
+  type: :companion
   cost: 6
   points: 3
-  skill: 2
-  attack: 1
-  move: 1
   special: +1 attack and +1 move if you have a crown
+  equip:
+    skill: 2
+    attack: 1
+    move: 1
 
 - name: The Queen of Hearts
   count: 1
+  type: :companion
   cost: 6
   points: 3
-  skill: 3
-  attack: 1
   special: Heal 1 if you have a crown
+  equip:
+    skill: 3
+    attack: 1
 
 - name: Treasure Hunter
   count: 2
+  type: :companion
   cost: 3
-  skill: 2
-  attack: 2
   points: 1
   special: Replace a card in dungeon row
-  type: :companion
+  equip:
+    skill: 2
+    attack: 2
 
 - name: Treasure Map
   count: 1
   cost: 6
-  coins: 5
+  equip:
+    coins: 5
 
 - name: Tunnel Guide
   count: 2
-  cost: 1
-  move: 1
-  attack: 1
-  points: 1
   type: :companion
+  cost: 1
+  points: 1
+  equip:
+    move: 1
+    attack: 1
 
 - name: Underworld Dealing
   count: 1
@@ -460,10 +512,11 @@
 
 - name: Wand of Recall
   count: 2
-  skill: 2
-  points: 1
   cost: 5
+  points: 1
   special: Teleport, if you have an artifact
+  equip:
+    skill: 2
 
 - name: Wand of Wind
   count: 1
@@ -473,7 +526,8 @@
 
 - name: Wizard
   count: 1
-  cost: 6
-  skill: 3
-  special: +3 points for each tome you have
   type: :companion
+  cost: 6
+  special: +3 points for each tome you have
+  equip:
+    skill: 3

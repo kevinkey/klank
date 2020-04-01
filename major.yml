@@ -1,0 +1,20 @@
+- name: Potion of Greater Healing
+  description: Use during your turn to heal 2 damage. (Keep until you use it, then return it to the box).
+  count: 2
+  heal: 2
+- name: Greater Skill Boost
+  description: Immediately gain 5 Skill, then return the token to the box.
+  count: 2
+  skill: 5
+- name: Greater Treasure
+  description: This token counts as 5 Gold. You may keep it until the end of the game or spend it normally.
+  count: 3
+  coins: 5
+- name: Flash of Brilliance
+  description: Immediately draw three cards, then return the token to the box.
+  count: 2
+- name: Chalice
+  description: Keep this token-it is worth 7 points at the end of the game. It is not an Artifact.
+  count: 2
+  points: 7
+  
