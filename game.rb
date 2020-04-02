@@ -2,12 +2,13 @@ module Klank
     require_relative "deck.rb"
     require_relative "dragon.rb"
     require_relative "dungeon.rb"
+    require_relative "map.rb"
     require_relative "utils.rb"
 
     class Game
-
         attr_reader :name
         attr_reader :num
+        attr_reader :map
         attr_reader :shutdown
         attr_reader :reserve
         attr_reader :dungeon
@@ -15,9 +16,10 @@ module Klank
         attr_reader :player
         attr_reader :escalation
 
-        def initialize(name, num)
+        def initialize(name, num, map)
             @name = name
             @num = num
+            @map = Map.new(map)
             @player = []
 
             @shutdown = false 
@@ -68,9 +70,9 @@ module Klank
             broadcast(msg)
 
             @reserve = {
-                x: Deck.new("explore.yml"),
-                c: Deck.new("mercenary.yml"),
-                t: Deck.new("tome.yml"),
+                x: Deck.new(self, "explore.yml"),
+                c: Deck.new(self, "mercenary.yml"),
+                t: Deck.new(self, "tome.yml"),
             }
 
             loop do 

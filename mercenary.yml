@@ -1,5 +1,7 @@
 - name: Mercenary
   count: 15
+  type: :companion
   cost: 2 
-  skill: 1
-  attack: 1
+  equip:
+    skill: 1
+    attack: 1

@@ -6,7 +6,7 @@ module Klank
 
         def initialize(game)
             @game = game
-            @deck = Deck.new("dungeon.yml")
+            @deck = Deck.new(game, "dungeon.yml")
             @hand = []
 
             while @hand.count < COUNT
@@ -84,6 +84,16 @@ module Klank
             end
 
             card
+        end
+
+        def replace_card(player)
+            c = menu(player)
+            if c != "N"
+                removed = @hand.delete_at(c.to_i)
+                added = @deck.draw(1)[0]
+                @hand << added
+                @game.broadcast("#{player.name} removed #{removed.name} and #{added.name} replaced it!")
+            end
         end
 
         private 

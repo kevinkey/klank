@@ -5,13 +5,13 @@ module Klank
     require_relative "utils.rb"
 
     class Deck
-        def initialize(yml)
+        def initialize(game, yml)
             @stack = []
             @pile = []
 
             YAML.load(File.read(yml)).each do |c|
                 (c["count"] || 1).times do 
-                    @stack << Card.new(c)
+                    @stack << Card.new(game, c)
                 end
             end
             @stack = Klank.randomize(@stack)

@@ -1,5 +1,6 @@
 - name: Explore
   count: 15
   cost: 3
-  skill: 2
-  move: 1
+  equip:
+    skill: 2
+    move: 1

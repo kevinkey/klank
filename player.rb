@@ -5,7 +5,9 @@ module Klank
         FULL_HEALTH = 10
 
         attr_reader :name
+        attr_reader :deck
 
+        attr_accessor :played
         attr_accessor :skill
         attr_accessor :attack
         attr_accessor :move
@@ -65,7 +67,7 @@ module Klank
 
         def start(game, index)
             @game = game
-            @deck = Deck.new("player.yml")
+            @deck = Deck.new(@game, "player.yml")
             @coins = 0
             @cubes = 30
             @health = FULL_HEALTH
@@ -73,14 +75,17 @@ module Klank
             @artifact = []
         end
 
-        def draw(count = 5)
+        def draw(count, announce = true)
             output("\nDrawing cards...")
             cards = @deck.draw(count)
-            msg = []
-            cards.each_with_index do |c, i|
-                msg << c.play_desc
+
+            if announce
+                msg = []
+                cards.each_with_index do |c, i|
+                    msg << c.play_desc
+                end
+                output(msg.join("\n"))
             end
-            output(msg.join("\n"))
 
             @hand += cards
         end
@@ -98,9 +103,12 @@ module Klank
 
                 @game.broadcast("HEALTH: #{@health} | CLANK: #{@cubes} | COINS: #{@coins}")
 
-                draw()
+                draw(5, false)
+                equip()
 
                 loop do 
+                    output_abilities()
+
                     menu = []
 
                     if @hand.count != 0
@@ -170,7 +178,7 @@ module Klank
                             @game.broadcast("#{@name} killed #{card.name} in the dungeon!")
                         end
                     when "G"
-                        @coins += 1
+                        collect_coins(1)
                         @attack -= 2
                     when "D"
                         @deck.discard(@played)
@@ -180,8 +188,6 @@ module Klank
                     end
 
                     break if dead?()
-
-                    output_abilities()
                 end
 
                 @game.dragon.remove(@index, -1 * @clank_remove)
@@ -196,6 +202,7 @@ module Klank
         end
 
         def heal(count = 1)
+            @cubes += [FULL_HEALTH - @health, count].min
             @health = [FULL_HEALTH, @health + count].min
         end
 
@@ -208,17 +215,36 @@ module Klank
                 actual = [@cubes, count].min 
                 @cubes -= actual 
                 @game.dragon.add(@index, actual)
+                @skill += @played.select { |c| c.name == "Swagger" }.count
             else
                 @clank_remove += count
             end
         end
 
-        def depths?()
+        def has_artifact?()
+            @artifact.count > 0
+        end
+
+        def trash_card(card = nil)
+
+        end
+
+        def discard_card()
+
             false
         end
 
-        def artifact?()
-            @artifact.count > 0
+        def has_item?(item)
+            false
+        end
+
+        def has_played?(card)
+            @played.any? { |c| c.name == card }
+        end
+
+        def collect_coins(count)
+            @coins += count 
+            @coins += @played.select { |c| c.name == "Search" }.count
         end
 
         private 
@@ -269,6 +295,8 @@ module Klank
                 play = [@hand.delete_at(c.to_i)]
             end
 
+            @played += play
+
             msg = [""]
 
             play.each do |card|
@@ -277,8 +305,6 @@ module Klank
             end
 
             @game.broadcast(msg.join("\n"))
-
-            @played += play
         end
     end
 end

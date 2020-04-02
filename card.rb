@@ -7,7 +7,9 @@ module Klank
         attr_reader :danger
         attr_reader :dragon
 
-        def initialize(hash)
+        def initialize(game, hash)
+            @game = game 
+
             @name = hash["name"]
             @type = hash["type"] || ""
             @cost = hash["cost"] || 0
@@ -31,16 +33,39 @@ module Klank
         end
 
         def acquire(player)
-            success = false 
+            success = false
+
+            if (@type == :gem) and player.has_played?("Gem Collector")
+                cost = @cost - 2 
+            else 
+                cost = @cost 
+            end
 
             if @type == :monster
                 player.output("Can't buy a monster!")
-            elsif @hash.key?("depths") && !player.depths?()
+            elsif @hash.key?("depths") and !@game.map.depths?(player)
                 player.output("Must be in the depths to acquire!")
-            elsif player.skill >= @cost
+            elsif player.skill >= cost
                 success = true
 
-                player.skill -= @cost
+                player.skill -= cost
+
+                case @name 
+                when "Dragon Shrine"
+                    menu = [["C", "2 coins"], ["T", "Trash a card"]]
+                    if player.menu("Dragon Shrine", menu) == "C"
+                        player.collect_coins(2)
+                    else 
+                        player.trash_card()
+                    end
+                when "Shrine"
+                    menu = [["C", "1 coin"], ["H", "1 heal"]]
+                    if player.menu("Dragon Shrine", menu) == "C"
+                        player.collect_coins(1)
+                    else 
+                        player.heal(1)
+                    end
+                end
 
                 if @hash.key?("acquire")
                     abilities(player, @hash["acquire"])
@@ -57,12 +82,23 @@ module Klank
 
             if @type != :monster
                 player.output("That's not a monster!")
-            elsif @hash.key?("depths") && !player.depths?()
+            elsif @hash.key?("depths") && !@game.map.depths?(player)
                 player.output("Must be in the depths to defeat!")
+            elsif @hash.key?("crystal cave") && !@game.map.crystal_cave?(player)
+                player.output("Must be in a crystal cave to defeat!")
             elsif player.attack >= @attack
                 success = true
                 
                 player.attack -= @attack
+
+                if @name == "Watcher"
+                    @game.broadcast("All other players +1 clank")
+                    @game.player.each do |p|
+                        if p.index != player.index 
+                            p.clank(1)
+                        end
+                    end
+                end
 
                 if @hash.key?("defeat")
                   abilities(player, @hash["defeat"])
@@ -75,6 +111,91 @@ module Klank
         end
 
         def equip(player)
+            case @name 
+            when "Apothecary"
+                if player.discard_card()
+                    menu = [["A", "3 Attack"], ["C", "2 coins"], ["H", "1 heal"]]
+                    case player.menu(menu)
+                    when "A"
+                        player.attack += 3
+                    when "C"
+                        player.collect_coins(2)
+                    when "H"
+                        player.heal(1)
+                    end
+                end
+            when "Archaeologist"
+                if player.has_item?("Monkey Idol")
+                    player.skill += 2
+                end
+            when "Kobold Merchant"
+                if player.has_artifact?()
+                    player.skill += 2
+                end
+            when "Master Burglar"
+                player.trash_card("Burgle")
+            when "Mister Whiskers"
+                menu = [["D", "Dragon Attack"], ["C", "-2 clank"]]
+                if player.menu(menu) == "D"
+                    @game.dragon.attack()
+                else 
+                    player.clank(-2)
+                end
+            when "Rebel Captain", "Rebel Miner", "Rebel Scout", "Rebel Soldier"
+                if player.played.any? { |c| (c.type == :companion) and (c.name != @name) }
+                    player.draw(1)
+                end 
+            when "Sleight of Hands"
+                if player.discard_card()
+                    player.draw(2)
+                end
+            when "Tattle"
+                @game.broadcast("All other players +1 clank")
+                @game.player.each do |p|
+                    if p.index != player.index 
+                        p.clank(1)
+                    end
+                end
+            when "The Mountain King"
+                if player.has_item?("Crown")
+                    player.attack += 1
+                    player.move += 1
+                end
+            when "The Queen of Hearts"
+                if player.has_item?("Crown")
+                    player.heal(1)
+                end
+            when "Treasure Hunter"
+                @game.dungeon.replace_card(player)
+            when "Underworld Dealing"
+                remaining = @game.reserve[:t].remaining
+                if (player.coins < 7) or (remaining == 0)
+                    player.collect_coins(1)
+                else
+                    menu = [["C", "1 coin"], ["T", "7 coins for #{[2, remaining].min} Tomes"]]
+                    if player.menu(menu) == "C"
+                        player.collect_coins(1)
+                    else 
+                        player.coins -= 7
+                        player.deck.discard(@game.reserve[:t].draw([2, remaining].min))
+                    end
+                end
+            when "Wand of Recall"
+                if player.has_artifact>()
+                    player.teleport += 1
+                end
+            when "Wand of Wind"
+                loop do 
+                    menu = [["T", "Teleport to an adjacent room"], ["S", "Take a secret from an adjacent room"]]
+                    if player.menu(menu) == "T"
+                        player.teleport += 1
+                        break
+                    elsif @game.map.take_adjacent_secret(player)
+                        break
+                    end
+                end
+            end
+
             if @hash.key?("equip")
                 abilities(player, @hash["equip"])
             end
@@ -152,7 +273,7 @@ module Klank
                 player.teleport += hash["teleport"]
             end
             if hash.key?("coins") 
-                player.coins += hash["coins"]
+                player.collect_coins(hash["coins"])
             end
             if hash.key?("draw") 
                 player.draw(hash["draw"])

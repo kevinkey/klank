@@ -26,9 +26,10 @@ module Klank
         when "N"
           name = player.input("Name")
           num = player.input_num("Players", 2..4)
+          map = player.input_num("Map", 1..2)
           player.output("\nCreated #{name}, waiting for players...")
 
-          game = Game.new(name, num)
+          game = Game.new(name, num, map)
           games << game 
           game.join(player)
         else
