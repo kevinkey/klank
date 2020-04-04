@@ -69,6 +69,16 @@ module Klank
                 total += card.points(self)
             end
 
+            @item.each do |i|
+                if i.key("points")
+                    total += i["points"]
+                end
+            end
+
+            if @mastery 
+                total += 20
+            end
+
             total
         end
 
@@ -81,6 +91,7 @@ module Klank
             @health = FULL_HEALTH
             @index = index
             @artifact = []
+            @item = []
         end
 
         def draw(count, announce = true)
@@ -123,6 +134,10 @@ module Klank
                         menu << ["E", "Equip card(s)"]
                     end
 
+                    if @item.select{ |i| i.playable }.count != 0
+                        menu << ["I", "Play an item"]
+                    end
+
                     if (@game.reserve[:x].remaining > 0) and (@skill >= @game.reserve[:x].peek.cost)
                         menu << ["X", "Buy an explore card"]
                     end
@@ -143,6 +158,10 @@ module Klank
                         menu << ["M", "Move"]
                     end
 
+                    if @teleport > 0 
+                        menu << ["P", "Teleport"]
+                    end
+
                     if @attack > 0
                         menu << ["A", "Attack a monster from the dungeon"]
                     end
@@ -160,6 +179,8 @@ module Klank
                     case option
                     when "E"
                         equip()
+                    when "I"
+                        play()
                     when "X"
                         x = @game.reserve[:x].draw(1)
                         @deck.discard(x)
@@ -179,7 +200,9 @@ module Klank
                             @game.broadcast("#{@name} bought #{card.name} from the dungeon!")
                         end
                     when "M"
-                    
+                        @game.map.move(self)
+                    when "P"
+                        @game.map.teleport(self)
                     when "A"
                         card = @game.dungeon.monster(self)
                         if card 
@@ -238,12 +261,22 @@ module Klank
         end
 
         def discard_card()
+            cards = []
+            @hand.each_with_index do |c, i|
+                cards << [i, c.play_desc]
+            end
+            cards << ["N", "None of the cards"]
+            c = menu("DISCARD", cards)
 
-            false
+            if c != "N"
+                @deck.discard([@hand.delete_at(c.to_i)])
+            end
+
+            c != "N"
         end
 
         def has_item?(item)
-            false
+            @item.any? { |i| i.name == item }
         end
 
         def has_played?(card)
@@ -313,6 +346,24 @@ module Klank
             end
 
             @game.broadcast(msg.join("\n"))
+        end
+
+        def play()
+            items = []
+            lookup = []
+            @item.each_with_index do |item, i|
+                if item.playable
+                    items << [lookup.count, item.play_desc()]
+                    lookup << i
+                end
+            end
+            items << ["N", "None of the items"]
+            i = menu("ITEMS", items)
+
+            if i != "N"
+                item = @item.delete_at(lookup[i.to_i])
+                item.play(self)
+            end
         end
     end
 end

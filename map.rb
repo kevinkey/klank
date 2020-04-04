@@ -6,7 +6,11 @@ module Klank
 
         end 
 
-        def move()
+        def move(player)
+
+        end
+
+        def teleport(player)
 
         end
 
