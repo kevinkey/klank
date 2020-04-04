@@ -46,5 +46,9 @@ module Klank
         def reshuffle!()
             @stack = Klank.randomize(@stack)
         end
+
+        def all()
+            @stack + @pile
+        end
     end
 end

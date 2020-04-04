@@ -204,7 +204,7 @@
   count: 1
   type: :companion
   cost: 4
-  special: 4 points if you have two of chalice, dragon, egg, or monkey idol
+  special: 4 points if you have two of chalice, dragon egg, or monkey idol
   equip:
     move: 1
     coins: 2

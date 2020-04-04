@@ -8,6 +8,7 @@ module Klank
         attr_reader :deck
 
         attr_accessor :played
+        attr_accessor :mastery
         attr_accessor :skill
         attr_accessor :attack
         attr_accessor :move
@@ -62,12 +63,19 @@ module Klank
         end
 
         def score()
-            @coins
+            total = @coins
+
+            @deck.all.each do |card|
+                total += card.points(self)
+            end
+
+            total
         end
 
         def start(game, index)
             @game = game
             @deck = Deck.new(@game, "player.yml")
+            @mastery = false
             @coins = 0
             @cubes = 30
             @health = FULL_HEALTH

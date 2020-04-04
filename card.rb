@@ -21,6 +21,41 @@ module Klank
             @hash = hash
         end 
 
+        def points(player)
+            total = 0
+
+            if @hash.key?("points")
+                total += @hash["points"].to_i
+            end
+
+            case @name 
+            when "Dragon's Eye"
+                if player.mastery 
+                    total += 10
+                end
+            when "Dwarven Peddler"
+                things = 0
+                if player.has_item?("Chalice")
+                    things += 1
+                end
+                if player.has_item?("Dragon Egg")
+                    things += 1
+                end
+                if player.has_item?("Monkey Idol")
+                    things += 1
+                end
+                if things >= 2 
+                    total += 4 
+                end
+            when "The Duke"
+                total += (player.coins / 5)
+            when "Wizard"
+                total += (player.deck.all.select { |c| c.name == "Tome" }.count * 3)
+            end
+
+            total
+        end
+
         def arrive()
             case @name 
             when "Overlord", "Watcher"
