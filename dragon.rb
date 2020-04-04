@@ -19,11 +19,13 @@ module Klank
 
         def anger()
             @anger = [DRAW.count - 1, anger + 1].min
+            @game.broadcast("The dragon is angered and now draws #{DRAW[@anger]}!")
         end
 
         def add(cube, count = 1)
             count.times do 
                 @bank << cube
+                @game.broadcast("#{@game.player[cube].name} adds a clank to the bank!")
             end
         end
 
@@ -31,7 +33,9 @@ module Klank
             removed = 0
 
             count.times do 
-                @bank.delete_at(@bank.index(cube) || @bank.length)
+                if @bank.delete_at(@bank.index(cube) || @bank.length)
+                    @game.broadcast("#{@game.player[cube].name} removes a clank from the bank!")
+                end
             end
         end
 
@@ -43,12 +47,13 @@ module Klank
             draw = DRAW[@anger] + @game.dungeon.danger() + @game.escalation
 
             msg = ["The dragon attacks, drawing #{draw} cubes..."]
-            draw.times do 
+            draw.times do
                 c = @bag.pop
                 if c == "D"
+                    msg << "The dragon's attack misses!"
                     @dragon_cubes += 1
                 else
-                    msg << "+1 damage to #{@game.player[c].name}"
+                    msg << "+1 damage to #{@game.player[c].name}!"
                     @game.player[c].damage()
                 end
             end

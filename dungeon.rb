@@ -34,6 +34,7 @@ module Klank
                 string = []
                 cards.each do |c|
                     string << c.name
+                    c.arrive()
                     if c.dragon
                         attack = true
                     end              
@@ -58,7 +59,7 @@ module Klank
             card = nil
 
             loop do 
-                c = menu(player)
+                c = menu("BUY A CARD",player)
                 break if c == "N"
 
                 if @hand[c.to_i].acquire(player)
@@ -74,7 +75,7 @@ module Klank
             card = nil
 
             loop do 
-                c = menu(player)
+                c = menu("DEFEAT A MONSTER", player)
                 break if c == "N"
 
                 if @hand[c.to_i].defeat(player)
@@ -87,7 +88,7 @@ module Klank
         end
 
         def replace_card(player)
-            c = menu(player)
+            c = menu("REPLACE A CARD", player)
             if c != "N"
                 removed = @hand.delete_at(c.to_i)
                 added = @deck.draw(1)[0]
@@ -98,13 +99,13 @@ module Klank
 
         private 
 
-        def menu(player)
+        def menu(title, player)
             options = []
             @hand.each_with_index do |c, i|
                 options << [i, c.buy_desc]
             end
             options << ["N", "None of the cards"]
-            card = player.menu("DUNGEON", options)
+            card = player.menu(title, options)
         end
     end
 end

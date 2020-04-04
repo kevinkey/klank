@@ -5,6 +5,7 @@ module Klank
         FULL_HEALTH = 10
 
         attr_reader :name
+        attr_reader :index
         attr_reader :deck
 
         attr_accessor :played
@@ -285,7 +286,14 @@ module Klank
 
         def collect_coins(count)
             @coins += count 
-            @coins += @played.select { |c| c.name == "Search" }.count
+
+            extra = @played.select { |c| c.name == "Search" }.count
+            if extra != 0
+                @coins += extra
+                @game.broadcast("#{@name} collects #{count} coins plus #{extra} because of Search!")
+            else
+                @game.broadcast("#{@name} collects #{count} coins!")
+            end
         end
 
         private 

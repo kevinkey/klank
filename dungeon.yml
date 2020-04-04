@@ -71,6 +71,7 @@
 - name: Watcher
   count: 3
   type: :monster
+  attack: 3
   defeat:
     coins: 3
   special: ARRIVE All players +1 clank | DEFEAT All other players +1 clank
@@ -184,6 +185,7 @@
   type: :gem
   cost: 8
   points: 8
+  dragon: true
   acquire:
     clank: 2
   equip:
@@ -194,6 +196,7 @@
   type: :gem
   cost: 5
   depths: true 
+  dragon: true
   special: Worth 10 points if you have a mastery token 
   acquire:
     clank: 2
@@ -241,6 +244,7 @@
   type: :gem 
   cost: 5
   points: 5
+  dragon: true
   acquire:
     clank: 2
   equip:
