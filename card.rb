@@ -69,6 +69,7 @@ module Klank
 
         def acquire(player)
             success = false
+            cost = 0
 
             if (@type == :gem) and player.has_played?("Gem Collector")
                 cost = @cost - 2 
@@ -276,19 +277,72 @@ module Klank
             string.join(" | ")
         end
 
-        def buy_desc()
-            string = [play_desc]
+        def buy_desc(gem_collector)
+            string = play_desc.split(" | ")
 
             if @hash.key?("points")
-                string << "POINTS: #{@hash["points"]}"
+                string.insert(2, "POINTS: #{@hash["points"]}")
             end
 
             if @hash.key?("cost")
-                string << "COST: #{@hash["cost"]}"
+                cost = 0
+    
+                if (@type == :gem) and gem_collector
+                    cost = @cost - 2 
+                else 
+                    cost = @cost 
+                end
+
+                string.insert(2, "COST: #{cost}")
             end
 
             if @hash.key?("attack")
-                string << "DEFEAT: #{@hash["attack"]}"
+                string.insert(2, "DEFEAT: #{@hash["attack"]}")
+            end
+
+            if @hash.key?("acquire")
+                if @hash["acquire"].key?("skill") 
+                    string << "ACQUIRE SKILL: #{@hash["acquire"]["skill"]}"
+                end
+                if @hash["acquire"].key?("move") 
+                    string << "ACQUIRE MOVE: #{@hash["acquire"]["move"]}"
+                end
+                if @hash["acquire"].key?("attack") 
+                    string << "ACQUIRE ATTACK: #{@hash["acquire"]["attack"]}"
+                end
+                if @hash["acquire"].key?("teleport") 
+                    string << "ACQUIRE TELEPORT"
+                end
+                if @hash["acquire"].key?("coins") 
+                    string << "ACQUIRE COINS: #{@hash["acquire"]["coins"]}"
+                end
+                if @hash["acquire"].key?("clank") 
+                    string << "ACQUIRE CLANK: #{@hash["acquire"]["clank"]}"
+                end
+                if @hash["acquire"].key?("heal") 
+                    string << "ACQUIRE HEAL: #{@hash["acquire"]["heal"]}"
+                end
+            end
+
+            if @hash.key?("defeat")
+                if @hash["defeat"].key?("skill") 
+                    string << "SKILL: #{@hash["defeat"]["skill"]}"
+                end
+                if @hash["defeat"].key?("move") 
+                    string << "MOVE: #{@hash["defeat"]["move"]}"
+                end
+                if @hash["defeat"].key?("coins") 
+                    string << "COINS: #{@hash["defeat"]["coins"]}"
+                end
+                if @hash["defeat"].key?("draw") 
+                    string << "DRAW: #{@hash["defeat"]["draw"]}"
+                end
+                if @hash["defeat"].key?("clank") 
+                    string << "CLANK: #{@hash["defeat"]["clank"]}"
+                end
+                if @hash["defeat"].key?("heal") 
+                    string << "HEAL: #{@hash["defeat"]["heal"]}"
+                end
             end
 
             string.join(" | ")

@@ -26,31 +26,29 @@ module Klank
             count = COUNT - @hand.count
 
             if count > 0
-                msg = ["\nReplenishing the dungeon..."]
+                @game.broadcast("\nReplenishing the dungeon...")
                 attack = false
 
                 cards = @deck.draw(count)
                 
-                string = []
                 cards.each do |c|
-                    string << c.name
                     c.arrive()
                     if c.dragon
                         attack = true
                     end              
                 end
-                msg << string.join(" | ")
-                @game.broadcast(msg.join("\n"))
                 @hand += cards
 
                 if attack 
                     @game.dragon.attack()
+                else 
+                    @game.dragon.bank_status()
                 end
             end
 
             msg = ["\nDUNGEON"]
             @hand.each_with_index do |c, i|
-                msg << c.buy_desc
+                msg << c.buy_desc(false)
             end
             @game.broadcast(msg.join("\n"))
         end
@@ -102,7 +100,7 @@ module Klank
         def menu(title, player)
             options = []
             @hand.each_with_index do |c, i|
-                options << [i, c.buy_desc]
+                options << [i, c.buy_desc(player.has_played?("Gem Collector"))]
             end
             options << ["N", "None of the cards"]
             card = player.menu(title, options)

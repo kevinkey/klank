@@ -25,8 +25,8 @@ module Klank
         def add(cube, count = 1)
             count.times do 
                 @bank << cube
-                @game.broadcast("#{@game.player[cube].name} adds a clank to the bank!")
             end
+            @game.broadcast("#{@game.player[cube].name} adds #{count} clank to the bank!")
         end
 
         def remove(cube, count)
@@ -66,6 +66,17 @@ module Klank
                 @bag << "D"
             end
             @dragon_cubes -= actual
+        end
+
+        def bank_status()
+            msg = ["DRAGON BANK"]
+
+            @game.player.each do |p|
+                count = @bank.select { |b| p.index == b }.count
+                msg << "#{p.name}: #{count}"
+            end
+
+            @game.broadcast(msg.join(" | "))
         end
     end
 end

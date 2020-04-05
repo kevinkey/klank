@@ -93,6 +93,7 @@ module Klank
             @index = index
             @artifact = []
             @item = []
+            @played = []
         end
 
         def draw(count, announce = true)
@@ -186,18 +187,23 @@ module Klank
                         x = @game.reserve[:x].draw(1)
                         @deck.discard(x)
                         @skill -= x[0].cost
+                        @game.broadcast("#{@name} bought an Explore!")
                     when "C"
                         c = @game.reserve[:c].draw(1)
                         @deck.discard(c)
                         @skill -= c[0].cost
+                        @game.broadcast("#{@name} bought a Mercenary!")
                     when "T"
                         t = @game.reserve[:t].draw(1)
                         @deck.discard(t)
                         @skill -= t[0].cost
+                        @game.broadcast("#{@name} bought a Tome!")
                     when "B"
                         card = @game.dungeon.buy(self)
                         if card 
-                            @deck.discard([card])
+                            if card.type != :device
+                                @deck.discard([card])
+                            end
                             @game.broadcast("#{@name} bought #{card.name} from the dungeon!")
                         end
                     when "M"
@@ -290,9 +296,9 @@ module Klank
             extra = @played.select { |c| c.name == "Search" }.count
             if extra != 0
                 @coins += extra
-                @game.broadcast("#{@name} collects #{count} coins plus #{extra} because of Search!")
+                @game.broadcast("#{@name} collects #{count} coin(s) +#{extra} for Search!")
             else
-                @game.broadcast("#{@name} collects #{count} coins!")
+                @game.broadcast("#{@name} collects #{count} coin(s)!")
             end
         end
 

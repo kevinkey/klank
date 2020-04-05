@@ -43,6 +43,7 @@ module Klank
                 start()
             else 
                 loop do 
+                    sleep(1.0)
                     break if @shutdown
                 end
             end          
@@ -84,6 +85,7 @@ module Klank
                 end
 
                 break if @game_over
+                sleep(0.1)
             end
 
             broadcast("GAME OVER!")
