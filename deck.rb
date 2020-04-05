@@ -5,6 +5,8 @@ module Klank
     require_relative "utils.rb"
 
     class Deck
+        attr_accessor :pile
+
         def initialize(game, yml)
             @stack = []
             @pile = []

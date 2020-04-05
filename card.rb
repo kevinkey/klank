@@ -89,14 +89,14 @@ module Klank
                 case @name 
                 when "Dragon Shrine"
                     menu = [["C", "2 coins"], ["T", "Trash a card"]]
-                    if player.menu("Dragon Shrine", menu) == "C"
+                    if player.menu("DRAGON SHRINE", menu) == "C"
                         player.collect_coins(2)
                     else 
                         player.trash_card()
                     end
                 when "Shrine"
                     menu = [["C", "1 coin"], ["H", "1 heal"]]
-                    if player.menu("Dragon Shrine", menu) == "C"
+                    if player.menu("SHRINE", menu) == "C"
                         player.collect_coins(1)
                     else 
                         player.heal(1)
@@ -151,7 +151,7 @@ module Klank
             when "Apothecary"
                 if player.discard_card()
                     menu = [["A", "3 Attack"], ["C", "2 coins"], ["H", "1 heal"]]
-                    case player.menu(menu)
+                    case player.menu("APOTHECARY", menu)
                     when "A"
                         player.attack += 3
                     when "C"
@@ -172,7 +172,7 @@ module Klank
                 player.trash_card("Burgle")
             when "Mister Whiskers"
                 menu = [["D", "Dragon Attack"], ["C", "-2 clank"]]
-                if player.menu(menu) == "D"
+                if player.menu("MISTER WHISKERS", menu) == "D"
                     @game.dragon.attack()
                 else 
                     player.clank(-2)
@@ -209,7 +209,7 @@ module Klank
                     player.collect_coins(1)
                 else
                     menu = [["C", "1 coin"], ["T", "7 coins for #{[2, remaining].min} Tomes"]]
-                    if player.menu(menu) == "C"
+                    if player.menu("UNDERWORLD DEALING", menu) == "C"
                         player.collect_coins(1)
                     else 
                         player.coins -= 7
@@ -223,7 +223,7 @@ module Klank
             when "Wand of Wind"
                 loop do 
                     menu = [["T", "Teleport to an adjacent room"], ["S", "Take a secret from an adjacent room"]]
-                    if player.menu(menu) == "T"
+                    if player.menu("WAND OF WIND", menu) == "T"
                         player.teleport += 1
                         break
                     elsif @game.map.take_adjacent_secret(player)
