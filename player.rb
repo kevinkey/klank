@@ -51,17 +51,20 @@ module Klank
         end
 
         def menu(title, options)
-            msg = ["\n#{title}"]
-            options.each do |o|
-                msg << "#{o[0]}: #{o[1]}"
-            end
-            output(msg.join("\n"))
+            choice = options[0][0]
 
-            choice = ""
-            loop do
-                choice = input("Choose an option").upcase
-                break if options.any? { |o| o[0].to_s.upcase == choice }
-                output("Oops!")
+            if options.count > 1
+                msg = ["\n#{title}"]
+                options.each do |o|
+                    msg << "#{o[0]}: #{o[1]}"
+                end
+                output(msg.join("\n"))
+                
+                loop do
+                    choice = input("Choose an option").upcase
+                    break if options.any? { |o| o[0].to_s.upcase == choice }
+                    output("Oops!")
+                end
             end
 
             choice
@@ -79,6 +82,7 @@ module Klank
             @item = []
             @played = []
             @room_num = 1
+            @skill = 0
         end
 
         def score()
@@ -123,150 +127,155 @@ module Klank
         end
 
         def turn()
-            if !dead?()
-                @hand = []
-                @played = []
-                @skill = 0
-                @move = 0
-                @attack = 0
-                @teleport = 0
-                @clank_added = 0
-                @clank_remove = 0
-                @frozen = false
+            @hand = []
+            @played = []
+            @skill = 0
+            @move = 0
+            @attack = 0
+            @teleport = 0
+            @clank_added = 0
+            @clank_remove = 0
+            @frozen = false
 
-                @game.broadcast("HEALTH: #{@health} | CLANK: #{@cubes} | COINS: #{@coins}")
+            @game.broadcast("HEALTH: #{@health} | CLANK: #{@cubes} | COINS: #{@coins} | ARTIFACT: #{@artifact.count} | ROOM: #{@room_num}")
 
-                draw(5)
+            draw(5)
 
-                loop do 
-                    if @new_cards
-                        @new_cards = false 
-                        equip()
-                    else 
-                        output_abilities()
+            loop do 
+                if @new_cards
+                    @new_cards = false 
+                    equip()
+                else 
+                    output_abilities()
 
-                        menu = []
+                    menu = []
 
-                        if @hand.count != 0
-                            menu << ["E", "Equip card(s)"]
-                        end
-
-                        if @item.select{ |i| i.playable }.count != 0
-                            menu << ["I", "Play an item"]
-                        end
-
-                        if (@game.reserve[:x].remaining > 0) and (@skill >= @game.reserve[:x].peek.cost)
-                            menu << ["X", "Buy an explore card"]
-                        end
-
-                        if (@game.reserve[:c].remaining > 0) and (@skill >= @game.reserve[:c].peek.cost)
-                            menu << ["C", "Buy a mercenary card"]
-                        end
-
-                        if (@game.reserve[:t].remaining > 0) and (@skill >= @game.reserve[:t].peek.cost)
-                            menu << ["T", "Buy a tome card"]
-                        end
-
-                        if @skill > 0
-                            menu << ["B", "Buy a card from the dungeon"]
-                        end
-
-                        if (@move > 0) and !@frozen
-                            menu << ["M", "Move"]
-                        end
-
-                        if @game.map.market?(self) and (@coins >= 7)
-                            menu << ["S", "Shop in the market"]
-                        end
-
-                        if @teleport > 0 
-                            menu << ["P", "Teleport"]
-                        end
-
-                        if @attack > 0
-                            menu << ["A", "Attack a monster from the dungeon"]
-                        end
-
-                        if @attack > 1
-                            menu << ["G", "Kill the goblin"]
-                        end
-
-                        if @hand.count == 0
-                            menu << ["D", "End Turn"]
-                        end
-
-                        option = menu("ACTION LIST", menu)
-                        
-                        case option
-                        when "E"
-                            equip()
-                        when "I"
-                            play()
-                        when "X"
-                            x = @game.reserve[:x].draw(1)
-                            @deck.discard(x)
-                            @skill -= x[0].cost
-                            @game.broadcast("#{@name} bought an Explore!")
-                        when "C"
-                            c = @game.reserve[:c].draw(1)
-                            @deck.discard(c)
-                            @skill -= c[0].cost
-                            @game.broadcast("#{@name} bought a Mercenary!")
-                        when "T"
-                            t = @game.reserve[:t].draw(1)
-                            @deck.discard(t)
-                            @skill -= t[0].cost
-                            @game.broadcast("#{@name} bought a Tome!")
-                        when "B"
-                            card = @game.dungeon.buy(self)
-                            if card 
-                                if card.type != :device
-                                    @deck.discard([card])
-                                end
-                                @game.broadcast("#{@name} bought #{card.name} from the dungeon!")
-                            end
-                        when "M"
-                            @game.map.move(self)
-                        when "S"
-                            @game.map.shop(self)
-                        when "P"
-                            @game.map.teleport(self)
-                        when "A"
-                            card = @game.dungeon.monster(self)
-                            if card 
-                                @game.broadcast("#{@name} killed #{card.name} in the dungeon!")
-                            end
-                        when "G"
-                            collect_coins(1)
-                            @attack -= 2
-                        when "D"
-                            @deck.discard(@played)
-                            break
-                        else
-                            output("Hmmm... something went wrong")
-                        end
-
-                        break if dead?()
+                    if @hand.count != 0
+                        menu << ["E", "Equip card(s)"]
                     end
-                end
 
-                @game.dragon.remove(@index, -1 * @clank_remove)
+                    if @item.select{ |i| i.playable }.count != 0
+                        menu << ["I", "Play an item"]
+                    end
+
+                    if (@game.reserve[:x].remaining > 0) and (@skill >= @game.reserve[:x].peek.cost)
+                        menu << ["X", "Buy an explore card"]
+                    end
+
+                    if (@game.reserve[:c].remaining > 0) and (@skill >= @game.reserve[:c].peek.cost)
+                        menu << ["C", "Buy a mercenary card"]
+                    end
+
+                    if (@game.reserve[:t].remaining > 0) and (@skill >= @game.reserve[:t].peek.cost)
+                        menu << ["T", "Buy a tome card"]
+                    end
+
+                    if @skill > 0
+                        menu << ["B", "Buy a card from the dungeon"]
+                    end
+
+                    if (@move > 0) and !@frozen
+                        menu << ["M", "Move"]
+                    end
+
+                    if @game.map.market?(self) and (@coins >= 7)
+                        menu << ["S", "Shop in the market"]
+                    end
+
+                    if @teleport > 0 
+                        menu << ["P", "Teleport"]
+                    end
+
+                    if @attack > 0
+                        menu << ["A", "Attack a monster from the dungeon"]
+                    end
+
+                    if @attack > 1
+                        menu << ["G", "Kill the goblin"]
+                    end
+
+                    if @hand.count == 0
+                        menu << ["D", "End Turn"]
+                    end
+
+                    option = menu("ACTION LIST", menu)
+                    
+                    case option
+                    when "E"
+                        equip()
+                    when "I"
+                        play()
+                    when "X"
+                        x = @game.reserve[:x].draw(1)
+                        @deck.discard(x)
+                        @skill -= x[0].cost
+                        @game.broadcast("#{@name} bought an Explore!")
+                    when "C"
+                        c = @game.reserve[:c].draw(1)
+                        @deck.discard(c)
+                        @skill -= c[0].cost
+                        @game.broadcast("#{@name} bought a Mercenary!")
+                    when "T"
+                        t = @game.reserve[:t].draw(1)
+                        @deck.discard(t)
+                        @skill -= t[0].cost
+                        @game.broadcast("#{@name} bought a Tome!")
+                    when "B"
+                        card = @game.dungeon.buy(self)
+                        if card 
+                            if card.type != :device
+                                @deck.discard([card])
+                            end
+                            @game.broadcast("#{@name} bought #{card.name} from the dungeon!")
+                        end
+                    when "M"
+                        @game.map.move(self)
+                    when "S"
+                        @game.map.shop(self)
+                    when "P"
+                        @game.map.teleport(self)
+                    when "A"
+                        card = @game.dungeon.monster(self)
+                        if card 
+                            @game.broadcast("#{@name} killed #{card.name} in the dungeon!")
+                        end
+                    when "G"
+                        collect_coins(1)
+                        @attack -= 2
+                    when "D"
+                        @deck.discard(@played)
+                        @played = []
+                        break
+                    else
+                        output("Hmmm... something went wrong")
+                    end
+
+                    break if dead?() or @mastery
+                end
             end
+
+            @game.dragon.remove(@index, -1 * @clank_remove)
         end
 
         def damage(direct = false)
             @health -= 1
             if direct 
-                @clank -= 1
+                @cubes -= 1
+            end
+            if dead?()
+                @game.broadcast("#{@name} has died!")
+                trigger_end(player)
             end
         end
 
         def heal(count = 1)
-            actual = [FULL_HEALTH - @health, count].min
+            if count > 0
+                actual = [FULL_HEALTH - @health, count].min
 
-            @cubes += actual
-            @health = [FULL_HEALTH, @health + count].min
-            @game.broadcast("#{@name} healed #{actual} their health is #{@health}!")
+                @cubes += actual
+                @health = [FULL_HEALTH, @health + count].min
+                @game.broadcast("#{@name} healed #{actual}, their health is #{@health}!")
+            end
         end
 
         def dead?()
@@ -278,7 +287,11 @@ module Klank
                 actual = [@cubes, count].min 
                 @cubes -= actual 
                 @game.dragon.add(@index, actual)
-                @skill += @played.select { |c| c.name == "Swagger" }.count
+                swagger = @played.select { |c| c.name == "Swagger" }.count
+                if swagger != 0
+                    @game.broadcast("#{@name} gained #{swagger} because of their Swagger!")
+                    @skill += swagger 
+                end
             else
                 @clank_remove += count
             end
@@ -294,17 +307,22 @@ module Klank
                 (@played + @deck.pile).each_with_index do |c, i|
                     cards << [i, c.name]
                 end 
+                cards << ["N", "Don't trash a card"]
                 c = menu("TRASH A CARD", cards)
-                card = cards[c.to_i][1]
+                card = (c != "N") ? cards[c.to_i][1] : ""
             end
 
-            if @played.delete_at(@played.index { |c| c.name == card } || @played.length)
-                @game.broadcast("#{@name} trashed #{card} from their play area!")
-            elsif @deck.pile.delete_at(@deck.pile.index { |c| c.name == card } || @deck.pile.length)
-                @game.broadcast("#{@name} trashed #{card} from their discard pile!")
-            else
-                output("Could not trash a #{card}!")
-            end
+            if card != ""
+                if @played.delete_at(@played.index { |c| c.name == card } || @played.length)
+                    @game.broadcast("#{@name} trashed #{card} from their play area!")
+                elsif @deck.pile.delete_at(@deck.pile.index { |c| c.name == card } || @deck.pile.length)
+                    @game.broadcast("#{@name} trashed #{card} from their discard pile!")
+                else
+                    output("Could not trash a #{card}!")
+                end
+            end 
+
+            card != ""
         end
 
         def discard_card()
@@ -343,7 +361,7 @@ module Klank
         end
 
         def hold_artifact?()
-            hold = @item.select { |i| i["name"] == "Backpack" }.count + 1
+            hold = @item.select { |i| i.name == "Backpack" }.count + 1
             (@artifact.count < hold)
         end
 
@@ -372,7 +390,9 @@ module Klank
                 string << "TELEPORT: #{@teleport}"
             end
 
-            output("\n" + string.join(" | "))
+            if string.count > 0
+                output("\n" + string.join(" | "))
+            end
         end
 
         def equip()
@@ -408,20 +428,29 @@ module Klank
         end
 
         def play()
-            items = []
-            lookup = []
-            @item.each_with_index do |item, i|
-                if item.playable
-                    items << [lookup.count, item.play_desc()]
-                    lookup << i
-                end
-            end
-            items << ["N", "None of the items"]
-            i = menu("ITEMS", items)
 
-            if i != "N"
-                item = @item.delete_at(lookup[i.to_i])
-                item.play(self)
+            loop do 
+                items = []
+                lookup = []
+                @item.each_with_index do |item, i|
+                    if item.playable
+                        items << [lookup.count, item.desc()]
+                        lookup << i
+                    end
+                end
+                items << ["N", "None of the items"]
+                i = menu("ITEMS", items)
+
+                if i != "N"
+                    if @item[lookup[i.to_i]].play(self)
+                        @item.delete_at(lookup[i.to_i])
+                        break if (@item.count == 0)
+                    else 
+                        output("Item not played!")
+                    end
+                else 
+                    break
+                end
             end
         end
     end

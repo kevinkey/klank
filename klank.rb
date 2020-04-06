@@ -24,6 +24,7 @@ module Klank
 
         case option 
         when "N"
+          player.output("\nCREATE A GAME")
           name = player.input("Name")
           num = player.input_num("Players", 2..4)
           map = player.input_num("Map", 1..2)

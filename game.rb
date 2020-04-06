@@ -21,6 +21,7 @@ module Klank
             @num = num
             @map = Map.new(self, map)
             @player = []
+            @trigger = -1
 
             @shutdown = false 
             @game_over = false
@@ -77,14 +78,32 @@ module Klank
             }
 
             loop do 
+                all_dead = true
+
                 @player.each do |p|
                     @dungeon.replenish()
-                    broadcast("\nStarting #{p.name}'s turn...")
-                    p.turn()
+                    if @trigger == player.index
+                        broadcast("\n#{p.name} triggered end of game!")
+
+                        @escalation += 1
+                        if @escalation > 3 
+                            @game_over = true 
+                        else
+                            @dragon.attack()
+                        end
+                    elsif p.dead?()
+                        broadcast("\n#{p.name} is dead!")
+                    elsif p.mastery
+                        broadcast("\n#{p.name} has left with an artifact!")                        
+                    else
+                        all_dead = false
+                        broadcast("\nStarting #{p.name}'s turn...")
+                        p.turn()
+                    end
                     break if @game_over
                 end
 
-                break if @game_over
+                break if @game_over || all_dead
                 sleep(0.1)
             end
 
@@ -93,6 +112,13 @@ module Klank
             scores()
 
             @shutdown = true
+        end
+
+        def trigger_end(player)
+            if @trigger < 0
+                @trigger = player.index
+                broadcast("#{player.name} has triggered the end of game!")
+            end
         end
 
         def scores()

@@ -57,13 +57,15 @@ module Klank
             card = nil
 
             loop do 
-                c = menu("BUY A CARD",player)
+                c = menu("BUY A CARD", player)
                 break if c == "N"
 
                 if @hand[c.to_i].acquire(player)
                     card = @hand.delete_at(c.to_i)
-                    break
+                    break if (@hand.count == 0) or (player.skill < @hand.map { |c| c.cost }.min)
                 end
+
+                player.output("\nSKILL: #{player.skill}")
             end
 
             card
@@ -78,8 +80,10 @@ module Klank
 
                 if @hand[c.to_i].defeat(player)
                     card = @hand.delete_at(c.to_i)
-                    break
+                    break if (@hand.count == 0) or (player.attack < @hand.map { |c| c.attack }.min)
                 end
+
+                player.output("\nATTACK: #{player.attack}")
             end
 
             card

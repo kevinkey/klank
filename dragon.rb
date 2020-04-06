@@ -7,7 +7,7 @@ module Klank
         def initialize(game)
             @game = game
 
-            @anger = 4 - @game.num
+            @level = 4 - @game.num
             @bag = []
             @bank = []
             @dragon_cubes = 0
@@ -18,8 +18,8 @@ module Klank
         end 
 
         def anger()
-            @anger = [DRAW.count - 1, anger + 1].min
-            @game.broadcast("The dragon is angered and now draws #{DRAW[@anger]}!")
+            @level = [DRAW.count - 1, @level + 1].min
+            @game.broadcast("The dragon is angered and now draws #{DRAW[@level]}!")
         end
 
         def add(cube, count = 1)
@@ -44,7 +44,7 @@ module Klank
             @bank = []
             @bag = Klank.randomize(@bag)
 
-            draw = DRAW[@anger] + @game.dungeon.danger() + @game.escalation
+            draw = DRAW[@level] + @game.dungeon.danger() + @game.escalation
 
             msg = ["The dragon attacks, drawing #{draw} cubes..."]
             draw.times do

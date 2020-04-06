@@ -4,6 +4,7 @@ module Klank
         attr_reader :name
         attr_reader :type
         attr_reader :cost
+        attr_reader :attack
         attr_reader :danger
         attr_reader :dragon
 
@@ -12,8 +13,8 @@ module Klank
 
             @name = hash["name"]
             @type = hash["type"] || ""
-            @cost = hash["cost"] || 0
-            @attack = hash["attack"] || 0
+            @cost = hash["cost"] || 1000000
+            @attack = hash["attack"] || 1000000
             @special = hash["special"] || ""
             @danger = hash.key?("danger")
             @dragon = hash.key?("dragon")
@@ -171,6 +172,8 @@ module Klank
             when "Master Burglar"
                 player.trash_card("Burgle")
             when "Mister Whiskers"
+                @game.broadcast("#{player.name} played Mister Whisterks!")
+                @game.dragon.bank_status()
                 menu = [["D", "Dragon Attack"], ["C", "-2 clank"]]
                 if player.menu("MISTER WHISKERS", menu) == "D"
                     @game.dragon.attack()
@@ -343,6 +346,10 @@ module Klank
                 if @hash["defeat"].key?("heal") 
                     string << "HEAL: #{@hash["defeat"]["heal"]}"
                 end
+            end
+
+            if @danger
+                string << "DANGER"
             end
 
             string.join(" | ")

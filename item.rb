@@ -24,6 +24,8 @@ module Klank
         end
 
         def play(player)
+            played = true
+            
             if @hash.key?("heal")
                 player.heal(@hash["heal"])
             elsif @hash.key?("skill")
@@ -35,8 +37,10 @@ module Klank
             elsif @hash.key?("attack")
                 player.move += @hash["attack"]
             elsif @name == "Magic Spring"
-                player.trash_card()
+                played = player.trash_card()
             end
+            
+            played
         end
 
         def points()
@@ -61,7 +65,7 @@ module Klank
             end
         end
 
-        def play_desc()
+        def desc()
             "#{@name} | #{@hash["description"]}"
         end
     end
