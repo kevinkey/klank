@@ -9,12 +9,16 @@ module Klank
         attr_reader :deck
 
         attr_accessor :played
+        attr_accessor :item
         attr_accessor :mastery
+        attr_accessor :room_num
         attr_accessor :skill
         attr_accessor :attack
         attr_accessor :move
         attr_accessor :coins
         attr_accessor :teleport
+        attr_accessor :frozen
+        attr_accessor :artifact
 
         def initialize(client)
             @client = client
@@ -63,26 +67,6 @@ module Klank
             choice
         end
 
-        def score()
-            total = @coins
-
-            @deck.all.each do |card|
-                total += card.points(self)
-            end
-
-            @item.each do |i|
-                if i.key("points")
-                    total += i["points"]
-                end
-            end
-
-            if @mastery 
-                total += 20
-            end
-
-            total
-        end
-
         def start(game, index)
             @game = game
             @deck = Deck.new(@game, "player.yml")
@@ -94,6 +78,41 @@ module Klank
             @artifact = []
             @item = []
             @played = []
+            @room_num = 1
+        end
+
+        def score()
+            msg = []
+
+            total = @coins
+            msg << sprintf("%-4s | %s", @coins.to_s, "Coins")
+
+            @deck.all.each do |card|
+                total += card.points(self)
+                msg << sprintf("%-4s | %s", card.points(self).to_s, card.name)
+            end
+
+            @item.each do |i|
+                total += i.points()
+                if i.points() != 0
+                    msg << sprintf("%-4s | %s", i.points().to_s, i.name)
+                end
+            end
+
+            @artifact.each do |a|
+                total += a
+                msg << sprintf("%-4s | %s", a.to_s, "Artifact")
+            end
+
+            if @mastery 
+                total += 20
+                msg << sprintf("%-4s | %s", 20.to_s, "Mastery")
+            end
+            msg << "----"
+            msg << sprintf("%-4s | %s", total.to_s, "Total")
+            output(msg.join("\n"))
+
+            total
         end
 
         def draw(count)
@@ -113,6 +132,7 @@ module Klank
                 @teleport = 0
                 @clank_added = 0
                 @clank_remove = 0
+                @frozen = false
 
                 @game.broadcast("HEALTH: #{@health} | CLANK: #{@cubes} | COINS: #{@coins}")
 
@@ -151,8 +171,12 @@ module Klank
                             menu << ["B", "Buy a card from the dungeon"]
                         end
 
-                        if @move > 0 
+                        if (@move > 0) and !@frozen
                             menu << ["M", "Move"]
+                        end
+
+                        if @game.map.market?(self) and (@coins >= 7)
+                            menu << ["S", "Shop in the market"]
                         end
 
                         if @teleport > 0 
@@ -203,6 +227,8 @@ module Klank
                             end
                         when "M"
                             @game.map.move(self)
+                        when "S"
+                            @game.map.shop(self)
                         when "P"
                             @game.map.teleport(self)
                         when "A"
@@ -314,6 +340,11 @@ module Klank
             else
                 @game.broadcast("#{@name} collects #{count} coin(s)!")
             end
+        end
+
+        def hold_artifact?()
+            hold = @item.select { |i| i["name"] == "Backpack" }.count + 1
+            (@artifact.count < hold)
         end
 
         private 

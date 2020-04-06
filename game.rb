@@ -19,7 +19,7 @@ module Klank
         def initialize(name, num, map)
             @name = name
             @num = num
-            @map = Map.new(map)
+            @map = Map.new(self, map)
             @player = []
 
             @shutdown = false 

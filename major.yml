@@ -13,6 +13,7 @@
 - name: Flash of Brilliance
   description: Immediately draw three cards, then return the token to the box.
   count: 2
+  draw: 3
 - name: Chalice
   description: Keep this token-it is worth 7 points at the end of the game. It is not an Artifact.
   count: 2

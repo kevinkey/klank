@@ -193,12 +193,12 @@ module Klank
                     end
                 end
             when "The Mountain King"
-                if player.has_item?("Crown")
+                if player.has_item?("Crown (10)") or player.has_item?("Crown (9)") or player.has_item?("Crown (8)")
                     player.attack += 1
                     player.move += 1
                 end
             when "The Queen of Hearts"
-                if player.has_item?("Crown")
+                if player.has_item?("Crown (10)") or player.has_item?("Crown (9)") or player.has_item?("Crown (8)")
                     player.heal(1)
                 end
             when "Treasure Hunter"

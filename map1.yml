@@ -1,0 +1,202 @@
+---
+description: This is one side of the official game board.
+depths: 17
+
+# not listing move if 1
+# paths are reversible unless otherwise specified (one-way)
+paths:
+  1-2:
+  2-3:
+  3-4:
+    move: 2
+  # can't go 3->7!
+  3-8:
+  4-5:
+    move: 2
+  4-9:
+    locked: true
+  4-10:
+  # can't go 5->6!
+  5-10:
+    attack: 1
+  6-5:
+    one-way: true
+  6-11:
+    locked: true
+  7-3:
+    one-way: true
+    move: 2
+  7-12:
+    attack: 1
+  8-13:
+    move: 2
+  8-14:
+    attack: 1
+  9-14:
+    locked: true
+  10-11:
+    move: 2
+  10-15:
+    attack: 1
+  11-16:
+  12-17:
+    move: 2
+  13-17:
+    attack: 1
+  13-18:
+  14-15:
+  14-18:
+    move: 2
+  14-19:
+    attack: 2
+  15-16:
+  15-21:
+    locked: true
+  16-21:
+  17-18:
+  17-22:
+  17-23:
+  17-24:
+    one-way: true
+    attack: 1
+  18-25:
+    move: 2
+    attack: 1
+  18-26:
+  19-26:
+  20-21:
+  20-27:
+  20-28:
+    attack: 1
+  21-22:
+  22-29:
+    locked: true
+  # can't go 23->24!
+  # can't go 24->17!
+  # can't go 24->30!
+  24-23:
+    one-way: true
+  24-36:
+    one-way: true
+  25-26:
+    locked: true
+  26-27:
+  26-30:
+    move: 2
+  26-31:
+    attack: 2
+  27-32:
+    locked: true
+  # can't go 28->34!
+  29-35:
+    attack: 1
+  30-24:
+    one-way: true
+    move: 2
+  30-31:
+    attack: 2
+  30-36:
+  31-32:
+    locked: true
+  31-37:
+    attack: 1
+  31-38:
+    move: 2
+  32-33:
+    attack: 2
+  33-34:
+    move: 2
+    attack: 1
+  33-38:
+    attack: 2
+  33-39:
+  34-28:
+    one-way: true
+  # can't go 36->24!
+  36-37:
+    locked: true
+  38-39:
+    move: 2
+    attack: 1
+
+rooms:
+  1:
+  2:
+  3:
+  4:
+    minor-secrets: 2
+  5:
+    major-secrets: 1
+  6:
+    major-secrets: 1
+  7:
+    crystal-cave: true
+  8:
+    crystal-cave: true
+  9:
+    major-secrets: 1
+  10:
+    crystal-cave: true
+    minor-secrets: 2
+  11:
+  12:
+    heal: 1
+  13:
+    minor-secrets: 2
+  14:
+    crystal-cave: true
+  15:
+  16:
+    minor-secrets: 2
+  17:
+  18:
+    crystal-cave: true
+    artifact: 5
+  19:
+    store: true
+    minor-secrets: 2
+  20:
+    store: true
+    minor-secrets: 2
+  21:
+    artifact: 7
+  22:
+    crystal-cave: true
+    minor-secrets: 2
+  23:
+    crystal-cave: true
+    artifact: 15
+  24:
+    monkey-idols: 3
+  25:
+    major-secrets: 1
+  26:
+    store: true
+  27:
+    store: true
+  28:
+    crystal-cave: true
+    major-secrets: 1
+  29:
+    major-secrets: 1
+  30:
+    minor-secrets: 2
+  31:
+    artifact: 20
+  32:
+    crystal-cave: true
+    minor-secrets: 2
+  33:
+    artifact: 25
+  34:
+    heal: 1
+  35:
+    artifact: 30
+  36:
+  37:
+    major-secrets: 1
+  38:
+    heal: 1
+  39:
+    crystal-cave: true
+    major-secrets: 1

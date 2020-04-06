@@ -8,8 +8,18 @@
   count: 2
   cost: 7
   points: 5
-- name: Crown
-  description: Worth the number of points shown. (Each player takes the most valuable Crown available when they buy one).
-  count: 3
+- name: Crown (10)
+  description: Worth the number of points shown. 
+  count: 1
   cost: 7
   points: 10
+- name: Crown (9)
+  description: Worth the number of points shown. 
+  count: 1
+  cost: 7
+  points: 9
+- name: Crown (8)
+  description: Worth the number of points shown.
+  count: 1
+  cost: 7
+  points: 8

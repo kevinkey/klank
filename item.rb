@@ -3,22 +3,66 @@ module Klank
 
         attr_reader :name
         
-        def initialize(hash)
-            @name = hash["name"]
-
+        def initialize(game, hash)
+            @game = game
+            @name = hash["name"] || ""
             @hash = hash
         end
 
         def playable()
-            false
+            play = [
+                "Potion of Greater Healing",
+                "Greater Skill Boost",
+                "Flash of Brilliance",
+                "Potion of Healing",
+                "Potion of Swiftness",
+                "Potion of Strength",
+                "Skill Boost",
+                "Magic Spring"
+            ]
+            play.any? { |i| i == @name }
         end
 
         def play(player)
+            if @hash.key?("heal")
+                player.heal(@hash["heal"])
+            elsif @hash.key?("skill")
+                player.skill += @hash["skill"]
+            elsif @hash.key?("draw")
+                player.draw(@hash["draw"])
+            elsif @hash.key?("move")
+                player.move += @hash["move"]
+            elsif @hash.key?("attack")
+                player.move += @hash["attack"]
+            elsif @name == "Magic Spring"
+                player.trash_card()
+            end
+        end
 
+        def points()
+            amount = 0
+
+            if @hash.key?("points") 
+                amount = @hash["points"]
+            end
+
+            amount
+        end
+
+        def gain(player)
+            player.item << self
+
+            if @hash.key?("coins")
+                player.collect_coins(@hash["coins"])
+            end
+
+            if @name == "Dragon Egg"
+                @game.dragon.anger()
+            end
         end
 
         def play_desc()
-
+            "#{@name} | #{@hash["description"]}"
         end
     end
 end
