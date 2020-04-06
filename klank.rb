@@ -10,6 +10,7 @@ module Klank
   loop do
     Thread.start(server.accept) do |client|
       sleep 0.1
+      p client
 
       player = Player.new(client)
 

@@ -29,9 +29,11 @@ module Klank
 
         def input(msg)
             @client.write "#{msg }: "
-            resp = @client.gets.strip
+            resp = @client.gets
 
-            resp
+            puts resp
+
+            resp.strip || ""
         end
 
         def input_num(msg, range)
@@ -159,15 +161,15 @@ module Klank
                     end
 
                     if (@game.reserve[:x].remaining > 0) and (@skill >= @game.reserve[:x].peek.cost)
-                        menu << ["X", "Buy an explore card"]
+                        menu << ["X", "Buy an explore card | COST: 3 | SKILL: 2 | MOVE: 1"]
                     end
 
                     if (@game.reserve[:c].remaining > 0) and (@skill >= @game.reserve[:c].peek.cost)
-                        menu << ["C", "Buy a mercenary card"]
+                        menu << ["C", "Buy a mercenary card | COST: 2 | SKILL: 1 | ATTACK: 2"]
                     end
 
                     if (@game.reserve[:t].remaining > 0) and (@skill >= @game.reserve[:t].peek.cost)
-                        menu << ["T", "Buy a tome card"]
+                        menu << ["T", "Buy a tome card | COST: 7 | POINTS: 7"]
                     end
 
                     if @skill > 0
@@ -191,7 +193,7 @@ module Klank
                     end
 
                     if @attack > 1
-                        menu << ["G", "Kill the goblin"]
+                        menu << ["G", "Kill the goblin | DEFEAT: 2 | COINS: 1"]
                     end
 
                     if @hand.count == 0
@@ -242,6 +244,7 @@ module Klank
                     when "G"
                         collect_coins(1)
                         @attack -= 2
+                        @game.broadcast("#{@name} killed the Goblin!")
                     when "D"
                         @deck.discard(@played)
                         @played = []
@@ -334,7 +337,9 @@ module Klank
             c = menu("DISCARD", cards)
 
             if c != "N"
-                @deck.discard([@hand.delete_at(c.to_i)])
+                card = @hand.delete_at(c.to_i)
+                @deck.discard([card])
+                @game.broadcast("#{@name} discarded #{card.name}!")
             end
 
             c != "N"

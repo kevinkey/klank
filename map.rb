@@ -180,7 +180,7 @@ module Klank
             if room_num <= 1
                 player.mastery = true 
                 @game.broadcast("#{player.name} has left and collects a Mastery Token!")
-                trigger_end(player)
+                @game.trigger_end(player)
             end
 
             if crystal_cave?(player) and !player.has_played?("Dead Run") and !player.has_played?("Flying Carpet")
