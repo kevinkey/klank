@@ -267,7 +267,7 @@ module Klank
             end
             if dead?()
                 @game.broadcast("#{@name} has died!")
-                trigger_end(player)
+                @game.trigger_end(player)
             end
         end
 
