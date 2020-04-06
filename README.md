@@ -1,12 +1,12 @@
 # klank
 Text based version of Clank written in Ruby
 
-To run a server simply run, you need to checkout the ruby code and run klank.rb:
+To run a server, you need to checkout the ruby code, and run klank.rb:
 ```
 ruby klank.rb
 ```
 
-To join a game you do not need the ruby code, just telnet to the server, on linux run:
+To join a game you do not need the ruby code, just telnet to the server:
 ```
 telnet localhost 2000
 ```
