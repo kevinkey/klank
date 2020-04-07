@@ -292,7 +292,7 @@ module Klank
                 @game.dragon.add(@index, actual)
                 swagger = @played.select { |c| c.name == "Swagger" }.count
                 if swagger != 0
-                    @game.broadcast("#{@name} gained #{swagger} because of their Swagger!")
+                    @game.broadcast("#{@name} gained #{swagger} skill because of their Swagger!")
                     @skill += swagger 
                 end
             else

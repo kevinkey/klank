@@ -151,7 +151,7 @@ module Klank
             case @name 
             when "Apothecary"
                 if player.discard_card()
-                    menu = [["A", "3 Attack"], ["C", "2 coins"], ["H", "1 heal"]]
+                    menu = [["A", "3 attack"], ["C", "2 coins"], ["H", "1 heal"]]
                     case player.menu("APOTHECARY", menu)
                     when "A"
                         player.attack += 3
@@ -172,7 +172,7 @@ module Klank
             when "Master Burglar"
                 player.trash_card("Burgle")
             when "Mister Whiskers"
-                @game.broadcast("#{player.name} played Mister Whisterks!")
+                @game.broadcast("#{player.name} played Mister Whiskers!")
                 @game.dragon.bank_status()
                 menu = [["D", "Dragon Attack"], ["C", "-2 clank"]]
                 if player.menu("MISTER WHISKERS", menu) == "D"

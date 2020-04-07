@@ -34,9 +34,11 @@ module Klank
 
             count.times do 
                 if @bank.delete_at(@bank.index(cube) || @bank.length)
-                    @game.broadcast("#{@game.player[cube].name} removes a clank from the bank!")
+                    removed += 1
                 end
             end
+
+            @game.broadcast("#{@game.player[cube].name} removed #{removed} clank from the bank!")
         end
 
         def attack()
