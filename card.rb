@@ -220,7 +220,7 @@ module Klank
                     end
                 end
             when "Wand of Recall"
-                if player.has_artifact>()
+                if player.has_artifact?()
                     player.teleport += 1
                 end
             when "Wand of Wind"
