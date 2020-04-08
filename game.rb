@@ -98,7 +98,7 @@ module Klank
                         end
                         broadcast("\nPLAYERS\n#{Klank.table(status)}")
 
-                        if @trigger == player.index
+                        if @trigger == p.index
                             @escalation += 1
 
                             if @escalation > 3 

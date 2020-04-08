@@ -431,7 +431,7 @@ module Klank
             end
 
             if ability.keys.count > 0
-                output("\n" + Klank.table(ability))
+                output("\n" + Klank.table([ability]))
             end
         end
 
