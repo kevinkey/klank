@@ -146,7 +146,7 @@ module Klank
                     table << {"POINTS" => 20, "DESCRIPTION" => "Mastery"}
                 end
                 table << {"POINTS" => total, "DESCRIPTION" => "Total"}
-                output(Klank.table(table)))
+                output(Klank.table(table))
 
                 @score = total
             end 
@@ -155,7 +155,6 @@ module Klank
         end
 
         def draw(count)
-            output("\nDrawing cards...")
             cards = @deck.draw(count)
             @hand += cards
             @new_cards = true
@@ -171,8 +170,6 @@ module Klank
             @clank_added = 0
             @clank_remove = 0
             @frozen = false
-
-            @game.broadcast("HEALTH: #{@health} | CLANK: #{@cubes} | COINS: #{@coins} | ARTIFACT: #{@artifact.count} | ROOM: #{@room_num}")
 
             draw(5)
 
@@ -205,24 +202,20 @@ module Klank
                         menu << ["T", "Buy a tome card | COST: 7 | POINTS: 7"]
                     end
 
-                    if @skill > 0
-                        menu << ["B", "Buy a card from the dungeon"]
+                    if @game.dungeon.afford?(self)
+                        menu << ["B", "Buy or defeat a monster in the dungeon"]
                     end
 
                     if (@move > 0) and !@frozen
                         menu << ["M", "Move"]
                     end
 
-                    if @game.map.market?(self) and (@coins >= 7)
+                    if @game.map.market?(self)
                         menu << ["S", "Shop in the market"]
                     end
 
                     if @teleport > 0 
                         menu << ["P", "Teleport"]
-                    end
-
-                    if @attack > 0
-                        menu << ["A", "Attack a monster from the dungeon"]
                     end
 
                     if @attack > 1
@@ -256,24 +249,13 @@ module Klank
                         @skill -= t[0].cost
                         @game.broadcast("#{@name} bought a Tome!")
                     when "B"
-                        card = @game.dungeon.buy(self)
-                        if card 
-                            if card.type != :device
-                                @deck.discard([card])
-                            end
-                            @game.broadcast("#{@name} bought #{card.name} from the dungeon!")
-                        end
+                        @game.dungeon.acquire(self)
                     when "M"
                         @game.map.move(self)
                     when "S"
                         @game.map.shop(self)
                     when "P"
                         @game.map.teleport(self)
-                    when "A"
-                        card = @game.dungeon.monster(self)
-                        if card 
-                            @game.broadcast("#{@name} killed #{card.name} in the dungeon!")
-                        end
                     when "G"
                         collect_coins(1)
                         @attack -= 2
@@ -305,7 +287,7 @@ module Klank
                 end
                 if dead?()
                     @game.broadcast("#{@name} has died!")
-                    @game.trigger_end(player)
+                    @game.trigger_end(self)
                 end
             end
         end
@@ -411,33 +393,45 @@ module Klank
             (@artifact.count < hold)
         end
 
+        def status()
+            {
+                "NAME" => @name,
+                "HEALTH" => @health,
+                "CLANK" => @cubes,
+                "COINS" => @coins,
+                "ARTIFACT" => @artifact,
+                "ROOM" => @room_num,
+                "DECK" => @deck.stack.count,
+            }
+        end
+
         private 
 
         def output_abilities()
-            string = []
+            ability = {}
 
             if @skill != 0
-                string << "SKILL: #{@skill}"
+                ability["SKILL"] = @skill
             end 
 
             if @move != 0
-                string << "MOVE: #{@move}"
+                ability["MOVE"] = @move
             end 
 
             if @attack != 0
-                string << "ATTACK: #{@attack}"
+                ability["ATTACK"] = @attack
             end
 
             if @coins != 0
-                string << "COINS: #{@coins}"
+                ability["COINS"] = @coins
             end
 
             if @teleport != 0
-                string << "TELEPORT: #{@teleport}"
+                ability["TELEPORT"] = @teleport
             end
 
-            if string.count > 0
-                output("\n" + string.join(" | "))
+            if ability.keys.count > 0
+                output("\n" + Klank.table(ability))
             end
         end
 

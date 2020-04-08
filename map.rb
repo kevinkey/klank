@@ -175,20 +175,25 @@ module Klank
         end
 
         def market?(player)
-            @map["rooms"][player.room_num]["store"]
+            (@map["rooms"][player.room_num]["store"]) and (@market.count > 0) and (player.coins >= 7)
         end
 
         def shop(player)
-            options = []
-            @market.each_with_index do |m, i|
-                options << [i, m.desc()]
-            end
-            item = player.menu("MARKET", options, true)
+            loop do 
+                options = []
+                @market.each_with_index do |m, i|
+                    options << [i, m.desc()]
+                end
+                item = player.menu("MARKET", options, true)
 
-            if item != "N"
+                break if item == "N"
+
                 if @market[item.to_i].gain(player)
                     @market.delete_at(item.to_i)
+                    player.coins -= 7
                 end
+
+                break if !market?(player)
             end
         end
 

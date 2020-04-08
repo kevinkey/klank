@@ -55,6 +55,13 @@ module Klank
             end
         end
 
+        def trigger_end(player)
+            if @trigger < 0
+                @trigger = player.index
+                broadcast("#{player.name} has triggered the end of game!")
+            end
+        end
+
         private 
 
         def start()
@@ -84,6 +91,13 @@ module Klank
                 @player.each do |p|
                     begin
                         @dungeon.replenish()
+
+                        status = []
+                        @player.each do |p|
+                            status << p.status 
+                        end
+                        broadcast("\nPLAYERS\n#{Klank.table(status)}")
+
                         if @trigger == player.index
                             @escalation += 1
 
@@ -119,13 +133,6 @@ module Klank
             scores()
 
             @shutdown = true
-        end
-
-        def trigger_end(player)
-            if @trigger < 0
-                @trigger = player.index
-                broadcast("#{player.name} has triggered the end of game!")
-            end
         end
 
         def scores()

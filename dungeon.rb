@@ -54,40 +54,38 @@ module Klank
             @game.broadcast("\nDUNGEON\n#{Klank.table(dungeon)}")
         end
 
-        def buy(player)
+        def acquire(player)
             card = nil
 
-            loop do 
-                c = menu("BUY A CARD", player)
+            loop do                 
+                player.output("\n" + Klank.table([{"SKILL" => player.skill, "ATTACK" => player.attack}]))
+
+                c = menu("BUY OR DEFEAT A CARD", player)
                 break if c == "N"
 
-                if @hand[c.to_i].acquire(player)
+                if @hand[c.to_i].type == :monster
+                    if @hand[c.to_i].defeat(player)
+                        card = @hand.delete_at(c.to_i)
+                        @game.broadcast("#{player.name} killed #{card.name} in the dungeon!")
+                    end
+                elsif @hand[c.to_i].acquire(player)
                     card = @hand.delete_at(c.to_i)
-                    break if (@hand.count == 0) or (player.skill < @hand.map { |c| c.cost }.min)
+                    @game.broadcast("#{player.name} bought #{card.name} from the dungeon!")
+                    if card.type != :device
+                        player.deck.discard([card])
+                    end
                 end
 
-                player.output("\nSKILL: #{player.skill}")
+                if @hand.count == 0
+                    break
+                elsif !afford?(player)
+                    break 
+                end
             end
-
-            card
         end
 
-        def monster(player)
-            card = nil
-
-            loop do 
-                c = menu("DEFEAT A MONSTER", player)
-                break if c == "N"
-
-                if @hand[c.to_i].defeat(player)
-                    card = @hand.delete_at(c.to_i)
-                    break if (@hand.count == 0) or (player.attack < @hand.map { |c| c.attack }.min)
-                end
-
-                player.output("\nATTACK: #{player.attack}")
-            end
-
-            card
+        def afford?(player)
+            (player.skill >= @hand.map { |c| c.cost }.min) or (player.attack >= @hand.map { |c| c.attack }.min)
         end
 
         def replace_card(player)

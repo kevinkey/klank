@@ -293,7 +293,7 @@ module Klank
             end
 
             if @hash.key?("attack")
-                desc["DEFEAT"] = @hash["attack"]
+                desc["COST"] = @hash["attack"]
             end
 
             if @hash.key?("points")

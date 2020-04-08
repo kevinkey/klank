@@ -130,6 +130,7 @@ rooms:
   6:
     major-secrets: 1
   7:
+    major-secrets: 1
     crystal-cave: true
   8:
     crystal-cave: true
@@ -174,6 +175,7 @@ rooms:
     store: true
   27:
     store: true
+    artifact: 10
   28:
     crystal-cave: true
     major-secrets: 1
