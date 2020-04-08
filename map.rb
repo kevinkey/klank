@@ -188,10 +188,9 @@ module Klank
 
                 break if item == "N"
 
-                if @market[item.to_i].gain(player)
-                    @market.delete_at(item.to_i)
-                    player.coins -= 7
-                end
+                @market[item.to_i].gain(player)
+                @market.delete_at(item.to_i)
+                player.coins -= 7
 
                 break if !market?(player)
             end
