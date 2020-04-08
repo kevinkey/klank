@@ -1,5 +1,6 @@
 module Klank
     require_relative "deck.rb"
+    require_relative "utils.rb"
 
     class Dungeon
         COUNT = 6
@@ -46,11 +47,11 @@ module Klank
                 end
             end
 
-            msg = ["\nDUNGEON"]
+            dungeon = []
             @hand.each_with_index do |c, i|
-                msg << c.buy_desc(false)
+                dungeon << c.buy_desc(false)
             end
-            @game.broadcast(msg.join("\n"))
+            @game.broadcast("\nDUNGEON\n#{Klank.table(dungeon)}")
         end
 
         def buy(player)
@@ -106,8 +107,7 @@ module Klank
             @hand.each_with_index do |c, i|
                 options << [i, c.buy_desc(player.has_played?("Gem Collector"))]
             end
-            options << ["N", "None of the cards"]
-            card = player.menu(title, options)
+            card = player.menu(title, options, true)
         end
     end
 end

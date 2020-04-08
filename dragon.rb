@@ -30,15 +30,17 @@ module Klank
         end
 
         def remove(cube, count)
-            removed = 0
+            if count != 0
+                removed = 0
 
-            count.times do 
-                if @bank.delete_at(@bank.index(cube) || @bank.length)
-                    removed += 1
+                count.times do 
+                    if @bank.delete_at(@bank.index(cube) || @bank.length)
+                        removed += 1
+                    end
                 end
-            end
 
-            @game.broadcast("#{@game.player[cube].name} removed #{removed} clank from the bank!")
+                @game.broadcast("#{@game.player[cube].name} removed #{removed} clank from the bank!")
+            end
         end
 
         def attack()
@@ -48,18 +50,19 @@ module Klank
 
             draw = DRAW[@level] + @game.dungeon.danger() + @game.escalation
 
-            msg = ["The dragon attacks, drawing #{draw} cubes..."]
+            @game.broadcast("The dragon attacks, drawing #{draw} cubes...")
+            sleep(1)
             draw.times do
                 c = @bag.pop
                 if c == "D"
-                    msg << "The dragon's attack misses!"
+                    @game.broadcast("The dragon's attack misses!")
                     @dragon_cubes += 1
                 else
-                    msg << "+1 damage to #{@game.player[c].name}!"
+                    @game.broadcast("+1 damage to #{@game.player[c].name}!")
                     @game.player[c].damage()
                 end
+                sleep(1)
             end
-            @game.broadcast(msg.join("\n"))
         end
 
         def add_dragon_cubes()

@@ -35,9 +35,13 @@ module Klank
             elsif @hash.key?("move")
                 player.move += @hash["move"]
             elsif @hash.key?("attack")
-                player.move += @hash["attack"]
+                player.attack += @hash["attack"]
             elsif @name == "Magic Spring"
                 played = player.trash_card()
+            end
+
+            if played 
+                @game.broadcast("#{player.name} played #{name}!")
             end
             
             played

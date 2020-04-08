@@ -1,5 +1,6 @@
 module Klank
     require_relative "deck.rb"
+    require_relative "utils.rb"
 
     class Player
         FULL_HEALTH = 10
@@ -29,9 +30,21 @@ module Klank
 
         def input(msg)
             @client.write "#{msg }: "
-            resp = @client.gets
+            resp = "" #@client.gets
 
-            puts resp
+            loop do 
+                char = @client.recv(1)
+
+                if (char == "\n") or (char == "\r")
+                    if resp.length > 0
+                        break
+                    end
+                elsif char =~ /(\w|\s)/
+                    resp += char 
+                end
+            end
+
+            puts resp.strip
 
             resp.strip || ""
         end
@@ -52,19 +65,29 @@ module Klank
             @client.puts "#{msg}"
         end
 
-        def menu(title, options)
-            choice = options[0][0]
+        def menu(title, options, none = false, all = false)
+            choice = none ? "N" : options[0][0]
 
-            if options.count > 1
-                msg = ["\n#{title}"]
+            if (options.count > 1) or ((options.count > 0) and none)
+                table = []
                 options.each do |o|
-                    msg << "#{o[0]}: #{o[1]}"
+                    row = {"#" => o[0]}
+                    if o[1].is_a?(Hash)
+                        row.merge!(o[1])
+                    else 
+                        row["DESC"] = o[1]
+                    end
+                    table << row
                 end
-                output(msg.join("\n"))
+                output("\n#{title}\n#{Klank.table(table)}")
+
+                valid = options.map { |o| o[0] }
+                valid << "N" if none
+                valid << "A" if all
                 
                 loop do
-                    choice = input("Choose an option").upcase
-                    break if options.any? { |o| o[0].to_s.upcase == choice }
+                    choice = input("Choose an option#{none ? " (N: None)" : ""}#{all ? " (A: All)" : ""}").upcase
+                    break if valid.any? { |v| v.to_s.upcase == choice }
                     output("Oops!")
                 end
             end
@@ -85,40 +108,50 @@ module Klank
             @played = []
             @room_num = 1
             @skill = 0
+            @score = -1
         end
 
         def score()
-            msg = []
+            if @score < 0
+                table = []
 
-            total = @coins
-            msg << sprintf("%-4s | %s", @coins.to_s, "Coins")
+                total = @coins
+                table << {"POINTS" => @coins, "DESCRIPTION" => "Coins"}
 
-            @deck.all.each do |card|
-                total += card.points(self)
-                msg << sprintf("%-4s | %s", card.points(self).to_s, card.name)
-            end
+                @deck.all.each do |card|
+                    points = card.points(self)
 
-            @item.each do |i|
-                total += i.points()
-                if i.points() != 0
-                    msg << sprintf("%-4s | %s", i.points().to_s, i.name)
+                    if points != 0
+                        total += points
+                        table << {"POINTS" => points, "DESCRIPTION" => card.name}
+                    end
                 end
-            end
 
-            @artifact.each do |a|
-                total += a
-                msg << sprintf("%-4s | %s", a.to_s, "Artifact")
-            end
+                @item.each do |i|
+                    points = i.points()
 
-            if @mastery 
-                total += 20
-                msg << sprintf("%-4s | %s", 20.to_s, "Mastery")
-            end
-            msg << "----"
-            msg << sprintf("%-4s | %s", total.to_s, "Total")
-            output(msg.join("\n"))
+                    if points != 0
+                        total += points
+                        table << {"POINTS" => points, "DESCRIPTION" => i.name}
+                    end
+                end
 
-            total
+                @artifact.each do |a|
+                    total += a
+                    table << {"POINTS" => a, "DESCRIPTION" => "Artifact"}
+                end
+
+                if @mastery 
+                    total += 20
+                    table << {"POINTS" => 20, "DESCRIPTION" => "Mastery"}
+                end
+                table << {"POINTS" => total, "DESCRIPTION" => "Total"}
+                output(Klank.table(table)))
+
+                @score = total
+            end 
+
+            @score
         end
 
         def draw(count)
@@ -261,13 +294,19 @@ module Klank
         end
 
         def damage(direct = false)
-            @health -= 1
-            if direct 
-                @cubes -= 1
-            end
-            if dead?()
-                @game.broadcast("#{@name} has died!")
-                @game.trigger_end(player)
+            if @mastery
+                @game.broadcast("#{@name} can't take damage he has left!")
+            elsif dead?()
+                @game.broadcast("#{@name} can't take damage he is already dead!")
+            else
+                @health -= 1
+                if direct 
+                    @cubes -= 1
+                end
+                if dead?()
+                    @game.broadcast("#{@name} has died!")
+                    @game.trigger_end(player)
+                end
             end
         end
 
@@ -286,7 +325,11 @@ module Klank
         end
 
         def clank(count = 1)
-            if count > 0
+            if @mastery
+                @game.broadcast("#{@name} can't add clank he has left!")
+            elsif dead?()
+                @game.broadcast("#{@name} can't add clank he is already dead!")
+            elsif count > 0
                 actual = [@cubes, count].min 
                 @cubes -= actual 
                 @game.dragon.add(@index, actual)
@@ -309,9 +352,8 @@ module Klank
                 cards = []
                 (@played + @deck.pile).each_with_index do |c, i|
                     cards << [i, c.name]
-                end 
-                cards << ["N", "Don't trash a card"]
-                c = menu("TRASH A CARD", cards)
+                end
+                c = menu("TRASH A CARD", cards, true)
                 card = (c != "N") ? cards[c.to_i][1] : ""
             end
 
@@ -333,8 +375,7 @@ module Klank
             @hand.each_with_index do |c, i|
                 cards << [i, c.play_desc]
             end
-            cards << ["N", "None of the cards"]
-            c = menu("DISCARD", cards)
+            c = menu("DISCARD", cards, true)
 
             if c != "N"
                 card = @hand.delete_at(c.to_i)
@@ -405,9 +446,7 @@ module Klank
             @hand.each_with_index do |c, i|
                 cards << [i, c.play_desc]
             end
-            cards << ["A", "All of the cards"]
-            cards << ["N", "None of the cards"]
-            c = menu("HAND", cards)
+            c = menu("HAND", cards, true, true)
 
             play = []
 
@@ -433,7 +472,6 @@ module Klank
         end
 
         def play()
-
             loop do 
                 items = []
                 lookup = []
@@ -443,8 +481,7 @@ module Klank
                         lookup << i
                     end
                 end
-                items << ["N", "None of the items"]
-                i = menu("ITEMS", items)
+                i = menu("ITEMS", items, true)
 
                 if i != "N"
                     if @item[lookup[i.to_i]].play(self)

@@ -59,7 +59,7 @@ module Klank
         def move(player)
             loop do 
                 paths_out = get_paths_out(player.room_num)
-                option = player.menu("MOVE FROM ROOM #{player.room_num}", paths_out + [["N", "No move"]])
+                option = player.menu("MOVE FROM ROOM #{player.room_num}", paths_out, true)
                 if option != "N"
                     room_num = option.to_i
                     path = paths_out.find { |p| p[0] == option }[1]
@@ -118,7 +118,7 @@ module Klank
         def teleport(player)
             loop do 
                 paths = get_paths(player.room_num)
-                option = player.menu("TELEPORT FROM ROOM #{player.room_num}", paths + [["N", "No teleport"]])
+                option = player.menu("TELEPORT FROM ROOM #{player.room_num}", paths, true)
                 if option != "N"
                     room_num = option.to_i
                     if (room_num <= 1) and !player.has_artifact?()
@@ -150,7 +150,28 @@ module Klank
         end
 
         def take_adjacent_secret(player)
-            false
+            #rooms = []
+            #paths = get_paths(player.room_num)
+            #paths.each do |room_num|
+            #    if (@map["rooms"][room_num]["minor-secrets"] > 0)
+            #        rooms << [room_num, "Minor Secrets: #{@map["rooms"][room_num]["minor-secrets"]}"]
+            #    elsif (@map["rooms"][room_num]["major-secrets"] > 0)
+            #        rooms << [room_num, "Major Secrets: #{@map["rooms"][room_num]["major-secrets"]}"]
+            #    end
+            #end
+            #rooms["N"] = "Take nothing"
+            #option = player.menu("ADJACENT SECRET LIST", rooms)
+            #if option != "N"
+            #    room_num = option.to_i
+            #    if (@map["rooms"][room_num]["minor-secrets"] > 0)
+            #        type = 'minor'
+            #    else
+            #        type = 'major'
+            #    end
+            #    @map["rooms"][room_num]["#{type}-secrets"] -= 1
+            #    player.output("You take a #{type} secret from room #{room_num}")
+            #end
+            #type
         end
 
         def market?(player)
@@ -162,8 +183,7 @@ module Klank
             @market.each_with_index do |m, i|
                 options << [i, m.desc()]
             end
-            options << ["N", "None of the items"]
-            item = player.menu("MARKET", options)
+            item = player.menu("MARKET", options, true)
 
             if item != "N"
                 if @market[item.to_i].gain(player)
@@ -217,6 +237,7 @@ module Klank
 
                 if player.menu("PICK UP #{points} POINT ARTIFACT?", [["Y", "Yes"], ["N", "No"]]) == "Y"
                     @game.broadcast("#{player.name} picks up the #{points} point artifact!")
+                    @game.dragon.anger()
                     player.artifact << points
                     @map["rooms"][player.room_num]["artifact"] = 0
                 end

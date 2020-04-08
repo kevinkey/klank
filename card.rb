@@ -241,51 +241,44 @@ module Klank
         end
 
         def play_desc()
-            string = [
-                sprintf("%-25s", @name), 
-                sprintf("%-10s", @type.to_s.upcase)
-            ]
+            desc = {"NAME" => @name, "TYPE" => @type.to_s.upcase}
 
             if @hash.key?("equip")
                 if @hash["equip"].key?("skill") 
-                    string << "SKILL: #{@hash["equip"]["skill"]}"
+                    desc["SKILL"] = @hash["equip"]["skill"]
                 end
                 if @hash["equip"].key?("move") 
-                    string << "MOVE: #{@hash["equip"]["move"]}"
+                    desc["MOVE"] = @hash["equip"]["move"]
                 end
                 if @hash["equip"].key?("attack") 
-                    string << "ATTACK: #{@hash["equip"]["attack"]}"
+                    desc["ATTACK"] = @hash["equip"]["attack"]
                 end
                 if @hash["equip"].key?("teleport") 
-                    string << "TELEPORT"
+                    desc["MISC"] = "TELEPORT"
                 end
                 if @hash["equip"].key?("coins") 
-                    string << "COINS: #{@hash["equip"]["coins"]}"
+                    desc["COINS"] = @hash["equip"]["coins"]
                 end
                 if @hash["equip"].key?("draw") 
-                    string << "DRAW: #{@hash["equip"]["draw"]}"
+                    desc["DRAW"] = @hash["equip"]["draw"]
                 end
                 if @hash["equip"].key?("clank") 
-                    string << "CLANK: #{@hash["equip"]["clank"]}"
+                    desc["CLANK"] = @hash["equip"]["clank"]
                 end
                 if @hash["equip"].key?("heal") 
-                    string << "HEAL: #{@hash["equip"]["heal"]}"
+                    desc["HEAL"] = @hash["equip"]["heal"]
                 end
             end
 
             if @hash.key?("special")
-                string << @special
+                desc["SPECIAL"] = @special
             end
 
-            string.join(" | ")
+            desc
         end
 
         def buy_desc(gem_collector)
-            string = play_desc.split(" | ")
-
-            if @hash.key?("points")
-                string.insert(2, "POINTS: #{@hash["points"]}")
-            end
+            desc = {"NAME" => @name, "TYPE" => @type.to_s.upcase}
 
             if @hash.key?("cost")
                 cost = 0
@@ -296,63 +289,71 @@ module Klank
                     cost = @cost 
                 end
 
-                string.insert(2, "COST: #{cost}")
+                desc["COST"] = cost
             end
 
             if @hash.key?("attack")
-                string.insert(2, "DEFEAT: #{@hash["attack"]}")
+                desc["DEFEAT"] = @hash["attack"]
+            end
+
+            if @hash.key?("points")
+                desc["POINTS"] = @hash["points"]
             end
 
             if @hash.key?("acquire")
                 if @hash["acquire"].key?("skill") 
-                    string << "ACQUIRE SKILL: #{@hash["acquire"]["skill"]}"
+                    desc["ACQUIRE"] = "SKILL: #{@hash["acquire"]["skill"]}"
                 end
                 if @hash["acquire"].key?("move") 
-                    string << "ACQUIRE MOVE: #{@hash["acquire"]["move"]}"
+                    desc["ACQUIRE"] = "MOVE: #{@hash["acquire"]["move"]}"
                 end
                 if @hash["acquire"].key?("attack") 
-                    string << "ACQUIRE ATTACK: #{@hash["acquire"]["attack"]}"
+                    desc["ACQUIRE"] = "ATTACK: #{@hash["acquire"]["attack"]}"
                 end
                 if @hash["acquire"].key?("teleport") 
-                    string << "ACQUIRE TELEPORT"
+                    desc["ACQUIRE"] = "TELEPORT"
                 end
                 if @hash["acquire"].key?("coins") 
-                    string << "ACQUIRE COINS: #{@hash["acquire"]["coins"]}"
+                    desc["ACQUIRE"] = "COINS: #{@hash["acquire"]["coins"]}"
                 end
                 if @hash["acquire"].key?("clank") 
-                    string << "ACQUIRE CLANK: #{@hash["acquire"]["clank"]}"
+                    desc["ACQUIRE"] = "CLANK: #{@hash["acquire"]["clank"]}"
                 end
                 if @hash["acquire"].key?("heal") 
-                    string << "ACQUIRE HEAL: #{@hash["acquire"]["heal"]}"
+                    desc["ACQUIRE"] = "HEAL: #{@hash["acquire"]["heal"]}"
                 end
             end
 
             if @hash.key?("defeat")
                 if @hash["defeat"].key?("skill") 
-                    string << "SKILL: #{@hash["defeat"]["skill"]}"
+                    desc["SKILL"] = @hash["defeat"]["skill"]
                 end
                 if @hash["defeat"].key?("move") 
-                    string << "MOVE: #{@hash["defeat"]["move"]}"
+                    desc["MOVE"] = @hash["defeat"]["move"]
                 end
                 if @hash["defeat"].key?("coins") 
-                    string << "COINS: #{@hash["defeat"]["coins"]}"
+                    desc["COINS"] = @hash["defeat"]["coins"]
                 end
                 if @hash["defeat"].key?("draw") 
-                    string << "DRAW: #{@hash["defeat"]["draw"]}"
+                    desc["DRAW"] = @hash["defeat"]["draw"]
                 end
                 if @hash["defeat"].key?("clank") 
-                    string << "CLANK: #{@hash["defeat"]["clank"]}"
+                    desc["CLANK"] = @hash["defeat"]["clank"]
                 end
                 if @hash["defeat"].key?("heal") 
-                    string << "HEAL: #{@hash["defeat"]["heal"]}"
+                    desc["HEAL"] = @hash["defeat"]["heal"]
                 end
             end
 
             if @danger
-                string << "DANGER"
+                desc["MISC"] = "DANGER"
             end
 
-            string.join(" | ")
+            if @hash.key?("depths")
+                desc["MISC"] = "DEPTHS ONLY"
+            end
+
+            desc.merge(play_desc())
         end
 
         def abilities(player, hash)

@@ -21,7 +21,6 @@ module Klank
             @num = num
             @map = Map.new(self, map)
             @player = []
-            @trigger = -1
 
             @shutdown = false 
             @game_over = false
@@ -63,11 +62,13 @@ module Klank
             @dungeon = Dungeon.new(self)
             @player = Klank.randomize(@player)
             @escalation = 0
+            @trigger = -1
 
             msg = "\nGAME STARTING\nRandomizing play order...\n"
             @player.each_with_index do |p, i|
                 msg += "#{i}: #{p.name}\n"
                 p.start(self, i)
+                p.clank(3 - i)
             end
             broadcast(msg)
 
@@ -81,26 +82,32 @@ module Klank
                 all_dead = true
 
                 @player.each do |p|
-                    @dungeon.replenish()
-                    if @trigger == player.index
-                        broadcast("\n#{p.name} triggered end of game!")
+                    begin
+                        @dungeon.replenish()
+                        if @trigger == player.index
+                            @escalation += 1
 
-                        @escalation += 1
-                        if @escalation > 3 
-                            @game_over = true 
+                            if @escalation > 3 
+                                @game_over = true 
+                            else
+                                broadcast("\n#{p.name} moves to escalation level #{@escalation}!")
+                                @dragon.attack()
+                            end
+                        elsif p.dead?()
+                            broadcast("\n#{p.name} is dead!")
+                        elsif p.mastery
+                            broadcast("\n#{p.name} has left with an artifact!")                        
                         else
-                            @dragon.attack()
+                            all_dead = false
+                            broadcast("\nStarting #{p.name}'s turn...")
+                            p.turn()
                         end
-                    elsif p.dead?()
-                        broadcast("\n#{p.name} is dead!")
-                    elsif p.mastery
-                        broadcast("\n#{p.name} has left with an artifact!")                        
-                    else
+                        break if @game_over
+                    rescue => exception
+                        puts exception.full_message
                         all_dead = false
-                        broadcast("\nStarting #{p.name}'s turn...")
-                        p.turn()
+                        broadcast("An error occurred so #{p.name}'s turn is ended prematurely, sorry!")
                     end
-                    break if @game_over
                 end
 
                 break if @game_over || all_dead
@@ -123,8 +130,8 @@ module Klank
 
         def scores()
             msg = "Scores\n"
-            @player.sort_by { |p| p.score }.reverse.each_with_index do |p, i|
-                msg += "#{p.name}: #{p.score}\n"
+            @player.sort_by { |p| p.score() }.reverse.each_with_index do |p, i|
+                msg += "#{p.name}: #{p.score()}\n"
             end
             broadcast(msg)
         end
