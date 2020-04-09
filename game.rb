@@ -75,9 +75,12 @@ module Klank
             @player.each_with_index do |p, i|
                 msg += "#{i}: #{p.name}\n"
                 p.start(self, i)
+            end
+            broadcast("#{msg}\n")
+
+            @player.each_with_index do |p, i|
                 p.clank(3 - i)
             end
-            broadcast(msg)
 
             @reserve = {
                 x: Deck.new(self, "explore.yml"),

@@ -62,7 +62,7 @@ module Klank
                 option = player.menu("MOVE FROM ROOM #{player.room_num}", paths_out, true)
                 if option != "N"
                     room_num = option.to_i
-                    path = paths_out.find { |p| p[0] == option }[1]
+                    path = paths_out.find { |p| p[0] == option }[1]["NAME"]
 
                     # get move, attack, and locked requirements and check player meets them
                     move = @map["paths"][path]["move"]
@@ -75,8 +75,6 @@ module Klank
                         player.output("That path is locked!")
                     elsif (room_num <= 1) and !player.has_artifact?()
                         player.output("No leaving without an artifact!")
-                    elsif (attack > 0) and (player.menu("#{attack} MONSTER(S) ATTACK", [["F", "Fight like a man"], ["T", "Turn tail and run"]]) == "T")
-                        player.output("You coward!")
                     else
                         if (attack > 0) 
                             if player.has_played?("Flying Carpet")
@@ -150,28 +148,28 @@ module Klank
         end
 
         def take_adjacent_secret(player)
-            #rooms = []
-            #paths = get_paths(player.room_num)
-            #paths.each do |room_num|
-            #    if (@map["rooms"][room_num]["minor-secrets"] > 0)
-            #        rooms << [room_num, "Minor Secrets: #{@map["rooms"][room_num]["minor-secrets"]}"]
-            #    elsif (@map["rooms"][room_num]["major-secrets"] > 0)
-            #        rooms << [room_num, "Major Secrets: #{@map["rooms"][room_num]["major-secrets"]}"]
-            #    end
-            #end
-            #rooms["N"] = "Take nothing"
-            #option = player.menu("ADJACENT SECRET LIST", rooms)
-            #if option != "N"
-            #    room_num = option.to_i
-            #    if (@map["rooms"][room_num]["minor-secrets"] > 0)
-            #        type = 'minor'
-            #    else
-            #        type = 'major'
-            #    end
-            #    @map["rooms"][room_num]["#{type}-secrets"] -= 1
-            #    player.output("You take a #{type} secret from room #{room_num}")
-            #end
-            #type
+            rooms = []
+            paths = get_paths(player.room_num)
+            paths.each do |p|
+                room_num = p[0].to_i
+                if (@map["rooms"][room_num]["minor-secrets"] > 0)
+                    rooms << [room_num, "Minor Secrets: #{@map["rooms"][room_num]["minor-secrets"]}"]
+                elsif (@map["rooms"][room_num]["major-secrets"] > 0)
+                    rooms << [room_num, "Major Secrets: #{@map["rooms"][room_num]["major-secrets"]}"]
+                end
+            end
+            option = player.menu("ADJACENT SECRET LIST", rooms, true)
+            if option != "N"
+                room_num = option.to_i
+                if (@map["rooms"][room_num]["minor-secrets"] > 0)
+                    type = 'minor'
+                else
+                    type = 'major'
+                end
+                @map["rooms"][room_num]["#{type}-secrets"] -= 1
+                @game.broadcast("#{player.name} took a #{type} secret from room #{room_num}")
+            end
+            type
         end
 
         def market?(player)
@@ -257,7 +255,7 @@ module Klank
             paths = []
             @map["paths"].each_key do |key|
                 if (key =~ /^#{room_num}-(\d+)$/) || (key =~ /^(\d+)-#{room_num}$/)
-                    paths << [$1, key]
+                    paths << [$1, path_desc(key)]
                 end
             end
             paths
@@ -269,10 +267,25 @@ module Klank
             @map["paths"].each_key do |key|
                 if ((key =~ /^#{room_num}-(\d+)/) ||
                     ((key =~ /(\d+)-#{room_num}$/) && @map["paths"][key]["one-way"].nil?))
-                    paths_out << [$1, key] 
+                    paths_out << [$1, path_desc(key)] 
                 end
             end
             paths_out
+        end
+
+        def path_desc(key)
+            path = @map["paths"][key]
+            desc = {
+                "NAME" => key,
+                "MOVE" => path.key?("move") ? path["move"] : 1,
+                "MONSTERS" => path.key?("attack") ? path["attack"] : 0,
+            }
+
+            if path["locked"]
+                desc["LOCK"] = "YES"
+            end
+
+            desc
         end
     end
 end

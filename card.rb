@@ -96,10 +96,13 @@ module Klank
                 case @name 
                 when "Dragon Shrine"
                     menu = [["C", "2 coins"], ["T", "Trash a card"]]
-                    if player.menu("DRAGON SHRINE", menu) == "C"
-                        player.collect_coins(2)
-                    else 
-                        player.trash_card()
+                    loop do 
+                        if player.menu("DRAGON SHRINE", menu) == "C"
+                            player.collect_coins(2)
+                            break
+                        else 
+                            break if player.trash_card()
+                        end
                     end
                 when "Shrine"
                     menu = [["C", "1 coin"], ["H", "1 heal"]]
