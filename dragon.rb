@@ -52,16 +52,21 @@ module Klank
 
             @game.broadcast("The dragon attacks, drawing #{draw} cubes...")
             sleep(1)
+            
             draw.times do
-                c = @bag.pop
-                if c == "D"
-                    @game.broadcast("The dragon's attack misses!")
-                    @dragon_cubes += 1
-                else
-                    @game.broadcast("+1 damage to #{@game.player[c].name}!")
-                    @game.player[c].damage()
+                if @bag.count > 0
+                    c = @bag.pop
+                    if c == "D"
+                        @game.broadcast("The dragon's attack misses!")
+                        @dragon_cubes += 1
+                    else
+                        @game.broadcast("+1 damage to #{@game.player[c].name}!")
+                        @game.player[c].damage()
+                    end
+                    sleep(1)
+                else 
+                    @game.broadcast("The dragon bag is empty!")
                 end
-                sleep(1)
             end
         end
 
