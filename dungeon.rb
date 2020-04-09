@@ -85,7 +85,7 @@ module Klank
         end
 
         def afford?(player)
-            (player.skill >= @hand.map { |c| c.cost }.min) or (player.attack >= @hand.map { |c| c.attack }.min)
+            (player.skill >= @hand.map { |c| c.player_cost(player) }.min) or (player.attack >= @hand.map { |c| c.attack }.min)
         end
 
         def replace_card(player)

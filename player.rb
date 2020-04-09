@@ -145,6 +145,12 @@ module Klank
                     total += 20
                     table << {"POINTS" => 20, "DESCRIPTION" => "Mastery"}
                 end
+
+                if @game.map.depths?(self)
+                    table << {"POINTS" => -1 * total, "DESCRIPTION" => "Depths"}
+                    total = 0
+                end
+
                 table << {"POINTS" => total, "DESCRIPTION" => "Total"}
                 output(Klank.table(table))
 

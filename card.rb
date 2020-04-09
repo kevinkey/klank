@@ -22,6 +22,18 @@ module Klank
             @hash = hash
         end 
 
+        def player_cost(player)
+            cost = 0
+
+            if (@type == :gem) and player.has_played?("Gem Collector")
+                cost = @cost - 2 
+            else 
+                cost = @cost 
+            end
+
+            cost
+        end
+
         def points(player)
             total = 0
 
@@ -70,13 +82,7 @@ module Klank
 
         def acquire(player)
             success = false
-            cost = 0
-
-            if (@type == :gem) and player.has_played?("Gem Collector")
-                cost = @cost - 2 
-            else 
-                cost = @cost 
-            end
+            cost = player_cost(player)
 
             if @type == :monster
                 player.output("Can't buy a monster!")

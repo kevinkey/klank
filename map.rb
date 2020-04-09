@@ -212,6 +212,10 @@ module Klank
                 player.frozen = true 
             end
 
+            if !crystal_cave?(player)
+                player.frozen = false
+            end
+
             if @map["rooms"][player.room_num]["minor-secrets"] > 0
                 @map["rooms"][player.room_num]["minor-secrets"] -= 1
                 @minor = Klank.randomize(@minor)
