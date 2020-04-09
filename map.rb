@@ -139,6 +139,18 @@ module Klank
             end
         end
 
+        def view(player)
+            rooms = []
+            @map["rooms"].each_key do |room_num|
+                status = room_desc(room_num)
+                if status.keys.count > 0
+                    rooms << {"ROOM" => room_num}.merge(status)
+                end
+            end
+
+            player.output("MAP\n#{Klank.table(rooms)}")
+        end
+
         def depths?(player)
             (player.room_num >= @map["depths"])
         end
@@ -232,7 +244,7 @@ module Klank
 
             if @map["rooms"][player.room_num]["monkey-idols"] > 0
                 @map["rooms"][player.room_num]["monkey-idols"] -= 1
-                player.item << Item.new(@game, {"name" => "Monkey Idol", "points" => 5})
+                player.item << Item.new(@game, {"name" => "Monkey Idol", "symbol" => "M", "points" => 5})
                 @game.broadcast("#{player.name} bows down to the Monkey Idol!")
             end
 
@@ -255,7 +267,7 @@ module Klank
             paths = []
             @map["paths"].each_key do |key|
                 if (key =~ /^#{room_num}-(\d+)$/) || (key =~ /^(\d+)-#{room_num}$/)
-                    paths << [$1, path_desc(key)]
+                    paths << [$1, path_desc(key).merge(room_desc($1.to_i))]
                 end
             end
             paths
@@ -267,7 +279,7 @@ module Klank
             @map["paths"].each_key do |key|
                 if ((key =~ /^#{room_num}-(\d+)/) ||
                     ((key =~ /(\d+)-#{room_num}$/) && @map["paths"][key]["one-way"].nil?))
-                    paths_out << [$1, path_desc(key)] 
+                    paths_out << [$1, path_desc(key).merge(room_desc($1.to_i))] 
                 end
             end
             paths_out
@@ -286,6 +298,22 @@ module Klank
             end
 
             desc
+        end
+
+        def room_desc(room_num)
+            status = {}
+
+            if (@map["rooms"][room_num]["minor-secrets"] > 0)
+                status["MINOR"] = @map["rooms"][room_num]["minor-secrets"]
+            elsif (@map["rooms"][room_num]["major-secrets"] > 0)
+                status["MAJOR"] = @map["rooms"][room_num]["major-secrets"]
+            elsif (@map["rooms"][room_num]["monkey-idols"] > 0)
+                status["MONKEY IDOLS"] = @map["rooms"][room_num]["monkey-idols"]
+            elsif (@map["rooms"][room_num]["artifact"] > 0)
+                status["ARTIFACT"] = @map["rooms"][room_num]["artifact"]
+            end
+
+            status
         end
     end
 end

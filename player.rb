@@ -227,6 +227,10 @@ module Klank
                         menu << ["P", {"DESC" => "Teleport"}]
                     end
 
+                    if ((@move > 0) and !@frozen) or (@teleport > 0)
+                        menu << ["V", {"DESC" => "View the map"}]
+                    end
+
                     if @attack > 1
                         menu << ["G", {"DESC" => "Kill the goblin", "COST" => 2, "BENEFIT" => "COINS: 1"}]
                     end
@@ -265,6 +269,8 @@ module Klank
                         @game.map.shop(self)
                     when "P"
                         @game.map.teleport(self)
+                    when "V"
+                        @game.map.view(self)
                     when "G"
                         collect_coins(1)
                         @attack -= 2
