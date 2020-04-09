@@ -310,27 +310,31 @@ module Klank
             end
 
             if @hash.key?("acquire")
+                acquire = []
+
                 if @hash["acquire"].key?("skill") 
-                    desc["ACQUIRE"] = "SKILL: #{@hash["acquire"]["skill"]}"
+                    acquire << "SKILL: #{@hash["acquire"]["skill"]}"
                 end
                 if @hash["acquire"].key?("move") 
-                    desc["ACQUIRE"] = "MOVE: #{@hash["acquire"]["move"]}"
+                    acquire << "MOVE: #{@hash["acquire"]["move"]}"
                 end
                 if @hash["acquire"].key?("attack") 
-                    desc["ACQUIRE"] = "ATTACK: #{@hash["acquire"]["attack"]}"
+                    acquire << "ATTACK: #{@hash["acquire"]["attack"]}"
                 end
                 if @hash["acquire"].key?("teleport") 
-                    desc["ACQUIRE"] = "TELEPORT"
+                    acquire << "TELEPORT"
                 end
                 if @hash["acquire"].key?("coins") 
-                    desc["ACQUIRE"] = "COINS: #{@hash["acquire"]["coins"]}"
+                    acquire << "COINS: #{@hash["acquire"]["coins"]}"
                 end
                 if @hash["acquire"].key?("clank") 
-                    desc["ACQUIRE"] = "CLANK: #{@hash["acquire"]["clank"]}"
+                    acquire << "CLANK: #{@hash["acquire"]["clank"]}"
                 end
                 if @hash["acquire"].key?("heal") 
-                    desc["ACQUIRE"] = "HEAL: #{@hash["acquire"]["heal"]}"
+                    acquire << "HEAL: #{@hash["acquire"]["heal"]}"
                 end
+
+                desc["ACQUIRE"] = "#{acquire.join(", ")}"
             end
 
             if @hash.key?("defeat")

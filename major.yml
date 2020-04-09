@@ -16,6 +16,7 @@
   draw: 3
 - name: Chalice
   description: Worth 7 points at the end of the game
+  symbol: Y
   count: 2
   points: 7
   

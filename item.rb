@@ -2,10 +2,12 @@ module Klank
     class Item
 
         attr_reader :name
+        attr_reader :symbol
         
         def initialize(game, hash)
             @game = game
             @name = hash["name"] || ""
+            @symbol = hash["symbol"] || ""
             @hash = hash
         end
 

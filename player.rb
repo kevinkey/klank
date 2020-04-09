@@ -108,56 +108,54 @@ module Klank
             @played = []
             @room_num = 1
             @skill = 0
-            @score = -1
         end
 
-        def score()
-            if @score < 0
-                table = []
+        def score(disp_breakdown = false)
+            table = []
 
-                total = @coins
-                table << {"POINTS" => @coins, "DESCRIPTION" => "Coins"}
+            total = @coins
+            table << {"POINTS" => @coins, "DESCRIPTION" => "Coins"}
 
-                @deck.all.each do |card|
-                    points = card.points(self)
+            @deck.all.each do |card|
+                points = card.points(self)
 
-                    if points != 0
-                        total += points
-                        table << {"POINTS" => points, "DESCRIPTION" => card.name}
-                    end
+                if points != 0
+                    total += points
+                    table << {"POINTS" => points, "DESCRIPTION" => card.name}
                 end
+            end
 
-                @item.each do |i|
-                    points = i.points()
+            @item.each do |i|
+                points = i.points()
 
-                    if points != 0
-                        total += points
-                        table << {"POINTS" => points, "DESCRIPTION" => i.name}
-                    end
+                if points != 0
+                    total += points
+                    table << {"POINTS" => points, "DESCRIPTION" => i.name}
                 end
+            end
 
-                @artifact.each do |a|
-                    total += a
-                    table << {"POINTS" => a, "DESCRIPTION" => "Artifact"}
-                end
+            @artifact.each do |a|
+                total += a
+                table << {"POINTS" => a, "DESCRIPTION" => "Artifact"}
+            end
 
-                if @mastery 
-                    total += 20
-                    table << {"POINTS" => 20, "DESCRIPTION" => "Mastery"}
-                end
+            if @mastery 
+                total += 20
+                table << {"POINTS" => 20, "DESCRIPTION" => "Mastery"}
+            end
 
-                if @game.map.depths?(self)
-                    table << {"POINTS" => -1 * total, "DESCRIPTION" => "Depths"}
-                    total = 0
-                end
+            if @game.map.depths?(self)
+                table << {"POINTS" => -1 * total, "DESCRIPTION" => "Depths"}
+                total = 0
+            end
 
-                table << {"POINTS" => total, "DESCRIPTION" => "Total"}
+            table << {"POINTS" => total, "DESCRIPTION" => "Total"}
+
+            if disp_breakdown
                 output(Klank.table(table))
-
-                @score = total
             end 
 
-            @score
+            total                
         end
 
         def draw(count)
@@ -189,47 +187,47 @@ module Klank
                     menu = []
 
                     if @hand.count != 0
-                        menu << ["E", "Equip card(s)"]
+                        menu << ["E", {"DESC" => "Equip card(s)"}]
                     end
 
                     if @item.select{ |i| i.playable }.count != 0
-                        menu << ["I", "Play an item"]
+                        menu << ["I", {"DESC" => "Play an item"}]
                     end
 
                     if (@game.reserve[:x].remaining > 0) and (@skill >= @game.reserve[:x].peek.cost)
-                        menu << ["X", "Buy an explore card | COST: 3 | SKILL: 2 | MOVE: 1"]
+                        menu << ["X", {"DESC" => "Buy an explore card", "COST" => 3, "BENEFIT" => "SKILL: 2 | MOVE: 1"}]
                     end
 
                     if (@game.reserve[:c].remaining > 0) and (@skill >= @game.reserve[:c].peek.cost)
-                        menu << ["C", "Buy a mercenary card | COST: 2 | SKILL: 1 | ATTACK: 2"]
+                        menu << ["C", {"DESC" => "Buy a mercenary card", "COST" => 2, "BENEFIT" => "SKILL: 1 | ATTACK: 2"}]
                     end
 
                     if (@game.reserve[:t].remaining > 0) and (@skill >= @game.reserve[:t].peek.cost)
-                        menu << ["T", "Buy a tome card | COST: 7 | POINTS: 7"]
+                        menu << ["T", {"DESC" => "Buy a tome card", "COST" => 7, "BENEFIT" => "POINTS: 7"}]
                     end
 
                     if @game.dungeon.afford?(self)
-                        menu << ["B", "Buy or defeat a monster in the dungeon"]
+                        menu << ["D", {"DESC" => "Go to the dungeon"}]
                     end
 
                     if (@move > 0) and !@frozen
-                        menu << ["M", "Move"]
+                        menu << ["M", {"DESC" => "Move"}]
                     end
 
                     if @game.map.market?(self)
-                        menu << ["S", "Shop in the market"]
+                        menu << ["S", {"DESC" => "Shop in the market"}]
                     end
 
                     if @teleport > 0 
-                        menu << ["P", "Teleport"]
+                        menu << ["P", {"DESC" => "Teleport"}]
                     end
 
                     if @attack > 1
-                        menu << ["G", "Kill the goblin | DEFEAT: 2 | COINS: 1"]
+                        menu << ["G", {"DESC" => "Kill the goblin", "COST" => 2, "BENEFIT" => "COINS: 1"}]
                     end
 
                     if @hand.count == 0
-                        menu << ["D", "End Turn"]
+                        menu << ["N", {"DESC" => "End Turn"}]
                     end
 
                     option = menu("ACTION LIST", menu)
@@ -254,7 +252,7 @@ module Klank
                         @deck.discard(t)
                         @skill -= t[0].cost
                         @game.broadcast("#{@name} bought a Tome!")
-                    when "B"
+                    when "D"
                         @game.dungeon.acquire(self)
                     when "M"
                         @game.map.move(self)
@@ -266,7 +264,7 @@ module Klank
                         collect_coins(1)
                         @attack -= 2
                         @game.broadcast("#{@name} killed the Goblin!")
-                    when "D"
+                    when "N"
                         @deck.discard(@played)
                         @played = []
                         break
@@ -326,7 +324,7 @@ module Klank
                     @game.broadcast("#{@name} gained #{swagger} skill because of their Swagger!")
                     @skill += swagger 
                 end
-            else
+            elsif count < 0
                 @clank_remove += count
             end
         end
@@ -405,9 +403,11 @@ module Klank
                 "HEALTH" => @health,
                 "CLANK" => @cubes,
                 "COINS" => @coins,
-                "ARTIFACT" => @artifact,
+                "ARTIFACT" => @artifact.join(", "),
+                "ITEM" => @item.map { |i| i.symbol }.join(""),
                 "ROOM" => @room_num,
                 "DECK" => @deck.stack.count,
+                "SCORE" => score()
             }
         end
 

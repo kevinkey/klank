@@ -23,5 +23,6 @@
   count: 2
 - name: Dragon Egg
   description: Worth 3 points at the end of the game
+  symbol: O
   count: 3
   points: 3

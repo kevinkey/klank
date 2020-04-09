@@ -1,25 +1,30 @@
 - name: Master Key
   description: Allows you to use tunnels with a lock icon. (Also worth 5 points at the end of the game).
+  symbol: K
   count: 2
   cost: 7
   points: 5
 - name: Backpack
   description: Allows you to carry an additional Artifact. (Also worth 5 points at the end of the game).
+  symbol: B
   count: 2
   cost: 7
   points: 5
 - name: Crown (10)
   description: Worth the number of points shown. 
+  symbol: W
   count: 1
   cost: 7
   points: 10
 - name: Crown (9)
-  description: Worth the number of points shown. 
+  description: Worth the number of points shown.
+  symbol: W 
   count: 1
   cost: 7
   points: 9
 - name: Crown (8)
   description: Worth the number of points shown.
+  symbol: W
   count: 1
   cost: 7
   points: 8
