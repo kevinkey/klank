@@ -276,7 +276,7 @@ module Klank
                 end
             end
 
-            @game.dragon.remove(@index, -1 * @clank_remove)
+            @cubes += @game.dragon.remove(@index, -1 * @clank_remove)
         end
 
         def damage(direct = false)

@@ -16,7 +16,7 @@ module Klank
 
       loop do
         menu = []
-        games.delete_if { |g| g.shutdown }
+        games.delete_if { |g| g.shutdown || g.started }
         games.each_with_index do |g, i|
           menu << [i, g.status]
         end

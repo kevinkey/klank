@@ -30,9 +30,9 @@ module Klank
         end
 
         def remove(cube, count)
-            if count != 0
-                removed = 0
+            removed = 0
 
+            if count != 0
                 count.times do 
                     if @bank.delete_at(@bank.index(cube) || @bank.length)
                         removed += 1
@@ -41,6 +41,8 @@ module Klank
 
                 @game.broadcast("#{@game.player[cube].name} removed #{removed} clank from the bank!")
             end
+
+            removed
         end
 
         def attack()
@@ -52,7 +54,7 @@ module Klank
 
             @game.broadcast("The dragon attacks, drawing #{draw} cubes...")
             sleep(1)
-            
+
             draw.times do
                 if @bag.count > 0
                     c = @bag.pop

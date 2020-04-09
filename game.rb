@@ -9,6 +9,7 @@ module Klank
         attr_reader :name
         attr_reader :num
         attr_reader :map
+        attr_reader :started
         attr_reader :shutdown
         attr_reader :reserve
         attr_reader :dungeon
@@ -24,6 +25,7 @@ module Klank
 
             @shutdown = false 
             @game_over = false
+            @started = false
         end
 
         def status 
@@ -70,6 +72,7 @@ module Klank
             @player = Klank.randomize(@player)
             @escalation = 0
             @trigger = -1
+            @started = true
 
             msg = "\nGAME STARTING\nRandomizing play order...\n"
             @player.each_with_index do |p, i|
