@@ -11,6 +11,7 @@ module Klank
         attr_reader :map
         attr_reader :started
         attr_reader :shutdown
+        attr_reader :game_over
         attr_reader :reserve
         attr_reader :dungeon
         attr_reader :dragon

@@ -144,7 +144,12 @@ module Klank
                 table << {"POINTS" => 20, "DESCRIPTION" => "Mastery"}
             end
 
-            if @game.map.depths?(self)
+            if !@game.game_over
+                # keep the score for now
+            elsif @artifact.count <= 0
+                table << {"POINTS" => -1 * total, "DESCRIPTION" => "No artifact"}
+                total = 0
+            elsif @game.map.depths?(self) 
                 table << {"POINTS" => -1 * total, "DESCRIPTION" => "Depths"}
                 total = 0
             end
@@ -195,15 +200,15 @@ module Klank
                     end
 
                     if (@game.reserve[:x].remaining > 0) and (@skill >= @game.reserve[:x].peek.cost)
-                        menu << ["X", {"DESC" => "Buy an explore card", "COST" => 3, "BENEFIT" => "SKILL: 2 | MOVE: 1"}]
+                        menu << ["X", {"DESC" => "Buy an explore card", "COST" => 3, "BENEFIT" => "SKILL: 2 | MOVE: 1", "LEFT" => @game.reserve[:x].remaining}]
                     end
 
                     if (@game.reserve[:c].remaining > 0) and (@skill >= @game.reserve[:c].peek.cost)
-                        menu << ["C", {"DESC" => "Buy a mercenary card", "COST" => 2, "BENEFIT" => "SKILL: 1 | ATTACK: 2"}]
+                        menu << ["C", {"DESC" => "Buy a mercenary card", "COST" => 2, "BENEFIT" => "SKILL: 1 | ATTACK: 2", "LEFT" => @game.reserve[:c].remaining}]
                     end
 
                     if (@game.reserve[:t].remaining > 0) and (@skill >= @game.reserve[:t].peek.cost)
-                        menu << ["T", {"DESC" => "Buy a tome card", "COST" => 7, "BENEFIT" => "POINTS: 7"}]
+                        menu << ["T", {"DESC" => "Buy a tome card", "COST" => 7, "BENEFIT" => "POINTS: 7", "LEFT" => @game.reserve[:t].remaining}]
                     end
 
                     if @game.dungeon.afford?(self)
@@ -461,14 +466,16 @@ module Klank
 
             @played += play
 
-            msg = []
+            if play.count > 0
+                msg = []
 
-            play.each do |card|
-                card.equip(self)
-                msg << "#{card.name}"
+                play.each do |card|
+                    card.equip(self)
+                    msg << "#{card.name}"
+                end
+
+                @game.broadcast("#{@name} played #{msg.join(", ")}!")
             end
-
-            @game.broadcast("#{@name} played #{msg.join(", ")}!")
         end
 
         def play()
