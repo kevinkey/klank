@@ -58,6 +58,8 @@ module Klank
 
         def move(player)
             loop do 
+                player.output("\n#{Klank.table([{"MOVE" => player.move, "ATTACK" => player.attack}])}")
+
                 paths_out = get_paths_out(player.room_num)
                 option = player.menu("MOVE FROM ROOM #{player.room_num}", paths_out, true)
                 if option != "N"
@@ -108,13 +110,13 @@ module Klank
                 end
 
                 break if player.dead?() or player.mastery
-
-                player.output("\nMOVE: #{player.move}")
             end
         end
 
         def teleport(player)
             loop do 
+                player.output("\n#{Klank.table([{"TELEPORT" => player.teleport}])}")
+
                 paths = get_paths(player.room_num)
                 option = player.menu("TELEPORT FROM ROOM #{player.room_num}", paths, true)
                 if option != "N"
@@ -134,8 +136,6 @@ module Klank
                 end
 
                 break if player.dead?() or player.mastery
-
-                player.output("\nTELEPORT: #{player.teleport}")
             end
         end
 
@@ -190,6 +190,8 @@ module Klank
 
         def shop(player)
             loop do 
+                player.output("\n#{Klank.table([{"COINS" => player.coins}])}")
+
                 options = []
                 @market.each_with_index do |m, i|
                     options << [i, m.desc()]
@@ -198,6 +200,7 @@ module Klank
 
                 break if item == "N"
 
+                @game.broadcast("#{player.name} bought #{item.name} from the market!")
                 @market[item.to_i].gain(player)
                 @market.delete_at(item.to_i)
                 player.coins -= 7
@@ -311,6 +314,11 @@ module Klank
                 status["MONKEY IDOLS"] = @map["rooms"][room_num]["monkey-idols"]
             elsif (@map["rooms"][room_num]["artifact"] > 0)
                 status["ARTIFACT"] = @map["rooms"][room_num]["artifact"]
+            else 
+                players = @game.player.select{ |p| p.room_num == room_num }
+                if players.count > 0
+                    status["PLAYERS"] = players.map { |p| p.name }.join(", ")
+                end
             end
 
             status

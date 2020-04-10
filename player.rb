@@ -417,7 +417,7 @@ module Klank
                 "ARTIFACT" => @artifact.join(", "),
                 "ITEM" => @item.map { |i| i.symbol }.join(""),
                 "ROOM" => @room_num,
-                "DECK" => @deck.stack.count,
+                "DECK" => "#{@deck.stack.count}/#{@deck.all.count}",
                 "SCORE" => score()
             }
         end
@@ -453,34 +453,42 @@ module Klank
         end
 
         def equip()
-            cards = []
-            @hand.each_with_index do |c, i|
-                cards << [i, c.play_desc]
-            end
-            c = menu("HAND", cards, true, true)
+            loop do
+                cards = []
+                @hand.each_with_index do |c, i|
+                    cards << [i, c.play_desc]
+                end
+                c = menu("HAND", cards, true, true)
 
-            play = []
+                play = []
 
-            if c == "A"
-                play = @hand 
-                @hand = []
-            elsif c == "N"
-                # do nothing
-            else
-                play = [@hand.delete_at(c.to_i)]
-            end
-
-            @played += play
-
-            if play.count > 0
-                msg = []
-
-                play.each do |card|
-                    card.equip(self)
-                    msg << "#{card.name}"
+                if c == "A"
+                    play = @hand 
+                    @hand = []
+                elsif c == "N"
+                    break
+                else
+                    play = [@hand.delete_at(c.to_i)]
                 end
 
-                @game.broadcast("#{@name} played #{msg.join(", ")}!")
+                if play.select { |c| c.name == "Stubmle" }.count == 2
+                    @game.broadcast("#{@name} stumbled twice and face planted!")
+                end
+
+                @played += play
+
+                if play.count > 0
+                    msg = []
+
+                    play.each do |card|
+                        card.equip(self)
+                        msg << "#{card.name}"
+                    end
+
+                    @game.broadcast("#{@name} played #{msg.join(", ")}!")
+                end
+
+                break if @hand.count == 0
             end
         end
 

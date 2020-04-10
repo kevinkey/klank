@@ -363,7 +363,7 @@ module Klank
             end
 
             if @hash.key?("depths")
-                desc["MISC"] = "DEPTHS ONLY"
+                desc["MISC"] = "DEPTHS"
             end
 
             desc.merge(play_desc())
