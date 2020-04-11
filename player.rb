@@ -471,10 +471,6 @@ module Klank
                     play = [@hand.delete_at(c.to_i)]
                 end
 
-                if play.select { |c| c.name == "Stubmle" }.count == 2
-                    @game.broadcast("#{@name} stumbled twice and face planted!")
-                end
-
                 @played += play
 
                 if play.count > 0
@@ -486,6 +482,10 @@ module Klank
                     end
 
                     @game.broadcast("#{@name} played #{msg.join(", ")}!")
+                end
+
+                if play.select { |c| c.name == "Stumble" }.count == 2
+                    @game.broadcast("#{@name} stumbled twice and face planted!")
                 end
 
                 break if @hand.count == 0
