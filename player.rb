@@ -487,7 +487,7 @@ module Klank
                 end
 
                 if play.select { |c| c.name == "Stumble" }.count == 2
-                    @game.broadcast("#{@name} stumbled twice and face planted!")
+                    @game.broadcast("#{@name} stumbled twice and faceplanted!")
                 end
 
                 break if @hand.count == 0
