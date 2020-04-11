@@ -276,9 +276,11 @@ module Klank
                         @attack -= 2
                         @game.broadcast("#{@name} killed the Goblin!")
                     when "N"
-                        @deck.discard(@played)
-                        @played = []
-                        break
+                        if (menu.count <= 1) or ("Y" == input("Are you sure? (Y: yes)").upcase)
+                            @deck.discard(@played)
+                            @played = []
+                            break
+                        end
                     else
                         output("Hmmm... something went wrong")
                     end

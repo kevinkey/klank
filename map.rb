@@ -174,12 +174,16 @@ module Klank
             if option != "N"
                 room_num = option.to_i
                 if (@map["rooms"][room_num]["minor-secrets"] > 0)
-                    type = 'minor'
+                    @map["rooms"][player.room_num]["minor-secrets"] -= 1
+                    @minor = Klank.randomize(@minor)
+                    item = @minor.shift
                 else
-                    type = 'major'
+                    @map["rooms"][player.room_num]["major-secrets"] -= 1
+                    @major = Klank.randomize(@major)
+                    item = @major.shift
                 end
-                @map["rooms"][room_num]["#{type}-secrets"] -= 1
-                @game.broadcast("#{player.name} took a #{type} secret from room #{room_num}")
+                @game.broadcast("#{player.name} took a #{item.name} from room #{room_num}")
+                item.gain(player)
             end
             type
         end
@@ -200,7 +204,7 @@ module Klank
 
                 break if item == "N"
 
-                @game.broadcast("#{player.name} bought #{item.name} from the market!")
+                @game.broadcast("#{player.name} bought #{@market[item.to_i].name} from the market!")
                 @market[item.to_i].gain(player)
                 @market.delete_at(item.to_i)
                 player.coins -= 7
