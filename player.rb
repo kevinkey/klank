@@ -247,20 +247,20 @@ module Klank
                     when "I"
                         play()
                     when "X"
+                        @game.broadcast("#{@name} bought an Explore!")
                         x = @game.reserve[:x].draw(1)
                         @deck.discard(x)
                         @skill -= x[0].cost
-                        @game.broadcast("#{@name} bought an Explore!")
                     when "C"
+                        @game.broadcast("#{@name} bought a Mercenary!")
                         c = @game.reserve[:c].draw(1)
                         @deck.discard(c)
                         @skill -= c[0].cost
-                        @game.broadcast("#{@name} bought a Mercenary!")
                     when "T"
+                        @game.broadcast("#{@name} bought a Tome!")
                         t = @game.reserve[:t].draw(1)
                         @deck.discard(t)
                         @skill -= t[0].cost
-                        @game.broadcast("#{@name} bought a Tome!")
                     when "D"
                         @game.dungeon.acquire(self)
                     when "M"
@@ -272,9 +272,9 @@ module Klank
                     when "V"
                         @game.map.view(self)
                     when "G"
+                        @game.broadcast("#{@name} killed the Goblin!")
                         collect_coins(1)
                         @attack -= 2
-                        @game.broadcast("#{@name} killed the Goblin!")
                     when "N"
                         if (menu.count <= 1) or ("Y" == input("Are you sure? (Y: yes)").upcase)
                             @deck.discard(@played)
