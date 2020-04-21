@@ -277,8 +277,6 @@ module Klank
                         @attack -= 2
                     when "N"
                         if (menu.count <= 1) or ("Y" == input("Are you sure? (Y: yes)").upcase)
-                            @deck.discard(@played)
-                            @played = []
                             break
                         end
                     else
@@ -289,7 +287,10 @@ module Klank
                 end
             end
 
-            @cubes += @game.dragon.remove(@index, -1 * @clank_remove)
+            @deck.discard(@played)
+            @played = []
+
+            reclaim_clank()
         end
 
         def damage(direct = false)
@@ -340,6 +341,10 @@ module Klank
             elsif count < 0
                 @clank_remove += count
             end
+        end
+
+        def reclaim_clank()
+            @cubes += @game.dragon.remove(@index, -1 * @clank_remove)
         end
 
         def has_artifact?()
@@ -415,6 +420,7 @@ module Klank
                 "NAME" => @name,
                 "HEALTH" => @health,
                 "CLANK" => @cubes,
+                "BANK" => @game.dragon.bank.select { |c| c == @index }.count,
                 "COINS" => @coins,
                 "ARTIFACT" => @artifact.join(", "),
                 "ITEM" => @item.map { |i| i.symbol }.join(""),

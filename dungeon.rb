@@ -42,8 +42,6 @@ module Klank
 
                 if attack 
                     @game.dragon.attack()
-                else 
-                    @game.dragon.bank_status()
                 end
             end
 

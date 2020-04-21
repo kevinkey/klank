@@ -4,6 +4,8 @@ module Klank
     class Dragon
         DRAW = [2, 2, 3, 3, 4, 4, 5]
 
+        attr_reader :bank
+
         def initialize(game)
             @game = game
 
@@ -78,17 +80,6 @@ module Klank
                 @bag << "D"
             end
             @dragon_cubes -= actual
-        end
-
-        def bank_status()
-            msg = ["DRAGON BANK"]
-
-            @game.player.each do |p|
-                count = @bank.select { |b| p.index == b }.count
-                msg << "#{p.name}: #{count}"
-            end
-
-            @game.broadcast(msg.join(" | "))
         end
     end
 end

@@ -182,9 +182,9 @@ module Klank
                 player.trash_card("Burgle")
             when "Mister Whiskers"
                 @game.broadcast("#{player.name} played Mister Whiskers!")
-                @game.dragon.bank_status()
                 menu = [["D", "Dragon Attack"], ["C", "-2 clank"]]
                 if player.menu("MISTER WHISKERS", menu) == "D"
+                    player.reclaim_clank()
                     @game.dragon.attack()
                 else 
                     player.clank(-2)
