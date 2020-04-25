@@ -532,6 +532,6 @@
   count: 1
   type: :companion
   cost: 6
-  special: +3 points for each tome you have
+  special: +2 points for each tome you have
   equip:
     skill: 3

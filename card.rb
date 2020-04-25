@@ -63,7 +63,7 @@ module Klank
             when "The Duke"
                 total += (player.coins / 5)
             when "Wizard"
-                total += (player.deck.all.select { |c| c.name == "Tome" }.count * 3)
+                total += (player.deck.all.select { |c| c.name == "Tome" }.count * 2)
             end
 
             total
