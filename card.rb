@@ -366,6 +366,10 @@ module Klank
                 desc["MISC"] = "DEPTHS"
             end
 
+            if @hash.key?("crystal cave")
+                desc["MISC"] = "CRYSTAL CAVE"
+            end
+
             desc.merge(play_desc())
         end
 
