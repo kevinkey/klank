@@ -20,6 +20,7 @@ module Klank
         attr_accessor :teleport
         attr_accessor :frozen
         attr_accessor :artifact
+        attr_accessor :health
 
         def initialize(client)
             @client = client

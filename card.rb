@@ -91,30 +91,46 @@ module Klank
             elsif player.skill >= cost
                 success = true
 
-                player.skill -= cost
-
                 case @name 
                 when "Dragon Shrine"
-                    menu = [["C", "2 coins"], ["T", "Trash a card"]]
+                    menu = [
+                        ["C", {"DESC" => "+2 coins", "COINS" => player.coins}], 
+                        ["T", {"DESC" => "Trash a card"}]
+                    ]
                     loop do 
-                        if player.menu("DRAGON SHRINE", menu) == "C"
+                        case player.menu("DRAGON SHRINE", menu, true))
+                        
+                        when "C"
                             player.collect_coins(2)
                             break
-                        else 
+                        when "T"
                             break if player.trash_card()
+                        else 
+                            success = false 
+                            break
                         end
                     end
                 when "Shrine"
-                    menu = [["C", "1 coin"], ["H", "1 heal"]]
-                    if player.menu("SHRINE", menu) == "C"
+                    menu = [
+                        ["C", {"DESC" => "+1 coin", "CURRENT" => player.coins}], 
+                        ["H", {"DESC" => "+1 health", "CURRENT" => player.health}]
+                    ]
+                    case player.menu("SHRINE", menu, true)
+                    when "C"
                         player.collect_coins(1)
-                    else 
+                    when "H" 
                         player.heal(1)
+                    else 
+                        success = false 
                     end
                 end
 
-                if @hash.key?("acquire")
-                    abilities(player, @hash["acquire"])
+                if success 
+                    player.skill -= cost
+
+                    if @hash.key?("acquire")
+                        abilities(player, @hash["acquire"])
+                    end
                 end
             else
                 player.output("Not enough skill!")
@@ -160,7 +176,11 @@ module Klank
             case @name 
             when "Apothecary"
                 if player.discard_card()
-                    menu = [["A", "3 attack"], ["C", "2 coins"], ["H", "1 heal"]]
+                    menu = [
+                        ["A", {"DESC" => "+3 attack", "CURRENT" => player.attack}], 
+                        ["C", {"DESC" => "+2 coins", "CURRENT" => player.coins}], 
+                        ["H", {"DESC" => "+1 health", "CURRENT" => player.health}]
+                    ]
                     case player.menu("APOTHECARY", menu)
                     when "A"
                         player.attack += 3
