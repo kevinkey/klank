@@ -98,11 +98,11 @@ module Klank
             }
 
             loop do 
-                all_dead = true
-
                 @player.each do |p|
                     begin
                         @dungeon.replenish()
+
+                        break if game_over?()
 
                         status = []
                         @player.each do |p|
@@ -124,19 +124,18 @@ module Klank
                         elsif p.mastery
                             broadcast("\n#{p.name} has left with an artifact!")                        
                         else
-                            all_dead = false
                             broadcast("\nStarting #{p.name}'s turn...")
                             p.turn()
                         end
-                        break if @game_over
                     rescue => exception
                         puts exception.full_message
-                        all_dead = false
                         broadcast("An error occurred so #{p.name}'s turn is ended prematurely, sorry!")
                     end
+
+                    break if game_over?()
                 end
 
-                break if @game_over || all_dead
+                break if game_over?()
                 sleep(0.1)
             end
 
@@ -145,6 +144,18 @@ module Klank
             scores()
 
             @shutdown = true
+        end
+
+        def game_over?()
+            all_done = true 
+            @player.each do |p|
+                if !p.dead?() or !p.mastery 
+                    all_done = false 
+                    break 
+                end 
+            end
+            
+            @game_over or all_done
         end
 
         def scores()
