@@ -317,11 +317,11 @@ module Klank
                 status["MONKEY IDOLS"] = @map["rooms"][room_num]["monkey-idols"]
             elsif (@map["rooms"][room_num]["artifact"] > 0)
                 status["ARTIFACT"] = @map["rooms"][room_num]["artifact"]
-            else 
-                players = @game.player.select{ |p| p.room_num == room_num }
-                if players.count > 0
-                    status["PLAYERS"] = players.map { |p| p.name }.join(", ")
-                end
+            end
+
+            players = @game.player.select{ |p| p.room_num == room_num }
+            if players.count > 0
+                status["PLAYERS"] = players.map { |p| p.name }.join(", ")
             end
 
             status

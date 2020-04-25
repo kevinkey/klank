@@ -98,7 +98,7 @@ module Klank
                         ["T", {"DESC" => "Trash a card"}]
                     ]
                     loop do 
-                        case player.menu("DRAGON SHRINE", menu, true))
+                        case player.menu("DRAGON SHRINE", menu, true)
                         
                         when "C"
                             player.collect_coins(2)
