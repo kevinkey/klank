@@ -418,7 +418,7 @@ module Klank
         def status()
             {
                 "NAME" => @name,
-                "HEALTH" => @health,
+                "HEALTH" => dead?() ? "DEAD" : @mastery ? "OUT" : @health,
                 "CLANK" => @cubes,
                 "BANK" => @game.dragon.bank.select { |c| c == @index }.count,
                 "COINS" => @coins,
