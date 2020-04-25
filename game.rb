@@ -21,6 +21,7 @@ module Klank
         def initialize(name, num, map)
             @name = name
             @num = num
+            @map_num = map
             @map = Map.new(self, map)
             @player = []
 
@@ -30,7 +31,11 @@ module Klank
         end
 
         def status 
-            "#{@name}, #{@player.count} / #{@num}"
+            {
+                "Name" => @name, 
+                "Map" => @map_num, 
+                "Players" => "#{@player.count} / #{@num}"
+            }
         end
 
         def join(player)

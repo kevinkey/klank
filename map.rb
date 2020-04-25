@@ -19,7 +19,6 @@ module Klank
                     "artifact" => 0,
                     "crystal-cave" => false,
                     "store" => false,
-
                 }.merge(@map["rooms"][room_num] || {})
             end
 

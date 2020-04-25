@@ -20,7 +20,7 @@ module Klank
         games.each_with_index do |g, i|
           menu << [i, g.status]
         end
-        menu << ["N", "Create a new game"]
+        menu << ["N", {"Name" => "Create a new game"}]
         option = player.menu("GAME LIST", menu)
 
         case option 
