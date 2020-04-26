@@ -184,6 +184,7 @@ module Klank
                     case player.menu("APOTHECARY", menu)
                     when "A"
                         player.attack += 3
+                        @game.broadcast("#{@player.name} gained +3 attack from Apothecary!")
                     when "C"
                         player.collect_coins(2)
                     when "H"
@@ -208,6 +209,7 @@ module Klank
                     @game.dragon.attack()
                 else 
                     player.clank(-2)
+                    @game.broadcast("#{@player.name} gained -2 clank from Mister Whiskers!")
                 end
             when "Rebel Captain", "Rebel Miner", "Rebel Scout", "Rebel Soldier"
                 if player.played.any? { |c| (c.type == :companion) and (c.name != @name) }
@@ -246,6 +248,7 @@ module Klank
                     else 
                         player.coins -= 7
                         player.deck.discard(@game.reserve[:t].draw([2, remaining].min))
+                        @game.broadcast("Through some Underworld Dealing, #{@player.name} gained +#{[2, remaining].min} Tomes!")
                     end
                 end
             when "Wand of Recall"
