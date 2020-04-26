@@ -345,7 +345,9 @@ module Klank
         end
 
         def reclaim_clank()
-            @cubes += @game.dragon.remove(@index, -1 * @clank_remove)
+            actual = @game.dragon.remove(@index, -1 * @clank_remove)
+            @clank_remove += actual
+            @cubes += actual
         end
 
         def has_artifact?()
@@ -454,6 +456,10 @@ module Klank
 
             if @teleport != 0
                 ability["TELEPORT"] = @teleport
+            end
+
+            if @clank_remove < 0
+                ability["CLANK"] = @clank_remove
             end
 
             if ability.keys.count > 0

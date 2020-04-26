@@ -149,7 +149,7 @@ module Klank
         def game_over?()
             all_done = true 
             @player.each do |p|
-                if !p.dead?() or !p.mastery 
+                if !p.dead?() and !p.mastery 
                     all_done = false 
                     break 
                 end 
