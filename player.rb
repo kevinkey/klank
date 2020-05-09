@@ -31,7 +31,7 @@ module Klank
 
         def input(msg)
             @client.write "#{msg }: "
-            resp = "" #@client.gets
+            resp = ""
 
             loop do 
                 char = @client.recv(1)
@@ -63,7 +63,7 @@ module Klank
         end
 
         def output(msg)
-            @client.puts "#{msg}"
+            @client.puts "#{msg.gsub("\n", "\r\n")}\r"
         end
 
         def menu(title, options, none = false, all = false)
