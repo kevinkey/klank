@@ -327,9 +327,9 @@ module Klank
 
         def clank(count = 1)
             if @mastery
-                @game.broadcast("#{@name} can't add clank he has left!")
+                @game.broadcast("#{@name} can't add clank.  He has left!")
             elsif dead?()
-                @game.broadcast("#{@name} can't add clank he is already dead!")
+                @game.broadcast("#{@name} can't add clank.  He is already dead!")
             elsif count > 0
                 actual = [@cubes, count].min 
                 @cubes -= actual 
