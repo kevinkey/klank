@@ -181,6 +181,8 @@ module Klank
             @clank_remove = 0
             @frozen = false
 
+            output("\a")
+            
             draw(5)
 
             loop do 
