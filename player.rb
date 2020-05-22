@@ -33,7 +33,7 @@ module Klank
             @client.write "#{msg }: "
             resp = ""
 
-            loop do 
+            loop do
                 char = @client.recv(1)
 
                 if (char == "\n") or (char == "\r")
@@ -41,7 +41,7 @@ module Klank
                         break
                     end
                 elsif char =~ /(\w|\s)/
-                    resp += char 
+                    resp += char
                 end
             end
 
@@ -53,7 +53,7 @@ module Klank
         def input_num(msg, range)
             n = 0
 
-            loop do 
+            loop do
                 n = input("#{msg} [#{range.min}, #{range.max}]")
                 break if n =~ /^\d+/ and range.include?(n.to_i)
                 output("Oops!")
@@ -75,7 +75,7 @@ module Klank
                     row = {"#" => o[0]}
                     if o[1].is_a?(Hash)
                         row.merge!(o[1])
-                    else 
+                    else
                         row["DESC"] = o[1]
                     end
                     table << row
@@ -85,7 +85,7 @@ module Klank
                 valid = options.map { |o| o[0] }
                 valid << "N" if none
                 valid << "A" if all
-                
+
                 loop do
                     choice = input("Choose an option#{none ? " (N: None)" : ""}#{all ? " (A: All)" : ""}").upcase
                     break if valid.any? { |v| v.to_s.upcase == choice }
@@ -140,7 +140,7 @@ module Klank
                 table << {"POINTS" => a, "DESCRIPTION" => "Artifact"}
             end
 
-            if @mastery 
+            if @mastery
                 total += 20
                 table << {"POINTS" => 20, "DESCRIPTION" => "Mastery"}
             end
@@ -150,7 +150,7 @@ module Klank
             elsif @artifact.count <= 0
                 table << {"POINTS" => -1 * total, "DESCRIPTION" => "No artifact"}
                 total = 0
-            elsif @game.map.depths?(self) 
+            elsif @game.map.depths?(self)
                 table << {"POINTS" => -1 * total, "DESCRIPTION" => "Depths"}
                 total = 0
             end
@@ -159,9 +159,9 @@ module Klank
 
             if disp_breakdown
                 output(Klank.table(table))
-            end 
+            end
 
-            total                
+            total
         end
 
         def draw(count)
@@ -182,14 +182,14 @@ module Klank
             @frozen = false
 
             output("\a")
-            
+
             draw(5)
 
-            loop do 
+            loop do
                 if @new_cards
-                    @new_cards = false 
+                    @new_cards = false
                     equip()
-                else 
+                else
                     output_abilities()
 
                     menu = []
@@ -226,16 +226,16 @@ module Klank
                         menu << ["S", {"DESC" => "Shop in the market"}]
                     end
 
-                    if @teleport > 0 
+                    if @teleport > 0
                         menu << ["P", {"DESC" => "Teleport"}]
-                    end
-
-                    if ((@move > 0) and !@frozen) or (@teleport > 0)
-                        menu << ["V", {"DESC" => "View the map"}]
                     end
 
                     if @attack > 1
                         menu << ["G", {"DESC" => "Kill the goblin", "COST" => 2, "BENEFIT" => "COINS: 1"}]
+                    end
+
+                    if menu.length > 0
+                        menu << ["V", {"DESC" => "View the map"}]
                     end
 
                     if @hand.count == 0
@@ -243,7 +243,7 @@ module Klank
                     end
 
                     option = menu("ACTION LIST", menu)
-                    
+
                     case option
                     when "E"
                         equip()
@@ -303,7 +303,7 @@ module Klank
                 @game.broadcast("#{@name} can't take damage he is already dead!")
             else
                 @health -= 1
-                if direct 
+                if direct
                     @cubes -= 1
                 end
                 if dead?()
@@ -333,13 +333,13 @@ module Klank
             elsif dead?()
                 @game.broadcast("#{@name} can't add clank he is already dead!")
             elsif count > 0
-                actual = [@cubes, count].min 
-                @cubes -= actual 
+                actual = [@cubes, count].min
+                @cubes -= actual
                 @game.dragon.add(@index, actual)
                 swagger = @played.select { |c| c.name == "Swagger" }.count
                 if swagger != 0
                     @game.broadcast("#{@name} gained #{swagger} skill because of their Swagger!")
-                    @skill += swagger 
+                    @skill += swagger
                 end
             elsif count < 0
                 @clank_remove += count
@@ -374,7 +374,7 @@ module Klank
                 else
                     output("Could not trash a #{card}!")
                 end
-            end 
+            end
 
             card != ""
         end
@@ -404,7 +404,7 @@ module Klank
         end
 
         def collect_coins(count)
-            @coins += count 
+            @coins += count
 
             extra = @played.select { |c| c.name == "Search" }.count
             if extra != 0
@@ -435,18 +435,18 @@ module Klank
             }
         end
 
-        private 
+        private
 
         def output_abilities()
             ability = {}
 
             if @skill != 0
                 ability["SKILL"] = @skill
-            end 
+            end
 
             if @move != 0
                 ability["MOVE"] = @move
-            end 
+            end
 
             if @attack != 0
                 ability["ATTACK"] = @attack
@@ -480,7 +480,7 @@ module Klank
                 play = []
 
                 if c == "A"
-                    play = @hand 
+                    play = @hand
                     @hand = []
                 elsif c == "N"
                     break
@@ -510,7 +510,7 @@ module Klank
         end
 
         def play()
-            loop do 
+            loop do
                 items = []
                 lookup = []
                 @item.each_with_index do |item, i|
@@ -525,10 +525,10 @@ module Klank
                     if @item[lookup[i.to_i]].play(self)
                         @item.delete_at(lookup[i.to_i])
                         break if (@item.count == 0)
-                    else 
+                    else
                         output("Item not played!")
                     end
-                else 
+                else
                     break
                 end
             end

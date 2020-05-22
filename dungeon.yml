@@ -167,7 +167,7 @@
   cost: 3
   points: 1
   acquire:
-    heal: 1 
+    heal: 1
   equip:
     skill: 2
     attack: 1
@@ -195,9 +195,9 @@
   count: 1
   type: :gem
   cost: 5
-  depths: true 
+  depths: true
   dragon: true
-  special: Worth 10 points if you have a mastery token 
+  special: Worth 10 points if you have a mastery token
   acquire:
     clank: 2
   equip:
@@ -241,7 +241,7 @@
 
 - name: Emerald
   count: 2
-  type: :gem 
+  type: :gem
   cost: 5
   points: 5
   dragon: true
@@ -254,7 +254,7 @@
   count: 1
   cost: 6
   points: 2
-  special: Ignore monsters and crystal caves 
+  special: Ignore monsters and crystal caves
   equip:
     move: 2
 
@@ -275,7 +275,7 @@
   points: 1
   equip:
     clank: 1
-    teleport: 1 
+    teleport: 1
 
 - name: Kobold Merchant
   count: 1
@@ -318,7 +318,7 @@
   equip:
     clank: 3
     draw: 3
-  
+
 - name: Move Silently
   count: 2
   cost: 3
@@ -336,37 +336,37 @@
 
 - name: Rebel Captain
   count: 1
-  type: :companion 
+  type: :companion
   cost: 3
   points: 1
-  special: Draw a card with another companion 
+  special: Draw a card with another companion
   equip:
     skill: 2
 
 - name: Rebel Miner
   count: 1
-  type: :companion 
+  type: :companion
   cost: 2
-  points: 1 
-  special: Draw a card with another companion 
+  points: 1
+  special: Draw a card with another companion
   equip:
     coins: 2
 
 - name: Rebel Scout
   count: 1
-  type: :companion 
+  type: :companion
   cost: 3
   points: 1
-  special: Draw a card with another companion 
+  special: Draw a card with another companion
   equip:
     move: 2
 
 - name: Rebel Soldier
   count: 1
-  type: :companion 
+  type: :companion
   cost: 2
   points: 1
-  special: Draw a card with another companion 
+  special: Draw a card with another companion
   equip:
     attack: 2
 
@@ -396,7 +396,7 @@
   count: 1
   cost: 3
   points: 3
-  equip:  
+  equip:
     skill: 3
     clank: 3
 
@@ -427,9 +427,9 @@
     attack: 2
     clank: 1
 
-- name: Sleight of Hands
+- name: Sleight of Hand
   count: 2
-  cost: 2 
+  cost: 2
   special: Discard a card to draw two cards
 
 - name: Sneak
