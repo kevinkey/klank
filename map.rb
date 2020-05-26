@@ -36,27 +36,27 @@ module Klank
             @market = []
 
             YAML.load(File.read("major.yml")).each do |i|
-                (i["count"] || 1).times do 
+                (i["count"] || 1).times do
                     @major << Item.new(game, i)
                 end
             end
 
             YAML.load(File.read("minor.yml")).each do |i|
-                (i["count"] || 1).times do 
+                (i["count"] || 1).times do
                     @minor << Item.new(game, i)
                 end
             end
 
             YAML.load(File.read("market.yml")).each do |i|
-                (i["count"] || 1).times do 
+                (i["count"] || 1).times do
                     @market << Item.new(game, i)
                 end
             end
 
-        end 
+        end
 
         def move(player)
-            loop do 
+            loop do
                 player.output("\n#{Klank.table([{"MOVE" => player.move, "ATTACK" => player.attack}])}")
 
                 paths_out = get_paths_out(player.room_num)
@@ -77,23 +77,23 @@ module Klank
                     elsif (room_num <= 1) and !player.has_artifact?()
                         player.output("No leaving without an artifact!")
                     else
-                        if (attack > 0) 
+                        if (attack > 0)
                             if player.has_played?("Flying Carpet")
                                 @game.broadcast("#{player.name} flew by the monster(s) on their Flying Carpet!")
                             elsif player.attack > 0
                                 max_kill = [player.attack, attack].min
                                 kill = player.input_num("You encounter #{attack} monster(s), enter number to kill", 0..max_kill)
                                 @game.broadcast("#{player.name} killed #{kill} monster(s) and took #{(attack - kill)} damage!")
-                                player.attack -= kill 
-                                (attack - kill).times do 
+                                player.attack -= kill
+                                (attack - kill).times do
                                     player.damage(true)
                                 end
-                            else 
-                                attack.times do 
+                            else
+                                attack.times do
                                     player.damage(true)
                                 end
                                 @game.broadcast("#{player.name} took #{attack} damage!")
-                            end                            
+                            end
                         end
 
                         break if player.dead?()
@@ -104,7 +104,7 @@ module Klank
                         enter_room(player, room_num)
                         break if (player.move == 0) or player.frozen
                     end
-                else 
+                else
                     break
                 end
 
@@ -113,7 +113,7 @@ module Klank
         end
 
         def teleport(player)
-            loop do 
+            loop do
                 player.output("\n#{Klank.table([{"TELEPORT" => player.teleport}])}")
 
                 paths = get_paths(player.room_num)
@@ -184,7 +184,7 @@ module Klank
                 @game.broadcast("#{player.name} took a #{item.name} from room #{room_num}")
                 item.gain(player)
             end
-            type
+            (option != "N")
         end
 
         def market?(player)
@@ -192,7 +192,7 @@ module Klank
         end
 
         def shop(player)
-            loop do 
+            loop do
                 player.output("\n#{Klank.table([{"COINS" => player.coins}])}")
 
                 options = []
@@ -218,14 +218,14 @@ module Klank
             player.room_num = room_num
 
             if room_num <= 1
-                player.mastery = true 
+                player.mastery = true
                 @game.broadcast("#{player.name} has left and collects a Mastery Token!")
                 @game.trigger_end(player)
             end
 
             if crystal_cave?(player) and !player.has_played?("Dead Run") and !player.has_played?("Flying Carpet")
                 @game.broadcast("#{player.name} has been frozen by the crystal cave!")
-                player.frozen = true 
+                player.frozen = true
             end
 
             if !crystal_cave?(player)
@@ -285,7 +285,7 @@ module Klank
             @map["paths"].each_key do |key|
                 if ((key =~ /^#{room_num}-(\d+)/) ||
                     ((key =~ /(\d+)-#{room_num}$/) && @map["paths"][key]["one-way"].nil?))
-                    paths_out << [$1, path_desc(key).merge(room_desc($1.to_i))] 
+                    paths_out << [$1, path_desc(key).merge(room_desc($1.to_i))]
                 end
             end
             paths_out

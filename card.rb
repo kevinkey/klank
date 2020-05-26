@@ -9,7 +9,7 @@ module Klank
         attr_reader :dragon
 
         def initialize(game, hash)
-            @game = game 
+            @game = game
 
             @name = hash["name"]
             @type = hash["type"] || ""
@@ -20,15 +20,15 @@ module Klank
             @dragon = hash.key?("dragon")
 
             @hash = hash
-        end 
+        end
 
         def player_cost(player)
             cost = 0
 
             if (@type == :gem) and player.has_played?("Gem Collector")
-                cost = @cost - 2 
-            else 
-                cost = @cost 
+                cost = @cost - 2
+            else
+                cost = @cost
             end
 
             cost
@@ -41,9 +41,9 @@ module Klank
                 total += @hash["points"].to_i
             end
 
-            case @name 
+            case @name
             when "Dragon's Eye"
-                if player.mastery 
+                if player.mastery
                     total += 10
                 end
             when "Dwarven Peddler"
@@ -57,8 +57,8 @@ module Klank
                 if player.has_item?("Monkey Idol")
                     things += 1
                 end
-                if things >= 2 
-                    total += 4 
+                if things >= 2
+                    total += 4
                 end
             when "The Duke"
                 total += (player.coins / 5)
@@ -70,7 +70,7 @@ module Klank
         end
 
         def arrive()
-            case @name 
+            case @name
             when "Overlord", "Watcher"
                 @game.player.each do |p|
                     p.clank()
@@ -91,41 +91,41 @@ module Klank
             elsif player.skill >= cost
                 success = true
 
-                case @name 
+                case @name
                 when "Dragon Shrine"
                     menu = [
-                        ["C", {"DESC" => "+2 coins", "COINS" => player.coins}], 
+                        ["C", {"DESC" => "+2 coins", "COINS" => player.coins}],
                         ["T", {"DESC" => "Trash a card"}]
                     ]
-                    loop do 
+                    loop do
                         case player.menu("DRAGON SHRINE", menu, true)
-                        
+
                         when "C"
                             player.collect_coins(2)
                             break
                         when "T"
                             break if player.trash_card()
-                        else 
-                            success = false 
+                        else
+                            success = false
                             break
                         end
                     end
                 when "Shrine"
                     menu = [
-                        ["C", {"DESC" => "+1 coin", "CURRENT" => player.coins}], 
+                        ["C", {"DESC" => "+1 coin", "CURRENT" => player.coins}],
                         ["H", {"DESC" => "+1 health", "CURRENT" => player.health}]
                     ]
                     case player.menu("SHRINE", menu, true)
                     when "C"
                         player.collect_coins(1)
-                    when "H" 
+                    when "H"
                         player.heal(1)
-                    else 
-                        success = false 
+                    else
+                        success = false
                     end
                 end
 
-                if success 
+                if success
                     player.skill -= cost
 
                     if @hash.key?("acquire")
@@ -150,13 +150,13 @@ module Klank
                 player.output("Must be in a crystal cave to defeat!")
             elsif player.attack >= @attack
                 success = true
-                
+
                 player.attack -= @attack
 
                 if @name == "Watcher"
                     @game.broadcast("All other players +1 clank")
                     @game.player.each do |p|
-                        if p.index != player.index 
+                        if p.index != player.index
                             p.clank(1)
                         end
                     end
@@ -173,12 +173,12 @@ module Klank
         end
 
         def equip(player)
-            case @name 
+            case @name
             when "Apothecary"
                 if player.discard_card()
                     menu = [
-                        ["A", {"DESC" => "+3 attack", "CURRENT" => player.attack}], 
-                        ["C", {"DESC" => "+2 coins", "CURRENT" => player.coins}], 
+                        ["A", {"DESC" => "+3 attack", "CURRENT" => player.attack}],
+                        ["C", {"DESC" => "+2 coins", "CURRENT" => player.coins}],
                         ["H", {"DESC" => "+1 health", "CURRENT" => player.health}]
                     ]
                     case player.menu("APOTHECARY", menu)
@@ -207,22 +207,22 @@ module Klank
                 if player.menu("MISTER WHISKERS", menu) == "D"
                     player.reclaim_clank()
                     @game.dragon.attack()
-                else 
+                else
                     player.clank(-2)
                     @game.broadcast("#{player.name} gained -2 clank from Mister Whiskers!")
                 end
             when "Rebel Captain", "Rebel Miner", "Rebel Scout", "Rebel Soldier"
                 if player.played.any? { |c| (c.type == :companion) and (c.name != @name) }
                     player.draw(1)
-                end 
-            when "Sleight of Hands"
+                end
+            when "Sleight of Hand"
                 if player.discard_card()
                     player.draw(2)
                 end
             when "Tattle"
                 @game.broadcast("All other players +1 clank")
                 @game.player.each do |p|
-                    if p.index != player.index 
+                    if p.index != player.index
                         p.clank(1)
                     end
                 end
@@ -245,7 +245,7 @@ module Klank
                     menu = [["C", "1 coin"], ["T", "7 coins for #{[2, remaining].min} Tomes"]]
                     if player.menu("UNDERWORLD DEALING", menu) == "C"
                         player.collect_coins(1)
-                    else 
+                    else
                         player.coins -= 7
                         player.deck.discard(@game.reserve[:t].draw([2, remaining].min))
                         @game.broadcast("Through some Underworld Dealing, #{player.name} gained +#{[2, remaining].min} Tomes!")
@@ -256,7 +256,7 @@ module Klank
                     player.teleport += 1
                 end
             when "Wand of Wind"
-                loop do 
+                loop do
                     menu = [["T", "Teleport to an adjacent room"], ["S", "Take a secret from an adjacent room"]]
                     if player.menu("WAND OF WIND", menu) == "T"
                         player.teleport += 1
@@ -276,28 +276,28 @@ module Klank
             desc = {"NAME" => @name, "TYPE" => @type.to_s.upcase}
 
             if @hash.key?("equip")
-                if @hash["equip"].key?("skill") 
+                if @hash["equip"].key?("skill")
                     desc["SKILL"] = @hash["equip"]["skill"]
                 end
-                if @hash["equip"].key?("move") 
+                if @hash["equip"].key?("move")
                     desc["MOVE"] = @hash["equip"]["move"]
                 end
-                if @hash["equip"].key?("attack") 
+                if @hash["equip"].key?("attack")
                     desc["ATTACK"] = @hash["equip"]["attack"]
                 end
-                if @hash["equip"].key?("teleport") 
+                if @hash["equip"].key?("teleport")
                     desc["MISC"] = "TELEPORT"
                 end
-                if @hash["equip"].key?("coins") 
+                if @hash["equip"].key?("coins")
                     desc["COINS"] = @hash["equip"]["coins"]
                 end
-                if @hash["equip"].key?("draw") 
+                if @hash["equip"].key?("draw")
                     desc["DRAW"] = @hash["equip"]["draw"]
                 end
-                if @hash["equip"].key?("clank") 
+                if @hash["equip"].key?("clank")
                     desc["CLANK"] = @hash["equip"]["clank"]
                 end
-                if @hash["equip"].key?("heal") 
+                if @hash["equip"].key?("heal")
                     desc["HEAL"] = @hash["equip"]["heal"]
                 end
             end
@@ -314,11 +314,11 @@ module Klank
 
             if @hash.key?("cost")
                 cost = 0
-    
+
                 if (@type == :gem) and gem_collector
-                    cost = @cost - 2 
-                else 
-                    cost = @cost 
+                    cost = @cost - 2
+                else
+                    cost = @cost
                 end
 
                 desc["COST"] = cost
@@ -335,25 +335,25 @@ module Klank
             if @hash.key?("acquire")
                 acquire = []
 
-                if @hash["acquire"].key?("skill") 
+                if @hash["acquire"].key?("skill")
                     acquire << "SKILL: #{@hash["acquire"]["skill"]}"
                 end
-                if @hash["acquire"].key?("move") 
+                if @hash["acquire"].key?("move")
                     acquire << "MOVE: #{@hash["acquire"]["move"]}"
                 end
-                if @hash["acquire"].key?("attack") 
+                if @hash["acquire"].key?("attack")
                     acquire << "ATTACK: #{@hash["acquire"]["attack"]}"
                 end
-                if @hash["acquire"].key?("teleport") 
+                if @hash["acquire"].key?("teleport")
                     acquire << "TELEPORT"
                 end
-                if @hash["acquire"].key?("coins") 
+                if @hash["acquire"].key?("coins")
                     acquire << "COINS: #{@hash["acquire"]["coins"]}"
                 end
-                if @hash["acquire"].key?("clank") 
+                if @hash["acquire"].key?("clank")
                     acquire << "CLANK: #{@hash["acquire"]["clank"]}"
                 end
-                if @hash["acquire"].key?("heal") 
+                if @hash["acquire"].key?("heal")
                     acquire << "HEAL: #{@hash["acquire"]["heal"]}"
                 end
 
@@ -361,22 +361,22 @@ module Klank
             end
 
             if @hash.key?("defeat")
-                if @hash["defeat"].key?("skill") 
+                if @hash["defeat"].key?("skill")
                     desc["SKILL"] = @hash["defeat"]["skill"]
                 end
-                if @hash["defeat"].key?("move") 
+                if @hash["defeat"].key?("move")
                     desc["MOVE"] = @hash["defeat"]["move"]
                 end
-                if @hash["defeat"].key?("coins") 
+                if @hash["defeat"].key?("coins")
                     desc["COINS"] = @hash["defeat"]["coins"]
                 end
-                if @hash["defeat"].key?("draw") 
+                if @hash["defeat"].key?("draw")
                     desc["DRAW"] = @hash["defeat"]["draw"]
                 end
-                if @hash["defeat"].key?("clank") 
+                if @hash["defeat"].key?("clank")
                     desc["CLANK"] = @hash["defeat"]["clank"]
                 end
-                if @hash["defeat"].key?("heal") 
+                if @hash["defeat"].key?("heal")
                     desc["HEAL"] = @hash["defeat"]["heal"]
                 end
             end
@@ -397,28 +397,28 @@ module Klank
         end
 
         def abilities(player, hash)
-            if hash.key?("skill") 
+            if hash.key?("skill")
                 player.skill += hash["skill"]
             end
-            if hash.key?("move") 
+            if hash.key?("move")
                 player.move += hash["move"]
             end
-            if hash.key?("attack") 
+            if hash.key?("attack")
                 player.attack += hash["attack"]
             end
-            if hash.key?("teleport") 
+            if hash.key?("teleport")
                 player.teleport += hash["teleport"]
             end
-            if hash.key?("coins") 
+            if hash.key?("coins")
                 player.collect_coins(hash["coins"])
             end
-            if hash.key?("draw") 
+            if hash.key?("draw")
                 player.draw(hash["draw"])
             end
-            if hash.key?("clank") 
+            if hash.key?("clank")
                 player.clank(hash["clank"])
             end
-            if hash.key?("heal") 
+            if hash.key?("heal")
                 player.heal(hash["heal"])
             end
         end

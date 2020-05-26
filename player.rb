@@ -42,6 +42,7 @@ module Klank
                     end
                 elsif char =~ /(\w|\s)/
                     resp += char
+                    resp.strip!
                 end
             end
 
