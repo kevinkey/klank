@@ -135,7 +135,7 @@
   type: :companion
   cost: 2
   points: 1
-  special: 2 skill if you have a monkey idol
+  special: +2 skill if you have a monkey idol
   equip:
     draw: 1
 
@@ -197,7 +197,7 @@
   cost: 5
   depths: true
   dragon: true
-  special: Worth 10 points if you have a mastery token
+  special: +10pt with a mastery token
   acquire:
     clank: 2
   equip:
@@ -207,7 +207,7 @@
   count: 1
   type: :companion
   cost: 4
-  special: 4pts with 2 of chalice, dragon egg, or monkey idol
+  special: +4pts with 2 of chalice, dragon egg, or monkey idol
   equip:
     move: 1
     coins: 2
@@ -458,7 +458,7 @@
   count: 1
   type: :companion
   cost: 5
-  special: Worth 1pt for every 5 coins you have
+  special: +1pt for every 5 coins you have
   equip:
     skill: 2
     attack: 2
@@ -512,7 +512,7 @@
 - name: Underworld Dealing
   count: 1
   cost: 1
-  special: Choose +1 coin or spend 7 coins for 2 tomes
+  special: Choose +1 coin or -7 coins for +2 tomes
 
 - name: Wand of Recall
   count: 2
