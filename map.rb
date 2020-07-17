@@ -173,11 +173,11 @@ module Klank
             if option != "N"
                 room_num = option.to_i
                 if (@map["rooms"][room_num]["minor-secrets"] > 0)
-                    @map["rooms"][player.room_num]["minor-secrets"] -= 1
+                    @map["rooms"][room_num]["minor-secrets"] -= 1
                     @minor = Klank.randomize(@minor)
                     item = @minor.shift
                 else
-                    @map["rooms"][player.room_num]["major-secrets"] -= 1
+                    @map["rooms"][room_num]["major-secrets"] -= 1
                     @major = Klank.randomize(@major)
                     item = @major.shift
                 end
