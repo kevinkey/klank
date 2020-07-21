@@ -25,11 +25,14 @@ module Klank
             @stack.count
         end
 
-        def draw(num)
+        def draw(num, player = nil)
             hand = []
 
             num.times do 
                 if @stack.count == 0
+                    if player != nil
+                        player.output("Reshuffling your deck!")
+                    end
                     @stack = Klank.randomize(@pile)
                     @pile = []
                 end 
@@ -53,6 +56,14 @@ module Klank
 
         def all()
             @stack + @pile
+        end
+
+        def view_pile(player)
+            cards = []
+            @pile.each do |c|
+                cards << {"CARD" => c.name}
+            end
+            player.output("\nDISCARD PILE\n#{Klank.table(cards)}")
         end
     end
 end
