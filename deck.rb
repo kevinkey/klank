@@ -25,13 +25,13 @@ module Klank
             @stack.count
         end
 
-        def draw(num, player = nil)
+        def draw(num, player = nil, game = nil)
             hand = []
 
             num.times do 
                 if @stack.count == 0
                     if player != nil
-                        player.output("Reshuffling your deck!")
+                        game.broadcast("#{player.name} is reshuffling thier deck!")
                     end
                     @stack = Klank.randomize(@pile)
                     @pile = []

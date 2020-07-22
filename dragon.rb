@@ -89,7 +89,7 @@ module Klank
                 @bag.each do |c|
                     cubes << {"CUBE" => (c == "D" ? "Dragon" : "#{@game.player[c].name}")} 
                 end
-                @game.broadcast("\DRAGON BAG\n#{Klank.table(cubes)}")
+                @game.broadcast("\nDRAGON BAG\n#{Klank.table(cubes)}")
             end
         end
     end

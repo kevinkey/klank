@@ -167,7 +167,7 @@ module Klank
         end
 
         def draw(count)
-            cards = @deck.draw(count, self)
+            cards = @deck.draw(count, self, @game)
             @hand += cards
             @new_cards = true
         end
@@ -285,7 +285,7 @@ module Klank
                         collect_coins(1)
                         @attack -= 2
                     when "F"
-                        @game.view_players()
+                        @game.view_players(self)
                     when "B"
                         @deck.view_pile(self)
                     when "N"
