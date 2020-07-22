@@ -21,6 +21,7 @@ module Klank
         attr_accessor :frozen
         attr_accessor :artifact
         attr_accessor :health
+        attr_accessor :clank_remove
 
         def initialize(client)
             @client = client

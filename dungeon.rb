@@ -56,7 +56,7 @@ module Klank
             card = nil
 
             loop do                 
-                player.output("\n" + Klank.table([{"SKILL" => player.skill, "ATTACK" => player.attack}]))
+                player.output("\n" + Klank.table([{"SKILL" => player.skill, "ATTACK" => player.attack, "CLANK" => player.clank_remove}]))
 
                 c = menu("BUY OR DEFEAT A CARD", player)
                 break if c == "N"

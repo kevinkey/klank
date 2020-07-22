@@ -70,6 +70,7 @@ module Klank
                     sleep(1)
                 else 
                     @game.broadcast("The dragon bag is empty!")
+                    break
                 end
             end
         end
