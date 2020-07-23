@@ -5,8 +5,11 @@ module Klank
   require_relative "player.rb"
 
   games = []
+  port = 8080
+  port = ARGV[0] if ARGV.length == 1
 
-  server = TCPServer.new 8080
+  server = TCPServer.new port
+  puts "Server is running on port #{port}..."
   loop do
     Thread.start(server.accept) do |client|
       sleep 0.1
@@ -23,7 +26,7 @@ module Klank
         menu << ["N", {"Name" => "Create a new game"}]
         option = player.menu("GAME LIST", menu)
 
-        case option 
+        case option
         when "N"
           player.output("\nCREATE A GAME")
           name = player.input("Name")
@@ -32,7 +35,7 @@ module Klank
           player.output("\nCreated #{name}, waiting for players...")
 
           game = Game.new(name, num, map)
-          games << game 
+          games << game
           game.join(player)
         else
           player.output("\nJoining #{games[option.to_i].name}...")
