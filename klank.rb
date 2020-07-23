@@ -6,7 +6,7 @@ module Klank
 
   games = []
 
-  server = TCPServer.new 2000
+  server = TCPServer.new 8080
   loop do
     Thread.start(server.accept) do |client|
       sleep 0.1

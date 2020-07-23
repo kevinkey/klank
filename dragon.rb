@@ -70,6 +70,7 @@ module Klank
                     sleep(1)
                 else 
                     @game.broadcast("The dragon bag is empty!")
+                    break
                 end
             end
         end
@@ -80,6 +81,16 @@ module Klank
                 @bag << "D"
             end
             @dragon_cubes -= actual
+        end
+
+        def view_bag()
+            if @bag.length > 0
+                cubes = []
+                @bag.each do |c|
+                    cubes << {"CUBE" => (c == "D" ? "Dragon" : "#{@game.player[c].name}")} 
+                end
+                @game.broadcast("\nDRAGON BAG\n#{Klank.table(cubes)}")
+            end
         end
     end
 end

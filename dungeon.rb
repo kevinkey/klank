@@ -24,7 +24,7 @@ module Klank
         end
 
         def replenish()
-            count = COUNT - @hand.count
+            count = [COUNT - @hand.count, @deck.stack.count].min
 
             if count > 0
                 @game.broadcast("\nReplenishing the dungeon...")
@@ -56,7 +56,7 @@ module Klank
             card = nil
 
             loop do                 
-                player.output("\n" + Klank.table([{"SKILL" => player.skill, "ATTACK" => player.attack}]))
+                player.output("\n" + Klank.table([{"SKILL" => player.skill, "ATTACK" => player.attack, "CLANK" => player.clank_remove}]))
 
                 c = menu("BUY OR DEFEAT A CARD", player)
                 break if c == "N"
@@ -83,7 +83,11 @@ module Klank
         end
 
         def afford?(player)
-            (player.skill >= @hand.map { |c| c.player_cost(player) }.min) or (player.attack >= @hand.map { |c| c.attack }.min)
+            result = @hand.count > 0
+            if result
+                result = ((player.skill >= @hand.map { |c| c.player_cost(player) }.min) or (player.attack >= @hand.map { |c| c.attack }.min))
+            end
+            result
         end
 
         def replace_card(player)

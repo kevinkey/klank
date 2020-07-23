@@ -21,6 +21,7 @@ module Klank
         attr_accessor :frozen
         attr_accessor :artifact
         attr_accessor :health
+        attr_accessor :clank_remove
 
         def initialize(client)
             @client = client
@@ -166,7 +167,7 @@ module Klank
         end
 
         def draw(count)
-            cards = @deck.draw(count)
+            cards = @deck.draw(count, self, @game)
             @hand += cards
             @new_cards = true
         end
@@ -237,6 +238,10 @@ module Klank
 
                     if menu.length > 0
                         menu << ["V", {"DESC" => "View the map"}]
+                        menu << ["F", {"DESC" => "View the players"}]
+                        if @deck.pile.length > 0
+                            menu << ["B", {"DESC" => "View discard pile"}]
+                        end
                     end
 
                     if @hand.count == 0
@@ -279,6 +284,10 @@ module Klank
                         @game.broadcast("#{@name} killed the Goblin!")
                         collect_coins(1)
                         @attack -= 2
+                    when "F"
+                        @game.view_players(self)
+                    when "B"
+                        @deck.view_pile(self)
                     when "N"
                         if (menu.count <= 1) or ("Y" == input("Are you sure? (Y: yes)").upcase)
                             break

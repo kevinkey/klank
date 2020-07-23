@@ -70,6 +70,18 @@ module Klank
             end
         end
 
+        def view_players(player = nil)
+            status = []
+            @player.each do |p|
+                status << p.status 
+            end
+            if player == nil
+                broadcast("\nPLAYERS\n#{Klank.table(status)}")
+            else
+                player.output("\nPLAYERS\n#{Klank.table(status)}")
+            end
+        end
+
         private 
 
         def start()
@@ -104,11 +116,7 @@ module Klank
 
                         break if game_over?()
 
-                        status = []
-                        @player.each do |p|
-                            status << p.status 
-                        end
-                        broadcast("\nPLAYERS\n#{Klank.table(status)}")
+                        view_players()
 
                         if @trigger == p.index
                             @escalation += 1
@@ -142,6 +150,7 @@ module Klank
             broadcast("GAME OVER!")
 
             scores()
+            @dragon.view_bag
 
             @shutdown = true
         end
