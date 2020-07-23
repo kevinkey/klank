@@ -85,7 +85,7 @@ module Klank
         def afford?(player)
             result = @hand.count > 0
             if result
-                result = (player.skill >= @hand.map { |c| c.player_cost(player) }.min) || (player.attack >= @hand.map { |c| c.attack }.min)
+                result = ((player.skill >= @hand.map { |c| c.player_cost(player) }.min) or (player.attack >= @hand.map { |c| c.attack }.min))
             end
             result
         end
