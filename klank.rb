@@ -38,8 +38,14 @@ module Klank
           games << game
           game.join(player)
         else
-          player.output("\nJoining #{games[option.to_i].name}...")
-          games[option.to_i].join(player)
+          case player.menu("PLAY OR SPECTATE", [["P", {"DESC" => "Play"}], ["S", {"DESC" => "Spectate"}]])
+          when "S"
+            player.output("\nJoining #{games[option.to_i].name} as spectator...")
+            games[option.to_i].spectate(player)
+          else
+            player.output("\nJoining #{games[option.to_i].name} as player...")
+            games[option.to_i].join(player)
+          end
         end
       end
 

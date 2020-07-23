@@ -24,18 +24,28 @@ module Klank
             @map_num = map
             @map = Map.new(self, map)
             @player = []
+            @spectator = []
 
-            @shutdown = false 
+            @shutdown = false
             @game_over = false
             @started = false
         end
 
-        def status 
+        def status
             {
-                "Name" => @name, 
-                "Map" => @map_num, 
+                "Name" => @name,
+                "Map" => @map_num,
                 "Players" => "#{@player.count} / #{@num}"
             }
+        end
+
+        def spectate(player)
+            @spectator << player
+
+            loop do
+                sleep(1.0)
+                break if @shutdown
+            end
         end
 
         def join(player)
@@ -47,18 +57,21 @@ module Klank
             player.output("#{@player.count}: #{player.name}")
             @player << player
 
-            if @player.count == @num 
+            if @player.count == @num
                 start()
-            else 
-                loop do 
+            else
+                loop do
                     sleep(1.0)
                     break if @shutdown
                 end
-            end          
+            end
         end
 
         def broadcast(msg)
             @player.each do |p|
+                p.output(msg)
+            end
+            @spectator.each do |p|
                 p.output(msg)
             end
         end
@@ -73,7 +86,7 @@ module Klank
         def view_players(player = nil)
             status = []
             @player.each do |p|
-                status << p.status 
+                status << p.status
             end
             if player == nil
                 broadcast("\nPLAYERS\n#{Klank.table(status)}")
@@ -82,7 +95,7 @@ module Klank
             end
         end
 
-        private 
+        private
 
         def start()
             @dragon = Dragon.new(self)
@@ -109,7 +122,7 @@ module Klank
                 t: Deck.new(self, "tome.yml"),
             }
 
-            loop do 
+            loop do
                 @player.each do |p|
                     begin
                         @dungeon.replenish()
@@ -121,8 +134,8 @@ module Klank
                         if @trigger == p.index
                             @escalation += 1
 
-                            if @escalation > 3 
-                                @game_over = true 
+                            if @escalation > 3
+                                @game_over = true
                             else
                                 broadcast("\n#{p.name} moves to escalation level #{@escalation}!")
                                 @dragon.attack()
@@ -130,7 +143,7 @@ module Klank
                         elsif p.dead?()
                             broadcast("\n#{p.name} is dead!")
                         elsif p.mastery
-                            broadcast("\n#{p.name} has left with an artifact!")                        
+                            broadcast("\n#{p.name} has left with an artifact!")
                         else
                             broadcast("\nStarting #{p.name}'s turn...")
                             p.turn()
@@ -156,14 +169,14 @@ module Klank
         end
 
         def game_over?()
-            all_done = true 
+            all_done = true
             @player.each do |p|
-                if !p.dead?() and !p.mastery 
-                    all_done = false 
-                    break 
-                end 
+                if !p.dead?() and !p.mastery
+                    all_done = false
+                    break
+                end
             end
-            
+
             @game_over or all_done
         end
 
@@ -177,4 +190,3 @@ module Klank
     end
 end
 
-    
