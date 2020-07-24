@@ -122,10 +122,8 @@ module Klank
             @deck.all.each do |card|
                 points = card.points(self)
 
-                if points != 0
-                    total += points
-                    table << {"POINTS" => points, "DESCRIPTION" => card.name}
-                end
+                total += points
+                table << {"POINTS" => points, "DESCRIPTION" => card.name, "PLAY COUNT" => card.play_count}
             end
 
             @item.each do |i|
