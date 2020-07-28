@@ -86,7 +86,7 @@ module Klank
         def view_bag()
             if @bag.length > 0
                 cubes = []
-                @bag.each do |c|
+                @bag.sort.each do |c|
                     cubes << {"CUBE" => (c == "D" ? "Dragon" : "#{@game.player[c].name}")} 
                 end
                 @game.broadcast("\nDRAGON BAG\n#{Klank.table(cubes)}")

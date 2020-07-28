@@ -119,14 +119,14 @@ module Klank
             total = @coins
             table << {"POINTS" => @coins, "DESCRIPTION" => "Coins"}
 
-            @deck.all.each do |card|
+            @deck.all.sort_by {|c| c.name }.each do |card|
                 points = card.points(self)
 
                 total += points
                 table << {"POINTS" => points, "DESCRIPTION" => card.name, "PLAY COUNT" => card.play_count}
             end
 
-            @item.each do |i|
+            @item.sort_by {|i| i.name }.each do |i|
                 points = i.points()
 
                 if points != 0
