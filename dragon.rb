@@ -86,9 +86,10 @@ module Klank
         def view_bag()
             if @bag.length > 0
                 cubes = []
-                @bag.sort_by {|c| c.to_s }.each do |c|
-                    cubes << {"CUBE" => (c == "D" ? "Dragon" : "#{@game.player[c].name}")} 
+                @game.player.each_with_index do |p, i|
+                    cubes << {"PLAYER" => p.name, "COUNT" => @bag.select { |c| c.to_s == i.to_s }.count}
                 end
+                cubes << {"PLAYER" => "Dragon", "COUNT" => @bag.select { |c| c.to_s == "D" }.count}
                 @game.broadcast("\nDRAGON BAG\n#{Klank.table(cubes)}")
             end
         end

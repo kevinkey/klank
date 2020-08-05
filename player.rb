@@ -375,10 +375,12 @@ module Klank
             end
 
             if card != ""
-                if @played.delete_at(@played.index { |c| c.name == card } || @played.length)
+                if @played.find { |c| c.name == card } != nil
                     @game.broadcast("#{@name} trashed #{card} from their play area!")
-                elsif @deck.pile.delete_at(@deck.pile.index { |c| c.name == card } || @deck.pile.length)
+                    @deck.trashed << @played.delete_at(@played.index { |c| c.name == card } || @played.length)
+                elsif @deck.pile.find { |c| c.name == card } != nil
                     @game.broadcast("#{@name} trashed #{card} from their discard pile!")
+                    @deck.trashed << @deck.pile.delete_at(@deck.pile.index { |c| c.name == card } || @deck.pile.length)
                 else
                     output("Could not trash a #{card}!")
                 end
@@ -438,7 +440,7 @@ module Klank
                 "ARTIFACT" => @artifact.join(", "),
                 "ITEM" => @item.map { |i| i.symbol }.join(""),
                 "ROOM" => @room_num,
-                "DECK" => "#{@deck.stack.count}/#{@deck.all.count}",
+                "DECK" => "#{@deck.stack.count}/#{@deck.active_cards.count}",
                 "SCORE" => score()
             }
         end
