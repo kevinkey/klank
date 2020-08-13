@@ -8,10 +8,12 @@ module Klank
         
         attr_accessor :stack
         attr_accessor :pile
+        attr_accessor :trashed
 
         def initialize(game, yml)
             @stack = []
             @pile = []
+            @trashed = []
 
             YAML.load(File.read(yml)).each do |c|
                 (c["count"] || 1).times do 
@@ -54,8 +56,12 @@ module Klank
             @stack = Klank.randomize(@stack)
         end
 
-        def all()
+        def active_cards()
             @stack + @pile
+        end
+
+        def all()
+            @stack + @pile + @trashed
         end
 
         def view_pile(player)

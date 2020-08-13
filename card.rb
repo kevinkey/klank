@@ -7,6 +7,7 @@ module Klank
         attr_reader :attack
         attr_reader :danger
         attr_reader :dragon
+        attr_reader :play_count
 
         def initialize(game, hash)
             @game = game
@@ -18,6 +19,7 @@ module Klank
             @special = hash["special"] || ""
             @danger = hash.key?("danger")
             @dragon = hash.key?("dragon")
+            @play_count = 0
 
             @hash = hash
         end
@@ -63,7 +65,7 @@ module Klank
             when "The Duke"
                 total += (player.coins / 5)
             when "Wizard"
-                total += (player.deck.all.select { |c| c.name == "Tome" }.count * 2)
+                total += (player.deck.active_cards.select { |c| c.name == "Tome" }.count * 2)
             end
 
             total
@@ -270,6 +272,8 @@ module Klank
             if @hash.key?("equip")
                 abilities(player, @hash["equip"])
             end
+
+            @play_count += 1
         end
 
         def play_desc()

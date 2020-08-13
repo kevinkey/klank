@@ -119,16 +119,14 @@ module Klank
             total = @coins
             table << {"POINTS" => @coins, "DESCRIPTION" => "Coins"}
 
-            @deck.all.each do |card|
+            @deck.all.sort_by {|c| c.name }.each do |card|
                 points = card.points(self)
 
-                if points != 0
-                    total += points
-                    table << {"POINTS" => points, "DESCRIPTION" => card.name}
-                end
+                total += points
+                table << {"POINTS" => points, "DESCRIPTION" => card.name, "PLAY COUNT" => card.play_count}
             end
 
-            @item.each do |i|
+            @item.sort_by {|i| i.name }.each do |i|
                 points = i.points()
 
                 if points != 0
@@ -377,10 +375,12 @@ module Klank
             end
 
             if card != ""
-                if @played.delete_at(@played.index { |c| c.name == card } || @played.length)
+                if @played.find { |c| c.name == card } != nil
                     @game.broadcast("#{@name} trashed #{card} from their play area!")
-                elsif @deck.pile.delete_at(@deck.pile.index { |c| c.name == card } || @deck.pile.length)
+                    @deck.trashed << @played.delete_at(@played.index { |c| c.name == card } || @played.length)
+                elsif @deck.pile.find { |c| c.name == card } != nil
                     @game.broadcast("#{@name} trashed #{card} from their discard pile!")
+                    @deck.trashed << @deck.pile.delete_at(@deck.pile.index { |c| c.name == card } || @deck.pile.length)
                 else
                     output("Could not trash a #{card}!")
                 end
@@ -440,7 +440,7 @@ module Klank
                 "ARTIFACT" => @artifact.join(", "),
                 "ITEM" => @item.map { |i| i.symbol }.join(""),
                 "ROOM" => @room_num,
-                "DECK" => "#{@deck.stack.count}/#{@deck.all.count}",
+                "DECK" => "#{@deck.stack.count}/#{@deck.active_cards.count}",
                 "SCORE" => score()
             }
         end
