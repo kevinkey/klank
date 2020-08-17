@@ -183,7 +183,7 @@ module Klank
         def scores()
             msg = "Scores\n"
             @player.sort_by { |p| p.score() }.reverse.each_with_index do |p, i|
-                msg += "#{p.name}: #{p.score(true)} (#{p.room_num})\n"
+                msg += "#{p.name}: #{p.score(true)} (Room ##{p.room_num})\n"
             end
             broadcast(msg)
         end
