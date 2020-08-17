@@ -378,9 +378,11 @@ module Klank
                 if @played.find { |c| c.name == card } != nil
                     @game.broadcast("#{@name} trashed #{card} from their play area!")
                     @deck.trashed << @played.delete_at(@played.index { |c| c.name == card } || @played.length)
+                    @deck.trashed.last.name = "[" + @deck.trashed.last.name + "]"
                 elsif @deck.pile.find { |c| c.name == card } != nil
                     @game.broadcast("#{@name} trashed #{card} from their discard pile!")
                     @deck.trashed << @deck.pile.delete_at(@deck.pile.index { |c| c.name == card } || @deck.pile.length)
+                    @deck.trashed.last.name = "[" + @deck.trashed.last.name + "]"
                 else
                     output("Could not trash a #{card}!")
                 end
@@ -419,9 +421,9 @@ module Klank
             extra = @played.select { |c| c.name == "Search" }.count
             if extra != 0
                 @coins += extra
-                @game.broadcast("#{@name} collects #{count} coin(s) +#{extra} for Search!")
+                @game.broadcast("#{@name} collects #{count} coin(s) +#{extra} for Search and has #{@coins} coin(s) total!")
             else
-                @game.broadcast("#{@name} collects #{count} coin(s)!")
+                @game.broadcast("#{@name} collects #{count} coin(s) and has #{@coins} coin(s) total!")
             end
         end
 

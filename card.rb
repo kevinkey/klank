@@ -1,7 +1,7 @@
 module Klank
     class Card
 
-        attr_reader :name
+        attr_accessor :name
         attr_reader :type
         attr_reader :cost
         attr_reader :attack
