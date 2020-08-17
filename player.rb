@@ -120,10 +120,17 @@ module Klank
             table << {"POINTS" => @coins, "DESCRIPTION" => "Coins"}
 
             @deck.all.sort_by {|c| c.name }.each do |card|
+                card_name = ""
+                if (@deck.trashed.find {|c| c == card} != nil)
+                    card_name = "[" + card.name + "]"
+                else
+                    card_name = card.name
+                end
+
                 points = card.points(self)
 
                 total += points
-                table << {"POINTS" => points, "DESCRIPTION" => card.name, "PLAY COUNT" => card.play_count}
+                table << {"POINTS" => points, "DESCRIPTION" => card_name, "PLAY COUNT" => card.play_count}
             end
 
             @item.sort_by {|i| i.name }.each do |i|
@@ -378,11 +385,9 @@ module Klank
                 if @played.find { |c| c.name == card } != nil
                     @game.broadcast("#{@name} trashed #{card} from their play area!")
                     @deck.trashed << @played.delete_at(@played.index { |c| c.name == card } || @played.length)
-                    @deck.trashed.last.name = "[" + @deck.trashed.last.name + "]"
                 elsif @deck.pile.find { |c| c.name == card } != nil
                     @game.broadcast("#{@name} trashed #{card} from their discard pile!")
                     @deck.trashed << @deck.pile.delete_at(@deck.pile.index { |c| c.name == card } || @deck.pile.length)
-                    @deck.trashed.last.name = "[" + @deck.trashed.last.name + "]"
                 else
                     output("Could not trash a #{card}!")
                 end
