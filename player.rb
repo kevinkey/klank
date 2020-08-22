@@ -23,6 +23,20 @@ module Klank
         attr_accessor :health
         attr_accessor :clank_remove
 
+        attr_accessor :num_cards_played
+        attr_accessor :num_caves_visited
+        attr_accessor :num_rooms_visited
+        attr_accessor :num_distance_moved
+        attr_accessor :num_monsters_killed
+        attr_accessor :num_damage_dealt
+        attr_accessor :num_damage_taken
+        attr_accessor :num_damage_healed
+        attr_accessor :num_coins_collected
+        attr_accessor :num_clank_added
+        attr_accessor :num_clank_removed
+        attr_accessor :num_major_secrets_collected
+        attr_accessor :num_minor_secrets_collected
+
         def initialize(client)
             @client = client
 
@@ -111,6 +125,20 @@ module Klank
             @played = []
             @room_num = 1
             @skill = 0
+
+            @num_cards_played = 0
+            @num_caves_visited = 0
+            @num_rooms_visited = 0
+            @num_distance_moved = 0
+            @num_monsters_killed = 0
+            @num_damage_dealt = 0
+            @num_damage_taken = 0
+            @num_damage_healed = 0
+            @num_coins_collected = 0
+            @num_clank_added = 0
+            @num_clank_removed = 0
+            @num_major_secrets_collected = 0
+            @num_minor_secrets_collected = 0
         end
 
         def score(disp_breakdown = false)
@@ -318,6 +346,7 @@ module Klank
                 @game.broadcast("#{@name} can't take damage he is already dead!")
             else
                 @health -= 1
+                @num_damage_taken += 1
                 if direct
                     @cubes -= 1
                 end
@@ -331,6 +360,7 @@ module Klank
         def heal(count = 1)
             if count > 0
                 actual = [FULL_HEALTH - @health, count].min
+                @num_damage_healed += 1
 
                 @cubes += actual
                 @health = [FULL_HEALTH, @health + count].min
@@ -351,6 +381,7 @@ module Klank
                 actual = [@cubes, count].min
                 @cubes -= actual
                 @game.dragon.add(@index, actual)
+                @num_clank_added += actual
                 swagger = @played.select { |c| c.name == "Swagger" }.count * count
                 if swagger != 0
                     @game.broadcast("#{@name} gained #{swagger} skill because of their Swagger!")
@@ -365,6 +396,7 @@ module Klank
             actual = @game.dragon.remove(@index, -1 * @clank_remove)
             @clank_remove += actual
             @cubes += actual
+            @num_clank_removed += actual
         end
 
         def has_artifact?()
@@ -422,10 +454,12 @@ module Klank
 
         def collect_coins(count)
             @coins += count
+            @num_coins_collected += count
 
             extra = @played.select { |c| c.name == "Search" }.count
             if extra != 0
                 @coins += extra
+                @num_coins_collected += extra
                 @game.broadcast("#{@name} collects #{count} coin(s) +#{extra} for Search and has #{@coins} coin(s) total!")
             else
                 @game.broadcast("#{@name} collects #{count} coin(s) and has #{@coins} coin(s) total!")
@@ -513,6 +547,7 @@ module Klank
                     play.each do |card|
                         card.equip(self)
                         msg << "#{card.name}"
+                        @num_cards_played += 1
                     end
 
                     @game.broadcast("#{@name} played #{msg.join(", ")}!")
@@ -549,6 +584,25 @@ module Klank
                     break
                 end
             end
+        end
+
+        def stats()
+            {
+                "NAME" => @name,
+                "CARDS PLAYED" => @num_cards_played,
+                "DISTANCE MOVED" => @num_distance_moved,
+                "ROOMS VISITED" => @num_rooms_visited,
+                "CAVES VISITED" => @num_caves_visited,
+                "DAMAGE DEALT" => @num_damage_dealt,
+                "MONSTER KILLED" => @num_monsters_killed,
+                "DAMAGE TAKEN" => @num_damage_taken,
+                "DAMAGE HEALED" => @num_damage_healed,
+                "CLANK ADDED" => @num_clank_added,
+                "CLANK REMOVED" => @num_clank_removed,
+                "COINS COLLECTED" => @num_coins_collected,
+                "MAJOR SECRETS COLLECTED" => @num_major_secrets_collected,
+                "MINOR SECRETS COLLECTED" => @num_minor_secrets_collected,
+            }
         end
     end
 end

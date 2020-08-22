@@ -163,6 +163,7 @@ module Klank
             broadcast("GAME OVER!")
 
             scores()
+            stats()
             @dragon.view_bag
 
             @shutdown = true
@@ -186,6 +187,18 @@ module Klank
                 msg += "#{p.name}: #{p.score(true)} (Room ##{p.room_num})\n"
             end
             broadcast(msg)
+        end
+
+        def stats()
+            stats = []
+            @player.each do |p|
+                stats << p.stats
+            end
+            if player == nil
+                broadcast("\nSTATISTICS\n#{Klank.table(stats)}")
+            else
+                player.output("\nSTATISTICS\n#{Klank.table(stats)}")
+            end
         end
     end
 end
