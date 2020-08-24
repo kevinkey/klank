@@ -192,7 +192,7 @@ module Klank
         def stats()
             stats = []
             @player.each do |p|
-                stats << p.stats
+                stats += p.stats
             end
             if player == nil
                 broadcast("\nSTATISTICS\n#{Klank.table(stats)}")

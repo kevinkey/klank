@@ -486,6 +486,25 @@ module Klank
             }
         end
 
+        def stats()
+            stats = []
+            stats << {"STATISTIC" => "Cards played", @name => @num_cards_played}
+            stats << {"STATISTIC" => "Distance moved", @name => @num_distance_moved}
+            stats << {"STATISTIC" => "Rooms visited", @name => @num_rooms_visited}
+            stats << {"STATISTIC" => "Caves visited", @name => @num_caves_visited}
+            stats << {"STATISTIC" => "Damage dealt", @name => @num_damage_dealt}
+            stats << {"STATISTIC" => "Monsters killed", @name => @num_monsters_killed}
+            stats << {"STATISTIC" => "Damage taken", @name => @num_damage_taken}
+            stats << {"STATISTIC" => "Damage healed", @name => @num_damage_healed}
+            stats << {"STATISTIC" => "Clank added", @name => @num_clank_added}
+            stats << {"STATISTIC" => "Clank removed", @name => @num_clank_removed}
+            stats << {"STATISTIC" => "Coins collected", @name => @num_coins_collected}
+            stats << {"STATISTIC" => "Major secrets collected", @name => @num_major_secrets_collected}
+            stats << {"STATISTIC" => "Minor secrets collected", @name => @num_minor_secrets_collected}
+            
+            stats
+        end
+
         private
 
         def output_abilities()
@@ -584,25 +603,6 @@ module Klank
                     break
                 end
             end
-        end
-
-        def stats()
-            {
-                "NAME" => @name,
-                "CARDS PLAYED" => @num_cards_played,
-                "DISTANCE MOVED" => @num_distance_moved,
-                "ROOMS VISITED" => @num_rooms_visited,
-                "CAVES VISITED" => @num_caves_visited,
-                "DAMAGE DEALT" => @num_damage_dealt,
-                "MONSTER KILLED" => @num_monsters_killed,
-                "DAMAGE TAKEN" => @num_damage_taken,
-                "DAMAGE HEALED" => @num_damage_healed,
-                "CLANK ADDED" => @num_clank_added,
-                "CLANK REMOVED" => @num_clank_removed,
-                "COINS COLLECTED" => @num_coins_collected,
-                "MAJOR SECRETS COLLECTED" => @num_major_secrets_collected,
-                "MINOR SECRETS COLLECTED" => @num_minor_secrets_collected,
-            }
         end
     end
 end
