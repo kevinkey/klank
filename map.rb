@@ -85,6 +85,8 @@ module Klank
                                 kill = player.input_num("You encounter #{attack} monster(s), enter number to kill", 0..max_kill)
                                 @game.broadcast("#{player.name} killed #{kill} monster(s) and took #{(attack - kill)} damage!")
                                 player.attack -= kill
+                                player.num_monsters_killed += kill
+                                player.num_damage_dealt += kill
                                 (attack - kill).times do
                                     player.damage(true)
                                 end
@@ -99,6 +101,7 @@ module Klank
                         break if player.dead?()
 
                         player.move -= move
+                        player.num_distance_moved += move
 
                         @game.broadcast("#{player.name} travelled to room #{room_num}.")
                         enter_room(player, room_num)
@@ -216,6 +219,7 @@ module Klank
 
         def enter_room(player, room_num)
             player.room_num = room_num
+            player.num_rooms_visited += 1
 
             if room_num <= 1
                 player.mastery = true
@@ -223,12 +227,13 @@ module Klank
                 @game.trigger_end(player)
             end
 
-            if crystal_cave?(player) and !player.has_played?("Dead Run") and !player.has_played?("Flying Carpet")
-                @game.broadcast("#{player.name} has been frozen by the crystal cave!")
-                player.frozen = true
-            end
-
-            if !crystal_cave?(player)
+            if crystal_cave?(player)
+                player.num_caves_visited += 1
+                if !player.has_played?("Dead Run") and !player.has_played?("Flying Carpet")
+                    @game.broadcast("#{player.name} has been frozen by the crystal cave!")
+                    player.frozen = true
+                end
+            else
                 player.frozen = false
             end
 
@@ -238,6 +243,7 @@ module Klank
                 item = @minor.shift
                 @game.broadcast("#{player.name} found a #{item.desc}!")
                 item.gain(player)
+                player.num_minor_secrets_collected += 1
             end
 
             if @map["rooms"][player.room_num]["major-secrets"] > 0
@@ -246,6 +252,7 @@ module Klank
                 item = @major.shift
                 @game.broadcast("#{player.name} found a #{item.desc}!")
                 item.gain(player)
+                player.num_major_secrets_collected += 1
             end
 
             if @map["rooms"][player.room_num]["monkey-idols"] > 0
