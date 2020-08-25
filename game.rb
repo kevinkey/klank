@@ -194,11 +194,7 @@ module Klank
             @player.each do |p|
                 stats += p.stats
             end
-            if player == nil
-                broadcast("\nSTATISTICS\n#{Klank.table(stats)}")
-            else
-                player.output("\nSTATISTICS\n#{Klank.table(stats)}")
-            end
+            broadcast("\nSTATISTICS\n#{Klank.table(stats)}")
         end
     end
 end

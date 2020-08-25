@@ -488,6 +488,7 @@ module Klank
 
         def stats()
             stats = []
+            
             stats << {"STATISTIC" => "Cards played", @name => @num_cards_played}
             stats << {"STATISTIC" => "Distance moved", @name => @num_distance_moved}
             stats << {"STATISTIC" => "Rooms visited", @name => @num_rooms_visited}
@@ -501,7 +502,7 @@ module Klank
             stats << {"STATISTIC" => "Coins collected", @name => @num_coins_collected}
             stats << {"STATISTIC" => "Major secrets collected", @name => @num_major_secrets_collected}
             stats << {"STATISTIC" => "Minor secrets collected", @name => @num_minor_secrets_collected}
-            
+
             stats
         end
 
