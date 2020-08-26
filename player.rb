@@ -23,6 +23,7 @@ module Klank
         attr_accessor :health
         attr_accessor :clank_remove
 
+        attr_accessor :num_turns
         attr_accessor :num_cards_played
         attr_accessor :num_caves_visited
         attr_accessor :num_rooms_visited
@@ -126,6 +127,7 @@ module Klank
             @room_num = 1
             @skill = 0
 
+            @num_turns = 0
             @num_cards_played = 0
             @num_caves_visited = 0
             @num_rooms_visited = 0
@@ -215,6 +217,7 @@ module Klank
             @clank_added = 0
             @clank_remove = 0
             @frozen = false
+            @num_turns += 1
 
             output("\a")
 
@@ -489,6 +492,7 @@ module Klank
         def stats()
             stats = []
             
+            stats << {"STATISTIC" => "Turns played", @name => @num_turns}
             stats << {"STATISTIC" => "Cards played", @name => @num_cards_played}
             stats << {"STATISTIC" => "Distance moved", @name => @num_distance_moved}
             stats << {"STATISTIC" => "Rooms visited", @name => @num_rooms_visited}
