@@ -194,6 +194,12 @@ module Klank
             @player.each do |p|
                 stats += p.stats
             end
+            stats.each do |s|
+                stats.select { |stat| stat.first == s.first }.each do |t|
+                    s.merge!(t)
+                end
+            end
+            stats.slice!(0, stats.length() / @player.length())
             broadcast("\nSTATISTICS\n#{Klank.table(stats)}")
         end
     end
