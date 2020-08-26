@@ -360,7 +360,7 @@ module Klank
         def heal(count = 1)
             if count > 0
                 actual = [FULL_HEALTH - @health, count].min
-                @num_damage_healed += 1
+                @num_damage_healed += actual
 
                 @cubes += actual
                 @health = [FULL_HEALTH, @health + count].min
