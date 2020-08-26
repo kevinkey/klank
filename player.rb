@@ -129,6 +129,7 @@ module Klank
             @skill = 0
 
             @num_turns = 0
+            @num_times_shuffled = 0
             @num_cards_played = 0
             @num_caves_visited = 0
             @num_rooms_visited = 0

@@ -154,6 +154,8 @@ module Klank
                 success = true
 
                 player.attack -= @attack
+                player.num_monsters_killed += 1
+                player.num_damage_dealt += @attack
 
                 if @name == "Watcher"
                     @game.broadcast("All other players +1 clank")

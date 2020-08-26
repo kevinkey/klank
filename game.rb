@@ -199,8 +199,7 @@ module Klank
                     s.merge!(t)
                 end
             end
-            stats.slice!(0, stats.length() / @player.length())
-            broadcast("\nSTATISTICS\n#{Klank.table(stats)}")
+            broadcast("\nSTATISTICS\n#{Klank.table(stats[0..((stats.length() / @player.length()) - 1)])}")
         end
     end
 end
