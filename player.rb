@@ -25,6 +25,7 @@ module Klank
 
         attr_accessor :num_turns
         attr_accessor :num_cards_played
+        attr_accessor :num_times_shuffled
         attr_accessor :num_caves_visited
         attr_accessor :num_rooms_visited
         attr_accessor :num_distance_moved
@@ -494,6 +495,7 @@ module Klank
             
             stats << {"STATISTIC" => "Turns played", @name => @num_turns}
             stats << {"STATISTIC" => "Cards played", @name => @num_cards_played}
+            stats << {"STATISTIC" => "Times reshuffed deck", @name => @num_times_shuffled}
             stats << {"STATISTIC" => "Distance moved", @name => @num_distance_moved}
             stats << {"STATISTIC" => "Rooms visited", @name => @num_rooms_visited}
             stats << {"STATISTIC" => "Caves visited", @name => @num_caves_visited}
