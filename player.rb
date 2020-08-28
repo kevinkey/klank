@@ -29,6 +29,7 @@ module Klank
         attr_accessor :num_caves_visited
         attr_accessor :num_rooms_visited
         attr_accessor :num_distance_moved
+        attr_accessor :num_times_teleported
         attr_accessor :num_monsters_killed
         attr_accessor :num_damage_dealt
         attr_accessor :num_damage_taken
@@ -134,6 +135,7 @@ module Klank
             @num_caves_visited = 0
             @num_rooms_visited = 0
             @num_distance_moved = 0
+            @num_times_teleported = 0
             @num_monsters_killed = 0
             @num_damage_dealt = 0
             @num_damage_taken = 0
@@ -500,6 +502,7 @@ module Klank
             stats << {"STATISTIC" => "Distance moved", @name => @num_distance_moved}
             stats << {"STATISTIC" => "Rooms visited", @name => @num_rooms_visited}
             stats << {"STATISTIC" => "Caves visited", @name => @num_caves_visited}
+            stats << {"STATISTIC" => "Times teleported", @name => @num_times_teleported}
             stats << {"STATISTIC" => "Damage dealt", @name => @num_damage_dealt}
             stats << {"STATISTIC" => "Monsters killed", @name => @num_monsters_killed}
             stats << {"STATISTIC" => "Damage taken", @name => @num_damage_taken}
