@@ -194,11 +194,12 @@ module Klank
             @player.each do |p|
                 stats += p.stats
             end
-            if player == nil
-                broadcast("\nSTATISTICS\n#{Klank.table(stats)}")
-            else
-                player.output("\nSTATISTICS\n#{Klank.table(stats)}")
+            stats.each do |s|
+                stats.select { |stat| stat.first == s.first }.each do |t|
+                    s.merge!(t)
+                end
             end
+            broadcast("\nSTATISTICS\n#{Klank.table(stats[0..((stats.length() / @player.length()) - 1)])}")
         end
     end
 end

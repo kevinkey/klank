@@ -23,10 +23,13 @@ module Klank
         attr_accessor :health
         attr_accessor :clank_remove
 
+        attr_accessor :num_turns
         attr_accessor :num_cards_played
+        attr_accessor :num_times_shuffled
         attr_accessor :num_caves_visited
         attr_accessor :num_rooms_visited
         attr_accessor :num_distance_moved
+        attr_accessor :num_times_teleported
         attr_accessor :num_monsters_killed
         attr_accessor :num_damage_dealt
         attr_accessor :num_damage_taken
@@ -126,10 +129,13 @@ module Klank
             @room_num = 1
             @skill = 0
 
+            @num_turns = 0
+            @num_times_shuffled = 0
             @num_cards_played = 0
             @num_caves_visited = 0
             @num_rooms_visited = 0
             @num_distance_moved = 0
+            @num_times_teleported = 0
             @num_monsters_killed = 0
             @num_damage_dealt = 0
             @num_damage_taken = 0
@@ -215,6 +221,7 @@ module Klank
             @clank_added = 0
             @clank_remove = 0
             @frozen = false
+            @num_turns += 1
 
             output("\a")
 
@@ -360,7 +367,7 @@ module Klank
         def heal(count = 1)
             if count > 0
                 actual = [FULL_HEALTH - @health, count].min
-                @num_damage_healed += 1
+                @num_damage_healed += actual
 
                 @cubes += actual
                 @health = [FULL_HEALTH, @health + count].min
@@ -488,10 +495,14 @@ module Klank
 
         def stats()
             stats = []
+            
+            stats << {"STATISTIC" => "Turns played", @name => @num_turns}
             stats << {"STATISTIC" => "Cards played", @name => @num_cards_played}
+            stats << {"STATISTIC" => "Times reshuffed deck", @name => @num_times_shuffled}
             stats << {"STATISTIC" => "Distance moved", @name => @num_distance_moved}
             stats << {"STATISTIC" => "Rooms visited", @name => @num_rooms_visited}
             stats << {"STATISTIC" => "Caves visited", @name => @num_caves_visited}
+            stats << {"STATISTIC" => "Times teleported", @name => @num_times_teleported}
             stats << {"STATISTIC" => "Damage dealt", @name => @num_damage_dealt}
             stats << {"STATISTIC" => "Monsters killed", @name => @num_monsters_killed}
             stats << {"STATISTIC" => "Damage taken", @name => @num_damage_taken}
@@ -501,7 +512,8 @@ module Klank
             stats << {"STATISTIC" => "Coins collected", @name => @num_coins_collected}
             stats << {"STATISTIC" => "Major secrets collected", @name => @num_major_secrets_collected}
             stats << {"STATISTIC" => "Minor secrets collected", @name => @num_minor_secrets_collected}
-            
+            stats << {"STATISTIC" => "Artifacts collected", @name => @artifact.length()}
+
             stats
         end
 

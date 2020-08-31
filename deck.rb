@@ -34,6 +34,7 @@ module Klank
                 if @stack.count == 0
                     if player != nil
                         game.broadcast("#{player.name} is reshuffling their deck!")
+                        player.num_times_shuffled += 1
                     end
                     @stack = Klank.randomize(@pile)
                     @pile = []

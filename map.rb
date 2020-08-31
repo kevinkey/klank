@@ -127,6 +127,7 @@ module Klank
                         player.output("No leaving without an artifact!")
                     else
                         player.teleport -= 1
+                        player.num_times_teleported += 1
 
                         @game.broadcast("#{player.name} teleported to room #{room_num}.")
                         enter_room(player, room_num)
