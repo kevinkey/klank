@@ -512,6 +512,7 @@ module Klank
             stats << {"STATISTIC" => "Coins collected", @name => @num_coins_collected}
             stats << {"STATISTIC" => "Major secrets collected", @name => @num_major_secrets_collected}
             stats << {"STATISTIC" => "Minor secrets collected", @name => @num_minor_secrets_collected}
+            stats << {"STATISTIC" => "Artifacts collected", @name => @artifact.length()}
 
             stats
         end
