@@ -324,6 +324,8 @@ module Klank
                         @game.broadcast("#{@name} killed the Goblin!")
                         collect_coins(1)
                         @attack -= 2
+                        @num_damage_dealt += 2
+                        @num_monsters_killed += 1
                     when "F"
                         @game.view_players(self)
                     when "B"
