@@ -182,7 +182,7 @@ module Klank
         end
 
         def scores()
-            msg = "Scores\n"
+            msg = "Scores (Map ##{map.num})\n"
             @player.sort_by { |p| p.score() }.reverse.each_with_index do |p, i|
                 msg += "#{p.name}: #{p.score(true)} (Room ##{p.room_num})\n"
             end
