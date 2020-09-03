@@ -4,13 +4,14 @@ module Klank
     require_relative "item.rb"
     require_relative "utils.rb"
 
-    attr_reader :num
-
     class Map
+
+        attr_reader :map_num
+
         def initialize(game, map)
             @game = game
-            @num = map
-            @map = YAML.load(File.read("map#{@num}.yml"))
+            @map_num = map
+            @map = YAML.load(File.read("map#{@map_num}.yml"))
 
             # make sure every room has a hash, "secrets" defined (default 0)
             @map["rooms"].each_key do |room_num|

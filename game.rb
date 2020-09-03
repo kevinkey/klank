@@ -106,6 +106,7 @@ module Klank
             @started = true
 
             msg = "\nGAME STARTING\nRandomizing play order...\n"
+            broadcast("#{@map.map_num}")
             @player.each_with_index do |p, i|
                 msg += "#{i}: #{p.name}\n"
                 p.start(self, i)
@@ -182,7 +183,7 @@ module Klank
         end
 
         def scores()
-            msg = "Scores (Map ##{map.num})\n"
+            msg = "Scores (Map ##{@map.map_num})\n"
             @player.sort_by { |p| p.score() }.reverse.each_with_index do |p, i|
                 msg += "#{p.name}: #{p.score(true)} (Room ##{p.room_num})\n"
             end
