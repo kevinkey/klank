@@ -500,7 +500,7 @@ module Klank
             
             stats << {"STATISTIC" => "Turns played", @name => @num_turns}
             stats << {"STATISTIC" => "Cards played", @name => @num_cards_played}
-            stats << {"STATISTIC" => "Times reshuffed deck", @name => @num_times_shuffled}
+            stats << {"STATISTIC" => "Times reshuffled deck", @name => @num_times_shuffled}
             stats << {"STATISTIC" => "Distance moved", @name => @num_distance_moved}
             stats << {"STATISTIC" => "Rooms visited", @name => @num_rooms_visited}
             stats << {"STATISTIC" => "Caves visited", @name => @num_caves_visited}
