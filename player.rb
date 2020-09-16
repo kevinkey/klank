@@ -40,10 +40,17 @@ module Klank
         attr_accessor :num_major_secrets_collected
         attr_accessor :num_minor_secrets_collected
 
-        def initialize(client)
+        def initialize(client, games)
             @client = client
 
-            @name = input("Name")
+            loop do
+                @name = input("Name")
+                if games.find { |g| g.player.find { |p| p.name == @name } != nil } != nil
+                    output("#{name} is already taken! Choose a different name!")
+                else
+                    break
+                end
+            end
             output("Welcome to Klank, #{@name}!")
         end
 

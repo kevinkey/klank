@@ -106,7 +106,6 @@ module Klank
             @started = true
 
             msg = "\nGAME STARTING\nRandomizing play order...\n"
-            broadcast("#{@map.map_num}")
             @player.each_with_index do |p, i|
                 msg += "#{i}: #{p.name}\n"
                 p.start(self, i)

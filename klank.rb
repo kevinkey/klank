@@ -15,7 +15,7 @@ module Klank
       sleep 0.1
       p client
 
-      player = Player.new(client)
+      player = Player.new(client, games)
 
       loop do
         menu = []
@@ -29,9 +29,29 @@ module Klank
         case option
         when "N"
           player.output("\nCREATE A GAME")
-          name = player.input("Name")
+
+          name = String.new
+          loop do
+            name = player.input("Name")
+            if games.find { |g| g.name == name } != nil
+              player.output("#{name} is already taken! Choose a different name!")
+            else
+              break
+            end
+          end
+
           num = player.input_num("Players", 2..4)
-          map = player.input_num("Map", 1..2)
+
+          case player.menu("MAP SELECTION", [["1", {"DESC" => "Play on Map 1"}], ["2", {"DESC" => "Play on Map 2"}], ["R", {"DESC" => "Let the game randomly choose the map"}]])
+          when "1"
+            map = 1
+          when "2"
+            map = 2
+          when "R"
+            map = rand(1..2)
+            player.output("Map ##{map} was randomly selected!")
+          end
+
           player.output("\nCreated #{name}, waiting for players...")
 
           game = Game.new(name, num, map)
