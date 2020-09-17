@@ -284,6 +284,9 @@ module Klank
                     end
 
                     if menu.length > 0
+                        if !@game.dungeon.afford?(self)
+                            menu << ["D", {"DESC" => "View the dungeon"}]
+                        end
                         menu << ["V", {"DESC" => "View the map"}]
                         menu << ["F", {"DESC" => "View the players"}]
                         if @deck.pile.length > 0
@@ -318,7 +321,11 @@ module Klank
                         @deck.discard(t)
                         @skill -= t[0].cost
                     when "D"
-                        @game.dungeon.acquire(self)
+                        if @game.dungeon.afford?(self)
+                            @game.dungeon.acquire(self)
+                        else
+                            @game.dungeon.view(self)
+                        end
                     when "M"
                         @game.map.move(self)
                     when "S"
