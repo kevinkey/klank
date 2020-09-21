@@ -39,6 +39,8 @@ module Klank
         attr_accessor :num_clank_removed
         attr_accessor :num_major_secrets_collected
         attr_accessor :num_minor_secrets_collected
+        attr_accessor :time
+        attr_accessor :time_per_turn
 
         def initialize(client, games)
             @client = client
@@ -152,6 +154,7 @@ module Klank
             @num_clank_removed = 0
             @num_major_secrets_collected = 0
             @num_minor_secrets_collected = 0
+            @time = 0
         end
 
         def score(disp_breakdown = false)
@@ -229,6 +232,7 @@ module Klank
             @clank_remove = 0
             @frozen = false
             @num_turns += 1
+            start_time = Time.now
 
             output("\a")
 
@@ -360,6 +364,10 @@ module Klank
             @played = []
 
             reclaim_clank()
+
+            end_time = Time.now
+            turn_time = end_time - start_time
+            @time += turn_time
         end
 
         def damage(direct = false)
@@ -512,6 +520,8 @@ module Klank
         def stats()
             stats = []
             
+            stats << {"STATISTIC" => "Total time spent", @name => Time.at(@time).utc.strftime("%M:%S")}
+            stats << {"STATISTIC" => "Time spent per turn", @name => Time.at(@time / @num_turns).utc.strftime("%M:%S")}
             stats << {"STATISTIC" => "Turns played", @name => @num_turns}
             stats << {"STATISTIC" => "Cards played", @name => @num_cards_played}
             stats << {"STATISTIC" => "Times reshuffled deck", @name => @num_times_shuffled}
