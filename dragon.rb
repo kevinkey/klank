@@ -81,6 +81,7 @@ module Klank
                 @bag << "D"
             end
             @dragon_cubes -= actual
+            @game.broadcast("#{actual} dragon cube(s) were added back to the dragon bag!")
         end
 
         def view_bag()
