@@ -288,6 +288,9 @@ module Klank
                     end
 
                     if menu.length > 0
+                        if @clank_remove < 0 and @game.dragon.bank.select { |c| c.to_s == @index.to_s }.count > 0
+                            menu << ["R", {"DESC" => "Remove clank"}]
+                        end
                         if !@game.dungeon.afford?(self)
                             menu << ["D", {"DESC" => "View the dungeon"}]
                         end
@@ -352,6 +355,9 @@ module Klank
                         if (menu.count <= 1) or ("Y" == input("Are you sure? (Y: yes)").upcase)
                             break
                         end
+                    when "R"
+                        clank_amount = input_num("How much clank do you want to remove from the bank?", 0..[-1 * @clank_remove, @game.dragon.bank.select { |c| c.to_s == @index.to_s }.count].min)
+                        reclaim_clank(clank_amount)
                     else
                         output("Hmmm... something went wrong")
                     end
@@ -423,8 +429,11 @@ module Klank
             end
         end
 
-        def reclaim_clank()
-            actual = @game.dragon.remove(@index, -1 * @clank_remove)
+        def reclaim_clank(request = nil)
+            if request == nil
+                request = 30
+            end
+            actual = @game.dragon.remove(@index, [-1 * @clank_remove, request].min)
             @clank_remove += actual
             @cubes += actual
             @num_clank_removed += actual
