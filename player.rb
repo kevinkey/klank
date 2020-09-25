@@ -520,10 +520,11 @@ module Klank
         def stats()
             stats = []
             
+            stats << {"STATISTIC" => "Turns played", @name => @num_turns}
             stats << {"STATISTIC" => "Total time spent", @name => Time.at(@time).utc.strftime("%M:%S")}
             stats << {"STATISTIC" => "Time spent per turn", @name => Time.at(@time / @num_turns).utc.strftime("%M:%S")}
-            stats << {"STATISTIC" => "Turns played", @name => @num_turns}
             stats << {"STATISTIC" => "Cards played", @name => @num_cards_played}
+            stats << {"STATISTIC" => "Cards played per turn", @name => @num_cards_played.fdiv(@num_turns).round(2).to_s}
             stats << {"STATISTIC" => "Times reshuffled deck", @name => @num_times_shuffled}
             stats << {"STATISTIC" => "Distance moved", @name => @num_distance_moved}
             stats << {"STATISTIC" => "Rooms visited", @name => @num_rooms_visited}
