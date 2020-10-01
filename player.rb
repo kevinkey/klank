@@ -39,6 +39,8 @@ module Klank
         attr_accessor :num_clank_removed
         attr_accessor :num_major_secrets_collected
         attr_accessor :num_minor_secrets_collected
+        attr_accessor :time
+        attr_accessor :time_per_turn
 
         def initialize(client, games)
             @client = client
@@ -152,6 +154,7 @@ module Klank
             @num_clank_removed = 0
             @num_major_secrets_collected = 0
             @num_minor_secrets_collected = 0
+            @time = 0
         end
 
         def score(disp_breakdown = false)
@@ -229,6 +232,7 @@ module Klank
             @clank_remove = 0
             @frozen = false
             @num_turns += 1
+            start_time = Time.now
 
             output("\a")
 
@@ -284,6 +288,12 @@ module Klank
                     end
 
                     if menu.length > 0
+                        if @clank_remove < 0 and @game.dragon.bank.select { |c| c.to_s == @index.to_s }.count > 0
+                            menu << ["R", {"DESC" => "Remove clank"}]
+                        end
+                        if !@game.dungeon.afford?(self)
+                            menu << ["D", {"DESC" => "View the dungeon"}]
+                        end
                         menu << ["V", {"DESC" => "View the map"}]
                         menu << ["F", {"DESC" => "View the players"}]
                         if @deck.pile.length > 0
@@ -318,7 +328,11 @@ module Klank
                         @deck.discard(t)
                         @skill -= t[0].cost
                     when "D"
-                        @game.dungeon.acquire(self)
+                        if @game.dungeon.afford?(self)
+                            @game.dungeon.acquire(self)
+                        else
+                            @game.dungeon.view(self)
+                        end
                     when "M"
                         @game.map.move(self)
                     when "S"
@@ -341,6 +355,9 @@ module Klank
                         if (menu.count <= 1) or ("Y" == input("Are you sure? (Y: yes)").upcase)
                             break
                         end
+                    when "R"
+                        clank_amount = input_num("How much clank do you want to remove from the bank?", 0..[-1 * @clank_remove, @game.dragon.bank.select { |c| c.to_s == @index.to_s }.count].min)
+                        reclaim_clank(clank_amount)
                     else
                         output("Hmmm... something went wrong")
                     end
@@ -353,6 +370,10 @@ module Klank
             @played = []
 
             reclaim_clank()
+
+            end_time = Time.now
+            turn_time = end_time - start_time
+            @time += turn_time
         end
 
         def damage(direct = false)
@@ -408,8 +429,11 @@ module Klank
             end
         end
 
-        def reclaim_clank()
-            actual = @game.dragon.remove(@index, -1 * @clank_remove)
+        def reclaim_clank(request = nil)
+            if request == nil
+                request = 30
+            end
+            actual = @game.dragon.remove(@index, [-1 * @clank_remove, request].min)
             @clank_remove += actual
             @cubes += actual
             @num_clank_removed += actual
@@ -506,7 +530,10 @@ module Klank
             stats = []
             
             stats << {"STATISTIC" => "Turns played", @name => @num_turns}
+            stats << {"STATISTIC" => "Total time spent", @name => Time.at(@time).utc.strftime("%M:%S")}
+            stats << {"STATISTIC" => "Time spent per turn", @name => Time.at(@time / @num_turns).utc.strftime("%M:%S")}
             stats << {"STATISTIC" => "Cards played", @name => @num_cards_played}
+            stats << {"STATISTIC" => "Cards played per turn", @name => @num_cards_played.fdiv(@num_turns).round(2).to_s}
             stats << {"STATISTIC" => "Times reshuffled deck", @name => @num_times_shuffled}
             stats << {"STATISTIC" => "Distance moved", @name => @num_distance_moved}
             stats << {"STATISTIC" => "Rooms visited", @name => @num_rooms_visited}

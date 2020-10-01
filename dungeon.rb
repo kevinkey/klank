@@ -45,11 +45,7 @@ module Klank
                 end
             end
 
-            dungeon = []
-            @hand.each_with_index do |c, i|
-                dungeon << c.buy_desc(false)
-            end
-            @game.broadcast("\nDUNGEON\n#{Klank.table(dungeon)}")
+            view
         end
 
         def acquire(player)
@@ -97,6 +93,18 @@ module Klank
                 added = @deck.draw(1)[0]
                 @hand << added
                 @game.broadcast("#{player.name} removed #{removed.name} and #{added.name} replaced it!")
+            end
+        end
+
+        def view(player = nil)
+            dungeon = []
+            @hand.each_with_index do |c, i|
+                dungeon << c.buy_desc(false)
+            end
+            if (player != nil)
+                player.output("\nDUNGEON\n#{Klank.table(dungeon)}")
+            else
+                @game.broadcast("\nDUNGEON\n#{Klank.table(dungeon)}")
             end
         end
 
