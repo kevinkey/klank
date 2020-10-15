@@ -177,14 +177,14 @@ module Klank
 
                 card_hash = Hash.new
                 if points > 0
-                    card_hash << {"POINTS" => points}
+                    card_hash["POINTS"] = points
                 end
-                card_hash << {"DESCRIPTION" => card_name}
+                card_hash["DESCRIPTION"] = card_name
                 if card.play_count > 0
-                    card_hash << {"PLAY COUNT" => card.play_count}
+                    card_hash["PLAY COUNT"] = card.play_count
                 end
                 if card.num_times_discarded > 0
-                    card_hash << "DISCARD COUNT" => card.num_times_discarded
+                    card_hash["DISCARD COUNT"] = card.num_times_discarded
                 end
                 table << card_hash
             end
