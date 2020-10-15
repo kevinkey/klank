@@ -9,6 +9,8 @@ module Klank
         attr_reader :dragon
         attr_reader :play_count
 
+        attr_accessor :num_times_discarded
+
         def initialize(game, hash)
             @game = game
 
@@ -20,6 +22,7 @@ module Klank
             @danger = hash.key?("danger")
             @dragon = hash.key?("dragon")
             @play_count = 0
+            @num_times_discarded = 0
 
             @hash = hash
         end

@@ -174,7 +174,19 @@ module Klank
                 points = card.points(self)
 
                 total += points
-                table << {"POINTS" => points, "DESCRIPTION" => card_name, "PLAY COUNT" => card.play_count}
+
+                card_hash = Hash.new
+                if points > 0
+                    card_hash << {"POINTS" => points}
+                end
+                card_hash << {"DESCRIPTION" => card_name}
+                if card.play_count > 0
+                    card_hash << {"PLAY COUNT" => card.play_count}
+                end
+                if card.num_times_discarded > 0
+                    card_hash << "DISCARD COUNT" => card.num_times_discarded
+                end
+                table << card_hash
             end
 
             @item.sort_by {|i| i.name }.each do |i|
@@ -476,6 +488,7 @@ module Klank
             c = menu("DISCARD", cards, true)
 
             if c != "N"
+                card.num_times_discarded += 1
                 card = @hand.delete_at(c.to_i)
                 @deck.discard([card])
                 @game.broadcast("#{@name} discarded #{card.name}!")
