@@ -81,6 +81,18 @@ module Klank
                     elsif (room_num <= 1) and !player.has_artifact?()
                         player.output("No leaving without an artifact!")
                     else
+                        if crystal_cave?(player)
+                            crystal_golem_card = @game.dungeon.crystal_golem
+                            if crystal_golem_card != nil
+                                if player.attack >= crystal_golem_card.attack
+                                    if ("Y" == player.input("Do you want to kill the Crystal Golem first? (Y: yes)").upcase)
+                                        @game.dungeon.acquire(player, crystal_golem_card)
+                                        break
+                                    end
+                                end
+                            end
+                        end
+                        
                         if (attack > 0)
                             if player.has_played?("Flying Carpet")
                                 @game.broadcast("#{player.name} flew by the monster(s) on their Flying Carpet!")

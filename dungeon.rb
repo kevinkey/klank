@@ -30,7 +30,11 @@ module Klank
                 @game.broadcast("\nReplenishing the dungeon...")
                 attack = false
 
-                cards = @deck.draw(count)
+                cards = []
+                loop do
+                    cards = @deck.draw(count)
+                break if cards.find {|d| d.name == "Crystal Golem"} != nil
+                end
                 
                 cards.each do |c|
                     c.arrive()
@@ -48,32 +52,45 @@ module Klank
             view
         end
 
-        def acquire(player)
-            card = nil
-
-            loop do                 
-                player.output("\n" + Klank.table([{"SKILL" => player.skill, "ATTACK" => player.attack, "CLANK" => player.clank_remove}]))
-
-                c = menu("BUY OR DEFEAT A CARD", player)
-                break if c == "N"
-
-                if @hand[c.to_i].type == :monster
-                    if @hand[c.to_i].defeat(player)
-                        card = @hand.delete_at(c.to_i)
+        def acquire(player, card = nil)
+            if @hand.include? card
+                if card.type == :monster
+                    if card.defeat(player)
+                        card = @hand.delete_at(@hand.index(card))
                         @game.broadcast("#{player.name} killed #{card.name} in the dungeon!")
                     end
-                elsif @hand[c.to_i].acquire(player)
-                    card = @hand.delete_at(c.to_i)
+                elsif card.acquire(player)
+                    card = @hand.delete_at(@hand.index(card))
                     @game.broadcast("#{player.name} bought #{card.name} from the dungeon!")
                     if card.type != :device
                         player.deck.discard([card])
                     end
                 end
+            else
+                loop do                 
+                    player.output("\n" + Klank.table([{"SKILL" => player.skill, "ATTACK" => player.attack, "CLANK" => player.clank_remove}]))
 
-                if @hand.count == 0
-                    break
-                elsif !afford?(player)
-                    break 
+                    c = menu("BUY OR DEFEAT A CARD", player)
+                    break if c == "N"
+
+                    if @hand[c.to_i].type == :monster
+                        if @hand[c.to_i].defeat(player)
+                            card = @hand.delete_at(c.to_i)
+                            @game.broadcast("#{player.name} killed #{card.name} in the dungeon!")
+                        end
+                    elsif @hand[c.to_i].acquire(player)
+                        card = @hand.delete_at(c.to_i)
+                        @game.broadcast("#{player.name} bought #{card.name} from the dungeon!")
+                        if card.type != :device
+                            player.deck.discard([card])
+                        end
+                    end
+
+                    if @hand.count == 0
+                        break
+                    elsif !afford?(player)
+                        break 
+                    end
                 end
             end
         end
@@ -84,6 +101,10 @@ module Klank
                 result = ((player.skill >= @hand.map { |c| c.player_cost(player) }.min) or (player.attack >= @hand.map { |c| c.attack }.min))
             end
             result
+        end
+
+        def crystal_golem()
+            @hand.find { |card| card.name == "Crystal Golem"}
         end
 
         def replace_card(player)
