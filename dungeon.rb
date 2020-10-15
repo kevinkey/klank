@@ -30,11 +30,7 @@ module Klank
                 @game.broadcast("\nReplenishing the dungeon...")
                 attack = false
 
-                cards = []
-                loop do
-                    cards = @deck.draw(count)
-                break if cards.find {|d| d.name == "Crystal Golem"} != nil
-                end
+                cards = @deck.draw(count)
                 
                 cards.each do |c|
                     c.arrive()
