@@ -488,8 +488,8 @@ module Klank
             c = menu("DISCARD", cards, true)
 
             if c != "N"
-                card.num_times_discarded += 1
                 card = @hand.delete_at(c.to_i)
+                card.num_times_discarded += 1
                 @deck.discard([card])
                 @game.broadcast("#{@name} discarded #{card.name}!")
             end
