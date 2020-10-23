@@ -208,10 +208,12 @@ module Klank
                     @map["rooms"][room_num]["minor-secrets"] -= 1
                     @minor = Klank.randomize(@minor)
                     item = @minor.shift
+                    player.num_minor_secrets_collected += 1
                 else
                     @map["rooms"][room_num]["major-secrets"] -= 1
                     @major = Klank.randomize(@major)
                     item = @major.shift
+                    player.num_major_secrets_collected += 1
                 end
                 @game.broadcast("#{player.name} took a #{item.name} from room #{room_num}")
                 item.gain(player)
