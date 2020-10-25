@@ -42,7 +42,7 @@ MOVE_RANGE = [1,1,1,2]
 # Set cc_ok to false to ignore crystal caves (heals, minor, major, artifacts can be in cc).
 # Set store_ok to false to ignore stores (minor, major, artifacts can be in stores).
 def room_used(map, room_num, cc_ok = true, store_ok = true)
-	max_room = map['rooms'].keys.max()
+	max_room = map['rooms'].count
 	used =  (room_num < 2) ||  # nothing in start room!
 			(room_num > max_room) ||  # nothing past end room!
 			(map['rooms'][room_num]['crystal-cave'] && cc_ok) ||

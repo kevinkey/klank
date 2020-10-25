@@ -54,7 +54,7 @@ module KlankMapGen
 																'style' => 'filled',
 																'color' => @colors['border_color'],
 																'fillcolor' => 'white' )
-			 else
+					else
                         # insert a dummy path node to give graphviz a little more flexibility
                         @map['paths'][key]['node'] = g.add_nodes( key,
                                                                 'label' => '',
