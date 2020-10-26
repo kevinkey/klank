@@ -75,8 +75,9 @@ module KlankMapGen
         def generate_map_graph
             #####################
             # Create a new graph
-            #####################
-            g = GraphViz.new( :G, :type => :digraph, 
+			#####################
+			# tbd ksh !!! not sure it makes any difference using graph vs digraph (look into this more)
+            g = GraphViz.new( :G, :type => :graph, #:digraph, 
                               :use => 'dot', 
                               :resolution => 160,    # make output image a little clearer
 							  :overlap => 'false',   # avoid overlapping nodes
@@ -102,70 +103,73 @@ module KlankMapGen
                     room_end = 1 # start node on it's own rank
                 elsif (room_start < @map['depths']) && (room_end >= @map['depths'])
                     room_end = @map['depths'] - 1  # start a new rank for depths
-                end
-                g.subgraph { |c|
-                    c[:rank => 'same']
-                    for room_num in (room_start .. room_end) do
-                        # determine shape and color for room
-						shape, color, width, height = 'box', 'lightgrey', 1.22, 0.96
-						if (@map['rooms'][room_num]['heal'] > 0)
-							image = (room_num < @map['depths']) ? './images/room-heal.png' : './images/room-depths-heal.png'
-						else
-							image = (room_num < @map['depths']) ? './images/room.png' : './images/room-depths.png'
-						end
-						room_font_color = @use_images ? 'white' : @colors['room_font_color']
-                        if @map['rooms'][room_num]['crystal-cave']
-							shape, color, width, height = 'circle', 'lightblue', 1.4, 1.4
-							image = (@map['rooms'][room_num]['heal'] > 0) ? './images/crystal-cave-heal.png' : './images/crystal-cave.png'
-                        elsif (@map['rooms'][room_num]['monkey-idols'] > 0)
-                            shape, color, width, height = 'box', 'khaki', 1.13, 2.46
-							image = './images/monkey-idols.png'
-						elsif @map['rooms'][room_num]['store']
-                            shape, color, width, height = 'box', 'gold', 1.19, 1.39
-							image = './images/store.png'
-                        end
-                        if (@map['rooms'][room_num]['heal'] > 0)
-							color = 'red'  # always make heal rooms red
-							room_font_color = 'red' if (@use_images)
-                        end
-                        labels = [ "ROOM: #{room_num}" ]
-						@map['rooms'][room_num].each do |key, value|
-							next if (@use_images) && ((key == 'store') || (key == 'monkey-idols') || (key == 'crystal-cave'))
-                            labels << "#{key}: #{value}" if (value == true) || ((value != false) && (value > 0)) 
-                        end
-						@map['rooms'][room_num]['node'] = c.add_nodes( "#{room_num}",
-                                                                       'label' => labels.join("\n"), 
-																	   'fontcolor' => room_font_color,
-																	   'fontname' => 'Helvetica-Bold',
-																	   'fontsize' => 8.0,
-                                                                       'width' => width,
-                                                                       'height' => height,
-																	   'peripheries' => 2,
-																	   'image' => (@use_images) ? image : 'none',
-																	   'imagescale' => true,
-                                                                       'shape' => shape,
-																	   'style' => 'filled',
-																	   'color' => (room_num < @map['depths']) ? 'green' : 'brown',
-																	   'fillcolor' => color )
-                        if (room_num+1) <= room_end
-                            # generate path nodes for any LR adjacent nodes on this rank
-                            # this helps with rank ordering
-                            generate_map_path_node(c, "#{room_num}-#{room_num+1}")
-                            generate_map_path_node(c, "#{room_num+1}-#{room_num}")
-                        end
-                    end
-                }
+				end
+				# tbd ksh !!! i'd like to use background cluster color to indicate
+				# above/below ground, but this really breaks layout
+				c = g.add_graph(# "cluster_rooms: #{room_start}..#{room_end}",
+								# 'rankdir' => 'LR',
+								# 'bgcolor' => 'blue',
+								'rank' => 'same')
+				for room_num in (room_start .. room_end) do
+					# determine shape and color for room
+					shape, color, width, height = 'box', 'lightgrey', 1.22, 0.96
+					if (@map['rooms'][room_num]['heal'] > 0)
+						image = (room_num < @map['depths']) ? './images/room-heal.png' : './images/room-depths-heal.png'
+					else
+						image = (room_num < @map['depths']) ? './images/room.png' : './images/room-depths.png'
+					end
+					room_font_color = @use_images ? 'white' : @colors['room_font_color']
+					if @map['rooms'][room_num]['crystal-cave']
+						shape, color, width, height = 'circle', 'lightblue', 1.4, 1.4
+						image = (@map['rooms'][room_num]['heal'] > 0) ? './images/crystal-cave-heal.png' : './images/crystal-cave.png'
+					elsif (@map['rooms'][room_num]['monkey-idols'] > 0)
+						shape, color, width, height = 'box', 'khaki', 1.13, 2.46
+						image = './images/monkey-idols.png'
+					elsif @map['rooms'][room_num]['store']
+						shape, color, width, height = 'box', 'gold', 1.19, 1.39
+						image = './images/store.png'
+					end
+					if (@map['rooms'][room_num]['heal'] > 0)
+						color = 'red'  # always make heal rooms red
+						room_font_color = 'red' if (@use_images)
+					end
+					labels = [ "ROOM: #{room_num}" ]
+					@map['rooms'][room_num].each do |key, value|
+						next if (@use_images) && ((key == 'store') || (key == 'monkey-idols') || (key == 'crystal-cave'))
+						labels << "#{key}: #{value}" if (value == true) || ((value != false) && (value > 0)) 
+					end
+					@map['rooms'][room_num]['node'] = c.add_nodes( "#{room_num}",
+																	'label' => labels.join("\n"), 
+																	'fontcolor' => room_font_color,
+																	'fontname' => 'Helvetica-Bold',
+																	'fontsize' => 8.0,
+																	'width' => width,
+																	'height' => height,
+																	'peripheries' => 2,
+																	'image' => (@use_images) ? image : 'none',
+																	'imagescale' => true,
+																	'shape' => shape,
+																	'style' => 'filled',
+																	'color' => (room_num < @map['depths']) ? 'green' : 'brown',
+																	'fillcolor' => color )
+					if (room_num+1) <= room_end
+						# generate path nodes for any LR adjacent nodes on this rank
+						# this helps with rank ordering
+						generate_map_path_node(c, "#{room_num}-#{room_num+1}")
+						generate_map_path_node(c, "#{room_num+1}-#{room_num}")
+					end
+				end
                 # generate path nodes for any paths from this rank to lower ranks
                 # this helps with rank ordering
-                g.subgraph { |c|
-                    c[:rank => 'same']
-                    for n1 in (room_start .. room_end) do
-                        for n2 in ((room_end+1) .. @map['rooms'].count) do
-                            generate_map_path_node(c, "#{n1}-#{n2}")
-                            generate_map_path_node(c, "#{n2}-#{n1}")
-                        end
-                    end
-                }
+				c = g.add_graph(# "cluster_paths_down: #{room_start}..#{room_end}",
+								# 'rankdir' => 'LR',
+								'rank' => 'same')
+				for n1 in (room_start .. room_end) do
+					for n2 in ((room_end+1) .. @map['rooms'].count) do
+						generate_map_path_node(c, "#{n1}-#{n2}")
+						generate_map_path_node(c, "#{n2}-#{n1}")
+					end
+				end
                 # go to next set of nodes for next rank
                 room_start = room_end + 1
             end

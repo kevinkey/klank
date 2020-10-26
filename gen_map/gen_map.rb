@@ -13,7 +13,7 @@
 # with Klank, I would suggest something like the following:
 # 1) generate a rand map (map_###.png)
 # 2) send it out via Teams, Zoom, etc.
-# 3) let everyone review it, and agree it on
+# 3) let everyone review it, and agree on it
 # 4) copy the map_###.yml to a slot for the game server to use and restart the server.
 #
 # You should definitely review any map generated as sometimes
