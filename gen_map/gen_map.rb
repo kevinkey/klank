@@ -29,13 +29,15 @@ require 'bundler/setup'
 # require any needed gems
 require 'yaml'
 
-# these are the possible numbers of ranks (floor) above and below ground
+# these are the possible numbers of ranks (floors) above and below ground
 ABOVE_RANKS_RANGE = [3,4]
 BELOW_RANKS_RANGE = [4,5]
 # when a path between rooms is generated, these are the 
-# possible attack/move value distrubutions
-ATTACK_RANGE = [0,0,0,0,1,2]
-MOVE_RANGE = [1,1,1,2]
+# possible attack/move value distrubutions (map2 has a 3 atk path)
+# map1: 60 paths: move: 47=1, 13=2: atk: 42=0 12=1, 5=2, 0=3
+# map2: 63 paths: move: 58=1, 5=2: atk: 45=0 14=1, 3=2, 1=3
+ATTACK_RANGE = [0]*40 + [1]*10 + [2]*5 + [3]*1 
+MOVE_RANGE = [1,1,1,1,2]
 
 # This returns true if the room_num is 'invalid' or has already
 # been used for something else.
@@ -55,11 +57,36 @@ def room_used(map, room_num, cc_ok = true, store_ok = true)
 	return used
 end
 
+# return the set of rooms reachable from room_num
+def rooms_reachable(map, room_num)
+	reachable = [ ]
+	check = [ room_num ]
+	while check.count > 0
+		s = check.shift
+		next if reachable.include?(s)
+		reachable << s
+		keys = map['paths'].keys
+		keys.each do |key|
+			key =~ /^(\d+)-(\d+)$/
+			n1, n2 = $1.to_i, $2.to_i
+			if map['paths'][key]['one-way'] 
+				check |= [n2] if (n1 == s)
+			elsif (n1 == s)
+				check |= [n2]
+			elsif (n2 == s)
+				check |= [n1]
+			end
+		end
+	end
+	# puts "#{room_num}:  " + reachable.join(',')
+	return reachable
+end
+
 # return count of paths in for room_num
 def paths_in(map, room_num)
 	count = 0
 	keys = map['paths'].keys
-		keys.each do |key|
+	keys.each do |key|
 		key =~ /^(\d+)-(\d+)$/
 		n1, n2 = $1.to_i, $2.to_i
 		if map['paths'][key]['one-way'] 
@@ -77,7 +104,7 @@ end
 def paths_out(map, room_num)
 	count = 0
 	keys = map['paths'].keys
-		keys.each do |key|
+	keys.each do |key|
 		key =~ /^(\d+)-(\d+)$/
 		n1, n2 = $1.to_i, $2.to_i
 		if map['paths'][key]['one-way'] 
@@ -92,6 +119,8 @@ def paths_out(map, room_num)
 end
 
 # add a path between rooms s and e
+# unless specified, the move and attack values for the path
+# are taken randomly from the available ranges.
 def add_path(map, s, e, move = MOVE_RANGE.sample(), atk = ATTACK_RANGE.sample())
 	# delete any old paths (in either direction)
 	key = "#{e}-#{s}"
@@ -99,13 +128,15 @@ def add_path(map, s, e, move = MOVE_RANGE.sample(), atk = ATTACK_RANGE.sample())
 	key = "#{s}-#{e}"
 	map['paths'].delete(key)
 
-	# if in the depths, add lock based on path value
+	# if after first 2/3 of above ground, add lock based on path value
+	# simple heuristic based on two base maps
 	val = ((map['rooms'][s]['artifact'] + map['rooms'][e]['artifact'] + 
 	       (room_used(map, s) ? 5 : 0) + (room_used(map, e) ? 5 : 0)) / 13).to_i
 	locked = (s >= (map['depths'] / 1.5)) && (rand(1..(7 - val)) == 1)
 
 	# if after first few rooms, make 1 in 4 paths one-way
 	# or if path to monkey-idol room
+	# simple heuristic based on two base maps
 	idols = map['rooms'][s]['monkey-idols'] + map['rooms'][e]['monkey-idols']
 	one_way = false
 	if (idols > 0) || ((s > 4) && (rand(1..4) == 1))
@@ -113,6 +144,24 @@ def add_path(map, s, e, move = MOVE_RANGE.sample(), atk = ATTACK_RANGE.sample())
 			key = "#{e}-#{s}"
 		end
 		one_way = true
+	end
+
+	# locked paths never have extra move or attacks
+	if (locked)
+		move = 1
+		atk = 0
+	end
+	# extra move paths never have more than 1 atk
+	if (move > 1) && (atk > 1)
+		atk = 1
+	end
+	# one-way paths can have extra move or atk, but not both
+	if (one_way && (move > 1) && (atk > 0))
+		if (rand(1..2) == 1)
+			move = 1
+		else
+			atk = 0
+		end
 	end
 
 	map['paths'][key] = {
@@ -147,7 +196,7 @@ module KlankMapGen
 
 	seed = Time.now.to_i
 	# tbd ksh !!! set fixed seed to debug a map
-	# seed = 1603381149
+	# seed = 1603823048
 	srand(seed)
 
 	rand_map = { }
@@ -183,10 +232,14 @@ module KlankMapGen
 		}.merge(rand_map['rooms'][room_num] || {})
 	end
 
-	# make some rooms crystal caves (avg 1 per rank)
-	(1..total_ranks).each do |i|
+	# make some rooms crystal caves (avg 1 per rank + 2)
+	# also *try* not put them next to each other (it can still
+	# happen since we only check prev room, but this helps
+	# spread them out)
+	(1..total_ranks+2).each do |i|
 		loop do
 			room_num = rand(2..total_count)
+			next if rand_map['rooms'][room_num-1]['crystal-cave']
 			break if !room_used(rand_map, room_num)
 		end
 		rand_map['rooms'][room_num]['crystal-cave'] = true
@@ -209,6 +262,8 @@ module KlankMapGen
 		loop do
 			limit -= 1
 			room_num = 1 + above_count + below_count - rand(0..rand(0..rand(0..below_count))) - (i*3)
+			# also try to spread them out
+			next if (room_num < (1 + above_count)) || (rand_map['rooms'][room_num-1]['artifact'] > 0)
 			# NB artifacts can be in crystal caves and stores
 			break if (limit <= 0) || (!room_used(rand_map, room_num, false, false) && (room_num > (1 + above_count)))
 		end
@@ -284,8 +339,8 @@ module KlankMapGen
 		# add LR (left-right) paths for this rank
 		skipped = false
 		(room_start..room_end-1).each do |room_num|
-			# after first rank, skip 1 in 6 LR paths, but no more than 1 per rank
-			if !skipped && (room_num > above_step) && (rand(1..6) == 1)
+			# after first rank, skip 1 in 5 LR paths, but no more than 1 per rank
+			if !skipped && (room_num > above_step) && (rand(1..5) == 1)
 				skipped = true
 			else
 				add_path(rand_map, room_num, room_num+1)
@@ -317,54 +372,94 @@ module KlankMapGen
 
 	end
 
-	# check rooms for ones with no paths in or no paths out
-	# tbd ksh !!! this really should check that room can reach room 1
-	added = true
-	while (added)
-		added = false
-		(1..total_count).each do |room_num|
-			if (paths_in(rand_map, room_num) < 1) || (paths_out(rand_map, room_num) < 1)		
+	# do something which can add/delete paths
+	# in all cases, we want to make sure all rooms 
+	# can make it to/from start
+	updated = true
+	limit = 10
+	while ( updated )
+
+		updated = false
+
+		# check that rooms are reachable from start
+		added = true
+		while (added)
+			added = false
+			reachable = rooms_reachable(rand_map, 1)
+			(3..total_count).each do |room_num|
+				if (!reachable.include?(room_num))
+					# try to add one to closest room
+					h = reachable.sort.group_by{ |e| e <=> room_num }
+					closest = h[-1].last || h[1].first
+					key = add_path(rand_map, closest, room_num)
+					# puts "no path from start, adding #{key}"
+					added = true
+					break
+				end
+			end
+		end
+
+		# check that rooms have a path to start
+		added = true
+		while (added)
+			added = false
+			(3..total_count).each do |room_num|
+				reachable = rooms_reachable(rand_map, room_num)
+				next if (reachable.min == 1)
 				# try to add one
-				e = (room_num > (below_step * 2)) ? (room_num - below_step) : (room_num + below_step)
-				key = add_path(rand_map, room_num, e)
-				# puts "no paths in/out, adding #{key}"
+				key = add_path(rand_map, room_num, room_num-1)
+				# puts "no path to start, adding #{key}"
 				added = true
 			end
 		end
-	end
 
-	# make high artifact value rooms a little harder to get to
-	(1..total_count).each do |room_num|
-		if (rand_map['rooms'][room_num]['artifact'] > 20)
-			removed = false
-			keys = rand_map['paths'].keys
-			keys.each do |key|
-				key =~ /^(\d+)-(\d+)$/
-				n1, n2 = $1.to_i, $2.to_i
-				if ((n1 == room_num) || (n2 == room_num))
-					n2 = (n1 == room_num) ? n2 : n1  # set n2 to the "other" room
-					# if more than 1 paths in, remove 1
-					if (!removed && (paths_in(rand_map, room_num) > 1) && (paths_out(rand_map, n2) > 1))
-						# puts "removing #{key} path"
-						removed = true
-						rand_map['paths'].delete(key)
-					elsif (paths_in(rand_map, room_num) == 1)
-						# if only one path in, lock it
-						# puts "locking #{key} path"
-						rand_map['paths'][key]['locked'] = true
-					else
-						# for all others, 1 of 2 things: make it locked or A2M2
-						# puts "hardening #{key} path"
-						if (rand(1..2) == 1)
-							rand_map['paths'][key]['move'] = 2
-							rand_map['paths'][key]['attack'] = 2
-						else
+		limit -= 1
+		break if limit < 0
+		
+		# make high artifact value rooms a little harder to get to
+		(1..total_count).each do |room_num|
+			if (rand_map['rooms'][room_num]['artifact'] > 20)
+				removed = false
+				keys = rand_map['paths'].keys
+				keys.each do |key|
+					key =~ /^(\d+)-(\d+)$/
+					n1, n2 = $1.to_i, $2.to_i
+					if ((n1 == room_num) || (n2 == room_num))
+						n2 = (n1 == room_num) ? n2 : n1  # set n2 to the "other" room
+						# if more than 1 paths in, remove 1
+						if ((limit > 4) && !removed && (paths_in(rand_map, room_num) > 1) && (paths_out(rand_map, n2) > 1))
+							# tbd ksh !!! we need to be smarter about removing paths here
+							# !!! then we could get rid of the limit thing
+							# puts "removing #{key} path"
+							removed = true
+							rand_map['paths'].delete(key)
+							updated = true
+						elsif (paths_in(rand_map, room_num) == 1)
+							# if only one path in, lock it
+							# puts "locking #{key} path"
 							rand_map['paths'][key]['locked'] = true
+							# locked paths never have extra move or attacks
+							rand_map['paths'][key]['move'] = 1
+							rand_map['paths'][key]['attack'] = 0
+						else
+							# for all others, 1 of 2 things: make it locked or A2M2
+							# puts "hardening #{key} path"
+							if (rand(1..2) == 1)
+								rand_map['paths'][key]['locked'] = false
+								rand_map['paths'][key]['move'] = 2
+								rand_map['paths'][key]['attack'] = 2
+							else
+								rand_map['paths'][key]['locked'] = true
+								# locked paths never have extra move or attacks
+								rand_map['paths'][key]['move'] = 1
+								rand_map['paths'][key]['attack'] = 0
+							end
 						end
 					end
 				end
 			end
 		end
+
 	end
 
 	# now write out yml and image files

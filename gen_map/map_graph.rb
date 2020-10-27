@@ -36,12 +36,12 @@ module KlankMapGen
         end
 
         def generate_map_path_node(g, key)
-            if @map['paths'][key] # valid key
+			if @map['paths'][key] # valid key
                 if @map['paths'][key]['node'].nil? # not already generated
                     labels = []
                     labels << 'M'+@map['paths'][key]['move'].to_s if (@map['paths'][key]['move'] > 1)
                     labels << 'A'+@map['paths'][key]['attack'].to_s if (@map['paths'][key]['attack'] > 0)
-                    labels << 'L' if @map['paths'][key]['locked']
+					labels << 'L' if @map['paths'][key]['locked']
                     if labels.count > 0
                         @map['paths'][key]['node'] = g.add_nodes( key,
                                                                 'label' => labels.join("\n"),
@@ -104,12 +104,7 @@ module KlankMapGen
                 elsif (room_start < @map['depths']) && (room_end >= @map['depths'])
                     room_end = @map['depths'] - 1  # start a new rank for depths
 				end
-				# tbd ksh !!! i'd like to use background cluster color to indicate
-				# above/below ground, but this really breaks layout
-				c = g.add_graph(# "cluster_rooms: #{room_start}..#{room_end}",
-								# 'rankdir' => 'LR',
-								# 'bgcolor' => 'blue',
-								'rank' => 'same')
+				c = g.add_graph('rank' => 'same')
 				for room_num in (room_start .. room_end) do
 					# determine shape and color for room
 					shape, color, width, height = 'box', 'lightgrey', 1.22, 0.96
@@ -145,7 +140,7 @@ module KlankMapGen
 																	'fontsize' => 8.0,
 																	'width' => width,
 																	'height' => height,
-																	'peripheries' => 2,
+																	'penwidth' => 3.0,
 																	'image' => (@use_images) ? image : 'none',
 																	'imagescale' => true,
 																	'shape' => shape,
@@ -161,11 +156,9 @@ module KlankMapGen
 				end
                 # generate path nodes for any paths from this rank to lower ranks
                 # this helps with rank ordering
-				c = g.add_graph(# "cluster_paths_down: #{room_start}..#{room_end}",
-								# 'rankdir' => 'LR',
-								'rank' => 'same')
+				c = g.add_graph('rank' => 'same')
 				for n1 in (room_start .. room_end) do
-					for n2 in ((room_end+1) .. @map['rooms'].count) do
+					for n2 in ((n1+1) .. @map['rooms'].count) do
 						generate_map_path_node(c, "#{n1}-#{n2}")
 						generate_map_path_node(c, "#{n2}-#{n1}")
 					end
@@ -189,14 +182,14 @@ module KlankMapGen
                 l1==r1 ? l2<=>r2 : l1<=>r1
             end
             keys.each do |key|
-                path_node = generate_map_path_node(g, key) # get or create path node
-                key =~ /^(\d+)-(\d+)$/
+				path_node = generate_map_path_node(g, key) # get or create path node
+				key =~ /^(\d+)-(\d+)$/
                 n1, n2 = $1.to_i, $2.to_i
-                if n2<n1 then back, n1, n2 = true, n2, n1 end # swap
+				if n2<n1 then back, n1, n2 = true, n2, n1 end # swap
                 # Create edges between the nodes (n1=path_node=n2)
                 g.add_edges( @map['rooms'][n1]['node'], 
                                 path_node, 
-                                'penwidth' => 3.0,
+								'penwidth' => 3.0,
 								'dir' => (@map['paths'][key]['one-way'] && back) ? 'back' : 'none',
 								'color' => @colors['border_color'] )
                 g.add_edges( path_node, 
