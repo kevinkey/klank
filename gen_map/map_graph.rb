@@ -42,16 +42,27 @@ module KlankMapGen
                     labels << 'M'+@map['paths'][key]['move'].to_s if (@map['paths'][key]['move'] > 1)
                     labels << 'A'+@map['paths'][key]['attack'].to_s if (@map['paths'][key]['attack'] > 0)
 					labels << 'L' if @map['paths'][key]['locked']
-                    if labels.count > 0
-                        @map['paths'][key]['node'] = g.add_nodes( key,
+					if labels.count > 0
+						image = './images/' + labels.sort.join('') + '.png'
+						if (@use_images && File.exist?(image))
+							style = 'none'
+							labels = []
+							width = '0.1'
+						else
+							style = 'filled'
+							image = 'none'
+							width = '0.5'
+						end
+						@map['paths'][key]['node'] = g.add_nodes( key,
                                                                 'label' => labels.join("\n"),
 																'fontcolor' => @colors['path_font_color'],
 																'fontname' => 'Helvetica-Bold',
 																'fontsize' => 8.0,
-																'width' => '0.5',
-                                                                'height' => '0.5',
-                                                                'shape' => 'circle',
-																'style' => 'filled',
+																'width' => width,
+																'image' => image,
+																'imagescale' => true,
+																'shape' => 'circle',
+																'style' => style,
 																'color' => @colors['border_color'],
 																'fillcolor' => 'white' )
 					else
