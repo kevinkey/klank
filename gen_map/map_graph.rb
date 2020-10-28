@@ -119,15 +119,11 @@ module KlankMapGen
 				for room_num in (room_start .. room_end) do
 					# determine shape and color for room
 					shape, color, width, height = 'box', 'lightgrey', 1.22, 0.96
-					if (@map['rooms'][room_num]['heal'] > 0)
-						image = (room_num < @map['depths']) ? './images/room-heal.png' : './images/room-depths-heal.png'
-					else
-						image = (room_num < @map['depths']) ? './images/room.png' : './images/room-depths.png'
-					end
+					image = (room_num < @map['depths']) ? './images/room.png' : './images/room-depths.png'
 					room_font_color = @use_images ? 'white' : @colors['room_font_color']
 					if @map['rooms'][room_num]['crystal-cave']
 						shape, color, width, height = 'circle', 'lightblue', 1.4, 1.4
-						image = (@map['rooms'][room_num]['heal'] > 0) ? './images/crystal-cave-heal.png' : './images/crystal-cave.png'
+						image = './images/crystal-cave.png'
 					elsif (@map['rooms'][room_num]['monkey-idols'] > 0)
 						shape, color, width, height = 'box', 'khaki', 1.13, 2.46
 						image = './images/monkey-idols.png'
@@ -141,11 +137,33 @@ module KlankMapGen
 					end
 					labels = [ "ROOM: #{room_num}" ]
 					@map['rooms'][room_num].each do |key, value|
-						next if (@use_images) && ((key == 'store') || (key == 'monkey-idols') || (key == 'crystal-cave'))
+						next if (@use_images) && (key == 'minor-secrets') && (value == 2)
+						next if (@use_images) && (key == 'major-secrets') && (value == 1)
+						next if (@use_images) && (key == 'heal') && (value == 1)
+						next if (@use_images) && ((key == 'store') || (key == 'monkey-idols') || (key == 'crystal-cave') || (key == 'crystal-cave'))
 						labels << "#{key}: #{value}" if (value == true) || ((value != false) && (value > 0)) 
 					end
+					label = labels.join("\n")
+					# is use_images, use 'html-like' node labels to get an image on image
+					# for heals, major-secrets, and minor-secrets
+					if (@use_images && (@map['rooms'][room_num]['heal'] > 0))
+						label = labels.join("<br />")
+						label = "<<table border='0' cellborder='0' cellpadding='0' cellspacing='0'>" + 
+								 "<tr><td width='40' height='37'><img src='./images/heal.png' /></td></tr>"+
+								 "<tr><td>#{label}</td></tr></table>>"
+					elsif (@use_images && (@map['rooms'][room_num]['major-secrets'] > 0))
+						label = labels.join("<br />")
+						label = "<<table border='0' cellborder='0' cellpadding='0' cellspacing='0'>" + 
+									"<tr><td width='50' height='50'><img src='./images/major-secrets.png' /></td></tr>"+
+									"<tr><td>#{label}</td></tr></table>>"
+					elsif (@use_images && (@map['rooms'][room_num]['minor-secrets'] > 0))
+						label = labels.join("<br />")
+						label = "<<table border='0' cellborder='0' cellpadding='0' cellspacing='0'>" + 
+									"<tr><td width='40' height='40'><img src='./images/minor-secrets.png' /></td></tr>"+
+									"<tr><td>#{label}</td></tr></table>>"
+					end
 					@map['rooms'][room_num]['node'] = c.add_nodes( "#{room_num}",
-																	'label' => labels.join("\n"), 
+																	'label' => label, 
 																	'fontcolor' => room_font_color,
 																	'fontname' => 'Helvetica-Bold',
 																	'fontsize' => 8.0,
