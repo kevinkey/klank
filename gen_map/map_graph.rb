@@ -42,42 +42,28 @@ module KlankMapGen
                     labels << 'M'+@map['paths'][key]['move'].to_s if (@map['paths'][key]['move'] > 1)
                     labels << 'A'+@map['paths'][key]['attack'].to_s if (@map['paths'][key]['attack'] > 0)
 					labels << 'L' if @map['paths'][key]['locked']
-					if labels.count > 0
-						image = './images/' + labels.sort.join('') + '.png'
-						if (@use_images && File.exist?(image))
-							style = 'none'
-							labels = []
-							width = '0.1'
-						else
-							style = 'filled'
-							image = 'none'
-							width = '0.5'
-						end
-						@map['paths'][key]['node'] = g.add_nodes( key,
-                                                                'label' => labels.join("\n"),
-																'fontcolor' => @colors['path_font_color'],
-																'fontname' => 'Helvetica-Bold',
-																'fontsize' => 8.0,
-																'width' => width,
-																'image' => image,
-																'imagescale' => true,
-																'shape' => 'circle',
-																'style' => style,
-																'color' => @colors['border_color'],
-																'fillcolor' => 'white' )
+					image = './images/' + labels.sort.join('') + '.png'
+					if (@use_images && File.exist?(image))
+						style = 'none'
+						labels = []
+						width = '0.1'
 					else
-                        # insert a dummy path node to give graphviz a little more flexibility
-                        @map['paths'][key]['node'] = g.add_nodes( key,
-                                                                'label' => '',
-																'fontcolor' => @colors['path_font_color'],
-																'fontname' => 'Helvetica-Bold',
-																'fontsize' => 8.0,
-                                                                'width' => '0.1',
-                                                                'shape' => 'circle',
-																'style' => 'filled',
-																'color' => @colors['border_color'],
-																'fillcolor' => 'white' )
-                    end
+						style = 'filled'
+						image = 'none'
+						width = (labels.count > 0) ? '0.5' : '0.1'
+					end
+					@map['paths'][key]['node'] = g.add_nodes( key,
+															'label' => labels.join("\n"),
+															'fontcolor' => @colors['path_font_color'],
+															'fontname' => 'Helvetica-Bold',
+															'fontsize' => 8.0,
+															'width' => width,
+															'image' => image,
+															'imagescale' => true,
+															'shape' => 'circle',
+															'style' => style,
+															'color' => @colors['border_color'],
+															'fillcolor' => 'white' )
                 end
                 @map['paths'][key]['node']
             end
@@ -89,7 +75,7 @@ module KlankMapGen
 			#####################
 			# tbd ksh !!! not sure it makes any difference using graph vs digraph (look into this more)
             g = GraphViz.new( :G, :type => :graph, #:digraph, 
-                              :use => 'dot', 
+                              :use => 'dot', # 'neato', 
                               :resolution => 160,    # make output image a little clearer
 							  :overlap => 'false',   # avoid overlapping nodes
 							  :bgcolor => @colors['bg_color'] )  
@@ -137,16 +123,23 @@ module KlankMapGen
 					end
 					labels = [ "ROOM: #{room_num}" ]
 					@map['rooms'][room_num].each do |key, value|
+						# if we are using images, only display a label if it's for a non-standard value
 						next if (@use_images) && (key == 'minor-secrets') && (value == 2)
 						next if (@use_images) && (key == 'major-secrets') && (value == 1)
 						next if (@use_images) && (key == 'heal') && (value == 1)
-						next if (@use_images) && ((key == 'store') || (key == 'monkey-idols') || (key == 'crystal-cave') || (key == 'crystal-cave'))
+						next if (@use_images) && ((key == 'store') || (key == 'monkey-idols') || (key == 'crystal-cave') || (key == 'crystal-cave') || (key == 'artifact'))
 						labels << "#{key}: #{value}" if (value == true) || ((value != false) && (value > 0)) 
 					end
 					label = labels.join("\n")
-					# is use_images, use 'html-like' node labels to get an image on image
+					# if use_images, use 'html-like' node labels to get an image on image
 					# for heals, major-secrets, and minor-secrets
-					if (@use_images && (@map['rooms'][room_num]['heal'] > 0))
+					if (@use_images && (@map['rooms'][room_num]['artifact'] > 0))
+						label = labels.join("<br />")
+						val = @map['rooms'][room_num]['artifact']
+						label = "<<table border='0' cellborder='0' cellpadding='0' cellspacing='0'>" + 
+								 "<tr><td width='47' height='50'><img src='./images/artifact#{val}.png' /></td></tr>"+
+								 "<tr><td>#{label}</td></tr></table>>"
+					elsif (@use_images && (@map['rooms'][room_num]['heal'] > 0))
 						label = labels.join("<br />")
 						label = "<<table border='0' cellborder='0' cellpadding='0' cellspacing='0'>" + 
 								 "<tr><td width='40' height='37'><img src='./images/heal.png' /></td></tr>"+

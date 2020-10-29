@@ -7,7 +7,7 @@
 
 # The graphviz executable should be in your path.
 # If not, try uncommenting and updating the following:
-# ENV["PATH"] = ENV["PATH"].split(";").push('C:\Program Files (x86)\Graphviz2.38\bin').join(";")
+# ENV["PATH"] = ENV["PATH"].split(";").push('C:\Program Files\Graphviz 2.44.1\bin').join(";")
 
 # For now, if you want to use a randomly generated map
 # with Klank, I would suggest something like the following:
