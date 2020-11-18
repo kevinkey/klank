@@ -81,6 +81,18 @@ module Klank
                     elsif (room_num <= 1) and !player.has_artifact?()
                         player.output("No leaving without an artifact!")
                     else
+                        if crystal_cave?(player)
+                            crystal_golem_card = @game.dungeon.crystal_golem
+                            if crystal_golem_card != nil
+                                if player.attack >= crystal_golem_card.attack
+                                    if ("Y" == player.input("Do you want to kill the Crystal Golem first? (Y: yes)").upcase)
+                                        @game.dungeon.acquire(player, crystal_golem_card)
+                                        break
+                                    end
+                                end
+                            end
+                        end
+                        
                         if (attack > 0)
                             if player.has_played?("Flying Carpet")
                                 @game.broadcast("#{player.name} flew by the monster(s) on their Flying Carpet!")
@@ -130,6 +142,18 @@ module Klank
                     if (room_num <= 1) and !player.has_artifact?()
                         player.output("No leaving without an artifact!")
                     else
+                        if crystal_cave?(player)
+                            crystal_golem_card = @game.dungeon.crystal_golem
+                            if crystal_golem_card != nil
+                                if player.attack >= crystal_golem_card.attack
+                                    if ("Y" == player.input("Do you want to kill the Crystal Golem first? (Y: yes)").upcase)
+                                        @game.dungeon.acquire(player, crystal_golem_card)
+                                        break
+                                    end
+                                end
+                            end
+                        end
+                        
                         player.teleport -= 1
                         player.num_times_teleported += 1
 
@@ -184,10 +208,12 @@ module Klank
                     @map["rooms"][room_num]["minor-secrets"] -= 1
                     @minor = Klank.randomize(@minor)
                     item = @minor.shift
+                    player.num_minor_secrets_collected += 1
                 else
                     @map["rooms"][room_num]["major-secrets"] -= 1
                     @major = Klank.randomize(@major)
                     item = @major.shift
+                    player.num_major_secrets_collected += 1
                 end
                 @game.broadcast("#{player.name} took a #{item.name} from room #{room_num}")
                 item.gain(player)
