@@ -1,0 +1,17 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rexml (3.2.4)
+    ruby-graphviz (1.2.5)
+      rexml
+    yaml (0.1.0)
+
+PLATFORMS
+  x64-mingw32
+
+DEPENDENCIES
+  ruby-graphviz
+  yaml
+
+BUNDLED WITH
+   2.1.4

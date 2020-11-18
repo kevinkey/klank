@@ -1,0 +1,668 @@
+---
+description: This is a random map from seed 1603813878.
+depths: 17
+rooms:
+  1:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  2:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  3:
+    major-secrets: 0
+    minor-secrets: 2
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  4:
+    major-secrets: 0
+    minor-secrets: 2
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  5:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  6:
+    major-secrets: 0
+    minor-secrets: 2
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: true
+    store: false
+  7:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  8:
+    major-secrets: 0
+    minor-secrets: 2
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: true
+    store: false
+  9:
+    major-secrets: 0
+    minor-secrets: 2
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: true
+    store: false
+  10:
+    major-secrets: 0
+    minor-secrets: 2
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  11:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  12:
+    major-secrets: 1
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  13:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 1
+    artifact: 0
+    crystal-cave: false
+    store: false
+  14:
+    major-secrets: 1
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  15:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  16:
+    major-secrets: 1
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: true
+  17:
+    major-secrets: 0
+    minor-secrets: 2
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  18:
+    major-secrets: 0
+    minor-secrets: 2
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: true
+  19:
+    major-secrets: 1
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  20:
+    major-secrets: 1
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: true
+    store: false
+  21:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 7
+    crystal-cave: false
+    store: true
+  22:
+    major-secrets: 1
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  23:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 5
+    crystal-cave: false
+    store: false
+  24:
+    major-secrets: 0
+    minor-secrets: 2
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  25:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: true
+    store: false
+  26:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 10
+    crystal-cave: false
+    store: false
+  27:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 25
+    crystal-cave: false
+    store: true
+  28:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: true
+    store: false
+  29:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  30:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 3
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  31:
+    major-secrets: 1
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  32:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 15
+    crystal-cave: false
+    store: false
+  33:
+    major-secrets: 1
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: true
+    store: false
+  34:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  35:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 20
+    crystal-cave: true
+    store: false
+  36:
+    major-secrets: 1
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  37:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: false
+    store: false
+  38:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 30
+    crystal-cave: true
+    store: false
+  39:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: true
+    store: false
+  40:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 1
+    artifact: 0
+    crystal-cave: false
+    store: false
+  41:
+    major-secrets: 0
+    minor-secrets: 0
+    monkey-idols: 0
+    heal: 0
+    artifact: 0
+    crystal-cave: true
+    store: false
+paths:
+  1-2:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: false
+  2-3:
+    move: 2
+    attack: 0
+    locked: false
+    one-way: false
+  3-4:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: false
+  4-5:
+    move: 1
+    attack: 2
+    locked: false
+    one-way: false
+  5-6:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: false
+  2-8:
+    move: 1
+    attack: 1
+    locked: false
+    one-way: false
+  3-8:
+    move: 2
+    attack: 0
+    locked: false
+    one-way: false
+  4-10:
+    move: 2
+    attack: 0
+    locked: false
+    one-way: false
+  5-11:
+    move: 2
+    attack: 1
+    locked: false
+    one-way: false
+  6-11:
+    move: 2
+    attack: 1
+    locked: false
+    one-way: false
+  8-7:
+    move: 1
+    attack: 3
+    locked: false
+    one-way: true
+  8-9:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: false
+  9-10:
+    move: 2
+    attack: 0
+    locked: false
+    one-way: false
+  10-11:
+    move: 1
+    attack: 1
+    locked: false
+    one-way: false
+  7-13:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: true
+  8-12:
+    move: 2
+    attack: 0
+    locked: false
+    one-way: false
+  9-14:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: true
+  14-10:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: true
+  11-15:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: false
+  12-13:
+    move: 1
+    attack: 1
+    locked: false
+    one-way: false
+  13-14:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: true
+  14-15:
+    move: 1
+    attack: 2
+    locked: false
+    one-way: false
+  15-16:
+    move: 2
+    attack: 1
+    locked: false
+    one-way: false
+  12-17:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: false
+  18-13:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: true
+  14-20:
+    move: 1
+    attack: 1
+    locked: false
+    one-way: false
+  15-20:
+    move: 1
+    attack: 2
+    locked: false
+    one-way: false
+  16-20:
+    move: 1
+    attack: 1
+    locked: false
+    one-way: true
+  19-18:
+    move: 2
+    attack: 0
+    locked: false
+    one-way: true
+  19-20:
+    move: 2
+    attack: 0
+    locked: false
+    one-way: false
+  20-21:
+    move: 1
+    attack: 0
+    locked: true
+    one-way: true
+  17-22:
+    move: 2
+    attack: 0
+    locked: false
+    one-way: false
+  18-24:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: false
+  19-23:
+    move: 1
+    attack: 1
+    locked: false
+    one-way: false
+  20-26:
+    move: 2
+    attack: 1
+    locked: false
+    one-way: false
+  21-26:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: true
+  23-24:
+    move: 2
+    attack: 1
+    locked: false
+    one-way: false
+  24-25:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: false
+  25-26:
+    move: 1
+    attack: 1
+    locked: false
+    one-way: false
+  22-28:
+    move: 1
+    attack: 1
+    locked: false
+    one-way: false
+  23-29:
+    move: 1
+    attack: 3
+    locked: false
+    one-way: false
+  24-29:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: false
+  25-29:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: false
+  30-26:
+    move: 1
+    attack: 2
+    locked: false
+    one-way: true
+  27-28:
+    move: 1
+    attack: 1
+    locked: true
+    one-way: true
+  28-29:
+    move: 1
+    attack: 1
+    locked: false
+    one-way: false
+  29-30:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: true
+  30-31:
+    move: 1
+    attack: 0
+    locked: true
+    one-way: true
+  27-33:
+    move: 2
+    attack: 1
+    locked: true
+    one-way: false
+  28-34:
+    move: 1
+    attack: 2
+    locked: false
+    one-way: true
+  29-34:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: false
+  30-35:
+    move: 1
+    attack: 1
+    locked: false
+    one-way: true
+  31-36:
+    move: 1
+    attack: 1
+    locked: false
+    one-way: false
+  32-33:
+    move: 2
+    attack: 1
+    locked: false
+    one-way: false
+  33-34:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: true
+  35-36:
+    move: 2
+    attack: 0
+    locked: false
+    one-way: false
+  33-39:
+    move: 2
+    attack: 0
+    locked: false
+    one-way: false
+  34-39:
+    move: 1
+    attack: 0
+    locked: true
+    one-way: false
+  35-39:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: false
+  36-40:
+    move: 2
+    attack: 0
+    locked: false
+    one-way: true
+  41-37:
+    move: 1
+    attack: 0
+    locked: false
+    one-way: true
+  38-37:
+    move: 1
+    attack: 2
+    locked: true
+    one-way: true
+  38-39:
+    move: 1
+    attack: 0
+    locked: true
+    one-way: false
+  39-40:
+    move: 1
+    attack: 1
+    locked: false
+    one-way: false
+  41-40:
+    move: 1
+    attack: 1
+    locked: false
+    one-way: true
+  41-36:
+    move: 2
+    attack: 1
+    locked: false
+    one-way: false
+  37-32:
+    move: 2
+    attack: 1
+    locked: false
+    one-way: false
