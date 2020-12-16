@@ -72,7 +72,11 @@ module Klank
                 p.output(msg)
             end
             @spectator.each do |p|
-                p.output(msg)
+                begin
+                    p.output(msg)
+                rescue => exception
+                    @spectator.remove(p)
+                end
             end
         end
 
@@ -93,6 +97,18 @@ module Klank
             else
                 player.output("\nPLAYERS\n#{Klank.table(status)}")
             end
+        end
+
+        def game_over?()
+            all_done = true
+            @player.each do |p|
+                if !p.dead?() and !p.mastery
+                    all_done = false
+                    break
+                end
+            end
+
+            @game_over or all_done
         end
 
         private
@@ -167,19 +183,7 @@ module Klank
             @dragon.view_bag
 
             @shutdown = true
-        end
-
-        def game_over?()
-            all_done = true
-            @player.each do |p|
-                if !p.dead?() and !p.mastery
-                    all_done = false
-                    break
-                end
-            end
-
-            @game_over or all_done
-        end
+        end     
 
         def scores()
             msg = "Scores (Map ##{@map.map_num})\n"

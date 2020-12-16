@@ -208,7 +208,7 @@ module Klank
                 table << {"POINTS" => 20, "DESCRIPTION" => "Mastery"}
             end
 
-            if !@game.game_over
+            if !@game.game_over?()
                 # keep the score for now
             elsif @artifact.count <= 0
                 table << {"POINTS" => -1 * total, "DESCRIPTION" => "No artifact"}
