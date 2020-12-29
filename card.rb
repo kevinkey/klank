@@ -254,6 +254,7 @@ module Klank
                         player.collect_coins(1)
                     else
                         player.coins -= 7
+                        @game.map.market += 7
                         player.deck.discard(@game.reserve[:t].draw([2, remaining].min))
                         @game.broadcast("Through some Underworld Dealing, #{player.name} gained +#{[2, remaining].min} Tomes!")
                     end

@@ -325,20 +325,20 @@ module Klank
                     when "I"
                         play()
                     when "X"
-                        @game.broadcast("#{@name} bought an Explore!")
                         x = @game.reserve[:x].draw(1)
                         @deck.discard(x)
                         @skill -= x[0].cost
+                        @game.broadcast("#{@name} bought an Explore! There are #{@game.reserve[:x].remaining} left!")
                     when "C"
-                        @game.broadcast("#{@name} bought a Mercenary!")
                         c = @game.reserve[:c].draw(1)
                         @deck.discard(c)
                         @skill -= c[0].cost
+                        @game.broadcast("#{@name} bought a Mercenary! There are #{@game.reserve[:c].remaining} left!")
                     when "T"
-                        @game.broadcast("#{@name} bought a Tome!")
                         t = @game.reserve[:t].draw(1)
                         @deck.discard(t)
                         @skill -= t[0].cost
+                        @game.broadcast("#{@name} bought a Tome! There are #{@game.reserve[:t].remaining} left!")
                     when "D"
                         if @game.dungeon.afford?(self)
                             @game.dungeon.acquire(self)
@@ -505,17 +505,35 @@ module Klank
             @played.any? { |c| c.name == card }
         end
 
-        def collect_coins(count)
+        def collect_coins(count, from_secret = false)
+            if !from_secret
+                count = [count, @game.map.bank].min
+                @game.map.bank -= count
+            end
             @coins += count
             @num_coins_collected += count
 
-            extra = @played.select { |c| c.name == "Search" }.count
-            if extra != 0
-                @coins += extra
-                @num_coins_collected += extra
-                @game.broadcast("#{@name} collects #{count} coin(s) +#{extra} for Search and has #{@coins} coin(s) total!")
+            if !from_secret
+                extra = [@played.select { |c| c.name == "Search" }.count, @game.map.bank]
+                @game.map.bank -= extra
             else
-                @game.broadcast("#{@name} collects #{count} coin(s) and has #{@coins} coin(s) total!")
+                extra = @played.select { |c| c.name == "Search" }.count
+            end
+            @coins += extra
+            @num_coins_collected += extra
+
+            if count == 0
+                @game.broadcast("#{@name} attempted to collect coins but the bank is out of coins!")
+            else
+                message = "#{@name} collects #{count} coin(s)"
+                if extra != 0
+                    message << " +#{extra} for Search"
+                end
+                message << " and has #{@coins} coin(s) total!"
+                if !from_secret
+                    message << " There are #{@game.map.bank} coin(s) in the bank!"
+                end
+                @game.broadcast(message)
             end
         end
 

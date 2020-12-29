@@ -63,7 +63,7 @@ module Klank
             player.item << self
 
             if @hash.key?("coins")
-                player.collect_coins(@hash["coins"])
+                player.collect_coins(@hash["coins"], true)
             end
 
             if @name == "Dragon Egg"

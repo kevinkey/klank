@@ -8,6 +8,8 @@ module Klank
 
         attr_reader :map_num
 
+        attr_accessor :bank
+
         def initialize(game, map)
             @game = game
             @map_num = map
@@ -56,6 +58,8 @@ module Klank
                     @market << Item.new(game, i)
                 end
             end
+
+            @bank = 81
 
         end
 
@@ -237,10 +241,11 @@ module Klank
 
                 break if item == "N"
 
-                @game.broadcast("#{player.name} bought #{@market[item.to_i].name} from the market!")
+                @game.broadcast("#{player.name} bought #{@market[item.to_i].name} from the market! There are #{@bank} coin(s) in the bank!")
                 @market[item.to_i].gain(player)
                 @market.delete_at(item.to_i)
                 player.coins -= 7
+                @bank += 7
 
                 break if !market?(player)
             end
