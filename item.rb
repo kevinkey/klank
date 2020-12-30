@@ -63,7 +63,8 @@ module Klank
             player.item << self
 
             if @hash.key?("coins")
-                player.collect_coins(@hash["coins"], true)
+                @game.map.bank += @hash["coins"]
+                player.collect_coins(@hash["coins"])
             end
 
             if @name == "Dragon Egg"

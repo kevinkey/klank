@@ -59,7 +59,7 @@ module Klank
                 end
             end
 
-            @bank = 81
+            @bank = 81  # <-- 12 5-coin tokens and 21 1-coin tokens
         end
 
         def move(player)

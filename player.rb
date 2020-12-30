@@ -505,20 +505,14 @@ module Klank
             @played.any? { |c| c.name == card }
         end
 
-        def collect_coins(count, from_secret = false)
-            if !from_secret
-                count = [count, @game.map.bank].min
-                @game.map.bank -= count
-            end
+        def collect_coins(count)
+            count = [count, @game.map.bank].min
+            @game.map.bank -= count
             @coins += count
             @num_coins_collected += count
 
-            if !from_secret
-                extra = [@played.select { |c| c.name == "Search" }.count, @game.map.bank]
-                @game.map.bank -= extra
-            else
-                extra = @played.select { |c| c.name == "Search" }.count
-            end
+            extra = [@played.select { |c| c.name == "Search" }.count, @game.map.bank].min
+            @game.map.bank -= extra
             @coins += extra
             @num_coins_collected += extra
 
@@ -529,10 +523,7 @@ module Klank
                 if extra != 0
                     message << " +#{extra} for Search"
                 end
-                message << " and has #{@coins} coin(s) total!"
-                if !from_secret
-                    message << " There are #{@game.map.bank} coin(s) in the bank!"
-                end
+                message << " and has #{@coins} coin(s) total! There are #{@game.map.bank} coin(s) in the bank!"
                 @game.broadcast(message)
             end
         end
