@@ -60,7 +60,6 @@ module Klank
             end
 
             @bank = 81
-
         end
 
         def move(player)
@@ -241,11 +240,11 @@ module Klank
 
                 break if item == "N"
 
+                @bank += 7
                 @game.broadcast("#{player.name} bought #{@market[item.to_i].name} from the market! There are #{@bank} coin(s) in the bank!")
                 @market[item.to_i].gain(player)
                 @market.delete_at(item.to_i)
                 player.coins -= 7
-                @bank += 7
 
                 break if !market?(player)
             end
