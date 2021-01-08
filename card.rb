@@ -249,14 +249,14 @@ module Klank
                 if (player.coins < 7) or (remaining == 0)
                     player.collect_coins(1)
                 else
-                    menu = [["C", "1 coin"], ["T", "7 coins for #{[2, remaining].min} Tomes"]]
+                    menu = [["C", "1 coin"], ["T", "7 coins for #{[2, remaining].min} Tomes. There are #{@game.reserve[:t].remaining} Tome(s) left!"]]
                     if player.menu("UNDERWORLD DEALING", menu) == "C"
                         player.collect_coins(1)
                     else
                         player.coins -= 7
                         @game.map.bank += 7
                         player.deck.discard(@game.reserve[:t].draw([2, remaining].min))
-                        @game.broadcast("Through some Underworld Dealing, #{player.name} gained +#{[2, remaining].min} Tomes!")
+                        @game.broadcast("Through some Underworld Dealing, #{player.name} gained +#{[2, remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
                     end
                 end
             when "Wand of Recall"
