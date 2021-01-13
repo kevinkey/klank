@@ -54,7 +54,7 @@ module Klank
 
             draw = DRAW[@level] + @game.dungeon.danger() + @game.escalation
 
-            view_bag(true)
+            view_bag()
             @game.broadcast("The dragon attacks, drawing #{draw} cubes...")
             sleep(1)
 
@@ -85,24 +85,13 @@ module Klank
             @game.broadcast("#{actual} dragon cube(s) were added back to the dragon bag!")
         end
 
-        def view_bag(show_chances = false)
+        def view_bag()
             if @bag.length > 0
                 cubes = []
-                count = 0
                 @game.player.each_with_index do |p, i|
-                    count = @bag.select { |c| c.to_s == i.to_s }.count
-                    if show_chances
-                        cubes << {"PLAYER" => p.name, "COUNT" => count, "DRAW CHANCE" => (count.fdiv(@bag.count) * 100).round(2).to_s}
-                    else
-                        cubes << {"PLAYER" => p.name, "COUNT" => count}
-                    end
+                    cubes << {"PLAYER" => p.name, "COUNT" => @bag.select { |c| c.to_s == i.to_s }.count}
                 end
-                count = @bag.select { |c| c.to_s == "D" }.count
-                if show_chances
-                    cubes << {"PLAYER" => "Dragon", "COUNT" => count, "DRAW CHANCE" => (count.fdiv(@bag.count) * 100).round(2).to_s}
-                else
-                    cubes << {"PLAYER" => "Dragon", "COUNT" => count}
-                end
+                cubes << {"PLAYER" => "Dragon", "COUNT" => @bag.select { |c| c.to_s == "D" }.count}
                 @game.broadcast("\nDRAGON BAG\n#{Klank.table(cubes)}")
             end
         end
