@@ -88,8 +88,9 @@ module Klank
         def view_bag(show_chances = false)
             if @bag.length > 0
                 cubes = []
-                count = @bag.select { |c| c.to_s == i.to_s }.count
+                count = 0
                 @game.player.each_with_index do |p, i|
+                    count = @bag.select { |c| c.to_s == i.to_s }.count
                     if show_chances
                         cubes << {"PLAYER" => p.name, "COUNT" => count, "DRAW CHANCE" => (count.fdiv(@bag.count) * 100).round(2).to_s}
                     else
