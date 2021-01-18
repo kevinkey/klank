@@ -1,0 +1,7 @@
+- name: Potion of Heroism
+  description: Use during your turn to gain 1 Boot, 1 Sword, and to heal 1 damage
+  count: 1
+  attack: 1
+  heal: 1
+  move: 1
+  

@@ -1,0 +1,231 @@
+- name: Crystal Fish
+  count: 2
+  type: :monster
+  attack: 1
+  defeat:
+    coins: 2
+  crystal cave: true
+  dragon: true
+  flooded room: true
+
+- name: Eye-in-the-Water
+  count: 2
+  type: :monster
+  attack: 2
+  defeat:
+    special: Choose 2 coins or -2 clank
+  special: ARRIVE All players +2 clank
+
+- name: Saurian
+  count: 2
+  type: :monster
+  attack: 3
+  defeat:
+    coins: 4
+  danger: true
+  dragon: true
+
+- name: Sorcerer
+  count: 1
+  type: :monster
+  attack: 4
+  defeat:
+    tomes: 1
+  depths: true
+  dragon: true
+
+- name: Pipe Organ
+  count: 1
+  type: :device
+  cost: 1
+  special: Move the Dragon marker one space up or down the Rage Track (your choice)
+
+- name: Shrine of the Mermaid
+  count: 2
+  type: :device
+  cost: 3
+  danger: true
+  special: Choose +2 coins or if you're in a flooded room, teleport to an adjacent room
+
+- name: Alchemist
+  count: 1
+  type: :companion
+  cost: 3
+  points: 1
+  equip:
+    skill: 2
+  special: +2 coins if you have a Secret Tome in your play area or discard pile
+
+- name: Ancient Invocation
+  count: 1
+  cost: 2
+  equip:
+    clank: 2
+    teleport: 1
+
+- name: Aspiration
+  count: 1
+  cost: 3
+  acquire:
+    coins: 1
+  special: Draw a card if you have a crown
+
+- name: Black Pearl
+  count: 1
+  type: :gem
+  cost: 6
+  points: 5
+  acquire:
+    clank: 2
+  dragon: true
+  special: Discard a card to draw two cards
+
+- name: Boomerang
+  count: 1
+  cost: 2
+  points: 1
+  equip:
+    skill: 1
+    attack: 2
+  special: When you discard this, return it to your hand
+
+- name: Burglar's Boots
+  count: 1
+  cost: 1
+  special: Choose -2 clank or +1 move or +1 coin
+
+- name: Climbing Gear
+  count: 1
+  cost: 2
+  points: 1
+  equip:
+    move: 1
+  special: Discard a card for +1 move
+
+- name: Coin Purse
+  count: 2
+  cost: 4
+  acquire:
+    coins: 3
+  equip:
+    coins: 2
+  special: +5 coins if you discard this card
+
+- name: Deep Dive
+  count: 1
+  cost: 5
+  special: Discard three cards to draw five cards
+
+- name: Elven Ranger
+  count: 1
+  type: :companion
+  cost: 5
+  points: 2
+  equip:
+    skill: 1
+    attack: 1
+    move: 1
+    draw: 1
+
+- name: Fishing Pole
+  count: 1
+  cost: 1
+  points: 1
+  special: Draw a card, then discard a card
+
+- name: Grand Plan
+  count: 1
+  cost: 5
+  equip:
+    coins: 2
+    skill: 2
+  acquire:
+    coins: 2
+  special: +7pts if you have at least three Market items
+
+- name: Medic
+  count: 1
+  type: :companion
+  cost: 2
+  points: 1
+  equip:
+    skill: 1
+  special: Discard a card for +1 health
+
+- name: Merling
+  count: 2
+  type: :companion
+  cost: 2
+  points: 2
+  equip:
+    skill: 1
+    attack: 1
+    move: 1
+
+- name: Mermaid
+  count: 2
+  type: :companion
+  cost: 4
+  points: 1
+  equip:
+    skill: 2
+    move: 1
+  special: Avoid water damage
+
+- name: Pickpocket
+  count: 1
+  type: :companion
+  cost: 3
+  points: 1
+  equip:
+    move: 1
+  special: Acquire a card that costs less than 3 skill or if discarded, less than 6 skill
+
+- name: Rebel Brawler
+  count: 1
+  type: :companion
+  cost: 1
+  points: 1
+  equip:
+    clank: 1
+    attack: 2
+  special: Draw a card with another companion
+
+- name: Rebel Scholar
+  count: 1
+  type: :companion
+  cost: 2
+  points: 1
+  equip:
+    draw: 1
+  special: Draw a card with another companion
+
+- name: Short Cut
+  count: 1
+  cost: 2
+  equip:
+    clank: 1
+    move: 1
+  acquire:
+    move: 1
+  special: +2 move when you discard this card
+
+- name: Silver Pearl
+  count: 1
+  type: :gem
+  cost: 3
+  points: 2
+  acquire:
+    clank: 2
+  dragon: true
+  special: Discard a card to draw two cards
+
+- name: White Pearl
+  count: 2
+  type: :gem
+  cost: 4
+  points: 3
+  acquire:
+    clank: 2
+  dragon: true
+  special: Discard a card to draw two cards
