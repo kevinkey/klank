@@ -21,6 +21,7 @@ module Klank
         attr_accessor :frozen
         attr_accessor :artifact
         attr_accessor :health
+        attr_accessor :air
         attr_accessor :clank_remove
 
         attr_accessor :num_turns
@@ -243,6 +244,7 @@ module Klank
             @clank_added = 0
             @clank_remove = 0
             @frozen = false
+            @air = !@game.map.flooded?(self)
             @num_turns += 1
             start_time = Time.now
 
@@ -296,7 +298,12 @@ module Klank
                     end
 
                     if @attack > 1
-                        menu << ["G", {"DESC" => "Kill the goblin", "COST" => 2, "BENEFIT" => "COINS: 1"}]
+                        if @game.sunken_treasures and (@attack > 2) and @game.map.flooded(self)
+                            menu << ["GB", {"DESC" => "Kill the goblin", "COST" => 2, "BENEFIT" => "COINS: 1"}]
+                            menu << ["GF", {"DESC" => "Kill the goldfish", "COST" => 3, "BENEFIT" => "COINS: 3"}]
+                        else
+                            menu << ["G", {"DESC" => "Kill the goblin", "COST" => 2, "BENEFIT" => "COINS: 1"}]
+                        end
                     end
 
                     if menu.length > 0
@@ -353,11 +360,17 @@ module Klank
                         @game.map.teleport(self)
                     when "V"
                         @game.map.view(self)
-                    when "G"
+                    when "G", "GB"
                         @game.broadcast("#{@name} killed the Goblin!")
                         collect_coins(1)
                         @attack -= 2
                         @num_damage_dealt += 2
+                        @num_monsters_killed += 1
+                    when "GF"
+                        @game.broadcast("#{@name} killed the Goldfish!")
+                        collect_coins(3)
+                        @attack -= 3
+                        @num_damage_dealt += 3
                         @num_monsters_killed += 1
                     when "F"
                         @game.view_players(self)
@@ -382,6 +395,11 @@ module Klank
             @played = []
 
             reclaim_clank()
+
+            if !@air and !has_item?("Scuba") and !has_played?("Mermaid")
+                @game.broadcast("#{@name} never came up for air on their turn!")
+                damage(true)
+            end
 
             end_time = Time.now
             turn_time = end_time - start_time
@@ -480,18 +498,35 @@ module Klank
             card != ""
         end
 
-        def discard_card()
-            cards = []
-            @hand.each_with_index do |c, i|
-                cards << [i, c.play_desc]
-            end
-            c = menu("DISCARD", cards, true)
+        def discard_card(count = 1)
+            d = ""
 
-            if c != "N"
-                card = @hand.delete_at(c.to_i)
-                card.num_times_discarded += 1
-                @deck.discard([card])
-                @game.broadcast("#{@name} discarded #{card.name}!")
+            for j in 1..count
+                cards = []
+                @hand.each_with_index do |c, i|
+                    cards << [i, c.play_desc]
+                end
+                d = menu("DISCARD", cards, true)
+
+                if d != "N"
+                    card = @hand.delete_at(d.to_i)
+                    card.num_times_discarded += 1
+                    @deck.discard([card])
+                    @game.broadcast("#{@name} discarded #{card.name}!")
+
+                    case card.name
+                    when "Boomerang"
+                        card.equip(self)
+                    when "Coin Purse"
+                        collect_coins(5)
+                    when "Pickpocket"
+                        @game.dungeon.pickpocket(self, 6)
+                    when "Short Cut"
+                        @move += 2
+                    end
+                else
+                    break
+                end
             end
 
             c != "N"

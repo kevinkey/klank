@@ -6,7 +6,7 @@
     coins: 2
   crystal cave: true
   dragon: true
-  flooded room: true
+  flooded: true
 
 - name: Eye-in-the-Water
   count: 2

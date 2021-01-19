@@ -74,7 +74,7 @@
   attack: 3
   defeat:
     coins: 3
-  special: ARRIVE All +1 clank | DEFEAT All others +1 clank
+  special: ARRIVE All players +1 clank | DEFEAT All others +1 clank
   dragon: true
 
 - name: Dragon Shrine

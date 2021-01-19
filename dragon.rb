@@ -20,8 +20,12 @@ module Klank
         end 
 
         def anger()
-            @level = [DRAW.count - 1, @level + 1].min
-            @game.broadcast("The dragon is angered and now draws #{DRAW[@level]}!")
+            move_marker(1)
+        end
+
+        def move_marker(count)
+            @level = [0, [DRAW.count - 1, @level + count].min].max
+            @game.broadcast("The dragon marker moves #{(count > 0) ? "up" : "down"} #{count.abs()} space(s) and now draws #{DRAW[@level]}!")
         end
 
         def add(cube, count = 1)

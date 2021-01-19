@@ -9,6 +9,10 @@ module Klank
             @game = game
             @deck = Deck.new(game, "dungeon.yml")
             @hand = []
+            
+            if @game.sunken_treasures
+                @deck.add(game, "sunken_treasures/dungeon.yml")
+            end
 
             while @hand.count < COUNT
                 if @deck.peek.dragon 
@@ -103,6 +107,18 @@ module Klank
             @hand.find { |card| card.name == "Crystal Golem"}
         end
 
+        def pickpocket(player, cost)
+            if @hand.any? { |c| c.cost <= cost }
+                c = menu("PICKPOCKET A CARD", player, cost)
+                if c != "N"
+                    card = @hand.select { |c| c.cost <= max_cost }.index(c.to_i)
+                    @hand.delete(@hand.index(card))
+                    player.deck.discard([card])
+                    @game.broadcast("#{player.name} pickpocketed #{card.name} from the dungeon!")
+                end
+            end
+        end
+
         def replace_card(player)
             c = menu("REPLACE A CARD", player)
             if c != "N"
@@ -127,9 +143,9 @@ module Klank
 
         private 
 
-        def menu(title, player)
+        def menu(title, player, max_cost = 1000000)
             options = []
-            @hand.each_with_index do |c, i|
+            @hand.select { |c| c.cost <= max_cost }.each_with_index do |c, i|
                 options << [i, c.buy_desc(player.has_played?("Gem Collector"))]
             end
             card = player.menu(title, options, true)

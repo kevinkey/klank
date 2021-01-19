@@ -24,6 +24,7 @@ module Klank
                     "heal" => 0,
                     "artifact" => 0,
                     "crystal-cave" => false,
+                    "flooded" => false,
                     "store" => false,
                 }.merge(@map["rooms"][room_num] || {})
             end
@@ -41,21 +42,26 @@ module Klank
             @minor = []
             @market = []
 
-            YAML.load(File.read("major.yml")).each do |i|
-                (i["count"] || 1).times do
-                    @major << Item.new(game, i)
-                end
-            end
+            for i in 0..1 do
+                file_path_prefix = ((i == 1) and @game.sunken_treasures) ? "sunken_treasures/" : ""
+                if (i == 0) or @game.sunken_treasures
+                    YAML.load(File.read("#{file_path_prefix}major.yml")).each do |i|
+                        (i["count"] || 1).times do
+                            @major << Item.new(game, i)
+                        end
+                    end
 
-            YAML.load(File.read("minor.yml")).each do |i|
-                (i["count"] || 1).times do
-                    @minor << Item.new(game, i)
-                end
-            end
+                    YAML.load(File.read("#{file_path_prefix}minor.yml")).each do |i|
+                        (i["count"] || 1).times do
+                            @minor << Item.new(game, i)
+                        end
+                    end
 
-            YAML.load(File.read("market.yml")).each do |i|
-                (i["count"] || 1).times do
-                    @market << Item.new(game, i)
+                    YAML.load(File.read("#{file_path_prefix}market.yml")).each do |i|
+                        (i["count"] || 1).times do
+                            @market << Item.new(game, i)
+                        end
+                    end
                 end
             end
 
@@ -193,6 +199,10 @@ module Klank
             @map["rooms"][player.room_num]["crystal-cave"]
         end
 
+        def flooded?(player)
+            @map["rooms"][player.room_num]["flooded"]
+        end
+
         def take_adjacent_secret(player)
             rooms = []
             paths = get_paths(player.room_num)
@@ -270,6 +280,13 @@ module Klank
                 end
             else
                 player.frozen = false
+            end
+
+            if !flooded?(player)
+                if !player.air
+                    @game.broadcast("#{player.name} has come up for air!")
+                end
+                player.air = true
             end
 
             if @map["rooms"][player.room_num]["minor-secrets"] > 0
