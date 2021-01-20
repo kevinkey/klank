@@ -199,7 +199,16 @@ module Klank
                 player.num_monsters_killed += 1
                 player.num_damage_dealt += @attack
 
-                if @name == "Watcher"
+                case @name
+                when "Eye-in-the-Water"
+                    menu = [["C", "-2 clank"], ["S", "+2 Coins"]]
+                    if player.menu("EYE-IN-THE-WATER", menu) == "S"
+                        player.collect_coins(2)
+                    else
+                        player.clank(-2)
+                        @game.broadcast("#{player.name} gained -2 clank from defeating Eye-in-the-Water!")
+                    end
+                when "Watcher"
                     @game.broadcast("All other players +1 clank")
                     @game.player.each do |p|
                         if p.index != player.index

@@ -10,9 +10,7 @@
   count: 2
   type: :monster
   attack: 2
-  defeat:
-    special: Choose 2 coins or -2 clank
-  special: ARRIVE All players +2 clank
+  special: ARRIVE All players +2 clank | DEFEAT Choose -2 Clank or +2 Coins
 
 - name: Saurian
   count: 2
