@@ -395,15 +395,15 @@ module Klank
                 end
             end
 
-            @deck.discard(@played)
-            @played = []
-
             reclaim_clank()
 
             if !@air and !has_item?("Scuba") and !has_played?("Mermaid")
                 @game.broadcast("#{@name} never came up for air on their turn and takes 1 damage!")
                 damage(true)
             end
+
+            @deck.discard(@played)
+            @played = []
 
             end_time = Time.now
             turn_time = end_time - start_time
