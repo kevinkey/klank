@@ -473,7 +473,7 @@ module Klank
         end
 
         def tome(count = 1)
-            @deck.discard(@game.reserve[:t].draw([count, remaining].min))
+            @deck.discard(@game.reserve[:t].draw([count, @game.reserve[:t].remaining].min))
         end
 
         def has_artifact?()

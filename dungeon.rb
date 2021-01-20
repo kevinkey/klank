@@ -111,7 +111,7 @@ module Klank
             if @hand.any? { |c| c.cost <= cost }
                 c = menu("PICKPOCKET A CARD", player, cost)
                 if c != "N"
-                    card = @hand.select { |c| c.cost <= max_cost }.index(c.to_i)
+                    card = @hand.select { |c| c.cost <= cost }.index(c.to_i)
                     @hand.delete(@hand.index(card))
                     player.deck.discard([card])
                     @game.broadcast("#{player.name} pickpocketed #{card.name} from the dungeon!")

@@ -155,7 +155,7 @@ module Klank
                         success = false
                     end
                 when "Shrine of the Mermaid"
-                    if !@game.map.flooded(player)
+                    if !@game.map.flooded?(player)
                         player.collect_coins(2)
                     else
                         menu = [["C", "2 coins"], ["T", "Teleport to an adjacent room"]]
@@ -472,8 +472,8 @@ module Klank
                 if @hash["defeat"].key?("heal")
                     desc["HEAL"] = @hash["defeat"]["heal"]
                 end
-                if @hash["defeat"].key?("tome")
-                    desc["TOME"] = @hash["defeat"]["tome"]
+                if @hash["defeat"].key?("tomes")
+                    desc["TOMES"] = @hash["defeat"]["tomes"]
                 end
             end
 
@@ -521,8 +521,8 @@ module Klank
             if hash.key?("heal")
                 player.heal(hash["heal"])
             end
-            if hash.key?("tome")
-                player.tome(hash["tome"])
+            if hash.key?("tomes")
+                player.tome(hash["tomes"])
                 @game.broadcast("#{player.name} gained +#{[1, remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
             end
         end
