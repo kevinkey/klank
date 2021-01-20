@@ -190,8 +190,8 @@ module Klank
                 player.output("Must be in the depths to defeat!")
             elsif @hash.key?("crystal cave") && !@game.map.crystal_cave?(player)
                 player.output("Must be in a crystal cave to defeat!")
-            elsif @hash.key?("flooded") && !@game.map.flooded?(player)
-                player.output("Must be in a flooded room to defeat!")
+            elsif @name == "Crystal Fish" && !@game.map.crystal_cave?(player) && !@game.map.flooded?(player)
+                player.output("Must be in a crystal cave or flooded room to defeat!")
             elsif player.attack >= @attack
                 success = true
 
@@ -329,7 +329,7 @@ module Klank
                     else
                         player.coins -= 7
                         @game.map.bank += 7
-                        player.deck.discard(@game.reserve[:t].draw([2, remaining].min))
+                        player.tome(2)
                         @game.broadcast("Through some Underworld Dealing, #{player.name} gained +#{[2, remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
                     end
                 end
@@ -463,6 +463,9 @@ module Klank
                 if @hash["defeat"].key?("heal")
                     desc["HEAL"] = @hash["defeat"]["heal"]
                 end
+                if @hash["defeat"].key?("tome")
+                    desc["TOME"] = @hash["defeat"]["tome"]
+                end
             end
 
             if @danger
@@ -475,6 +478,10 @@ module Klank
 
             if @hash.key?("crystal cave")
                 desc["MISC"] = "CRYSTAL CAVE"
+            end
+
+            if @name == "Crystal Fish"
+                desc["MISC"] = "CRYSTAL CAVE OR FLOODED ROOM"
             end
 
             desc.merge(play_desc())
@@ -504,6 +511,10 @@ module Klank
             end
             if hash.key?("heal")
                 player.heal(hash["heal"])
+            end
+            if hash.key?("tome")
+                player.tome(hash["tome"])
+                @game.broadcast("#{player.name} gained +#{[1, remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
             end
         end
     end

@@ -346,8 +346,7 @@ module Klank
                         @skill -= c[0].cost
                         @game.broadcast("#{@name} bought a Mercenary! There are #{@game.reserve[:c].remaining} left!")
                     when "T"
-                        t = @game.reserve[:t].draw(1)
-                        @deck.discard(t)
+                        tome(1)
                         @skill -= t[0].cost
                         @game.broadcast("#{@name} bought a Tome! There are #{@game.reserve[:t].remaining} left!")
                     when "D"
@@ -471,6 +470,10 @@ module Klank
             @clank_remove += actual
             @cubes += actual
             @num_clank_removed += actual
+        end
+
+        def tome(count = 1)
+            @deck.discard(@game.reserve[:t].draw([count, remaining].min))
         end
 
         def has_artifact?()

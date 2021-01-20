@@ -4,9 +4,7 @@
   attack: 1
   defeat:
     coins: 2
-  crystal cave: true
   dragon: true
-  flooded: true
 
 - name: Eye-in-the-Water
   count: 2
