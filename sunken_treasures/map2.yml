@@ -1,0 +1,242 @@
+---
+description: This is other (hard) side of the official Sunken Treasures game board.
+depths: 18
+
+# not listing move if 1
+# paths are reversible unless otherwise specified (one-way)
+paths:
+  1-2:
+  2-3:
+  3-4:
+    move: 2
+  3-7:
+    one-way: true
+  3-8:
+    one-way: true
+  # can't go 4->5!
+  4-10:
+  # can't go 5->11!
+  5-4:
+    one-way: true
+  5-6:
+  6-11:
+  6-12:
+  # can't go 7->3!
+  7-8:
+  7-12:
+  7-13:
+  7-29:
+    clank: 3
+    one-way: true
+  8-3:
+    locked: true
+    one-way: true
+  8-9:
+    locked: true
+  8-13:
+  8-14:
+  9-14:
+  9-15:
+  10-11:
+  10-15:
+    move: 2
+  10-16:
+  11-5:
+    one-way: true
+  11-12:
+  11-16:
+    attack: 2
+  11-17:
+  12-17:
+  13-18:
+  14-15:
+  14-19:
+    attack: 1
+  15-20:
+  15-25:
+    attack: 2
+  16-17:
+  16-20:
+    attack: 1
+  16-26:
+  17-21:
+  18-19:
+  18-22:
+    locked: true
+  18-23:
+    move: 2
+  19-23:
+    locked: true
+  19-25:
+    attack: 1
+  20-25:
+  20-26:
+  21-22:
+  21-26:
+  21-27:
+    locked: true
+  22-28:
+    move: 2
+  23-29:
+  23-30:
+  # can't go 24->38!
+  24-25:
+  24-30:
+    attack: 1
+  24-37:
+    clank: 1
+    one-way: 1
+  # can't go 25->32!
+  25-31:
+    attack: 1
+  # can't go 26->27!
+  # can't go 26->32!
+  26-33:
+    clank: 1
+    one-way: true
+  27-26:
+    one-way: true
+  27-33:
+    move: 2
+  27-35:
+    attack: 1
+  28-35:
+  # can't go 29->7!
+  29-30:
+    attack: 1
+  29-36:
+  30-36:
+  30-37:
+  31-32:
+    one-way: true
+  31-38:
+    attack: 2
+  # can't go 32->31!
+  # can't go 32->33!
+  32-25:
+    one-way: true
+  32-26:
+    attack: 1
+    one-way: true
+  32-39:
+    locked: true
+  32-40:
+    one-way: true
+  # can't go 33->26!
+  33-32:
+    one-way: true
+  33-34:
+  33-40:
+  34-41:
+  35-41:
+    attack: 1
+  36-37:
+  # can't go 37->24!
+  37-38:
+  38-24:
+    one-way: true
+  38-39:
+  39-40:
+  # can't go 40->32!
+  40-41:
+
+rooms:
+  1:
+  2:
+  3:
+  4:
+    minor-secrets: 2
+  5:
+    heal: 1
+  6:
+    major-secrets: 1
+    flooded: true
+  7:
+  8:
+    minor-secrets: 2
+  9:
+    major-secrets: 1
+    crystal-cave: true
+  10:
+    minor-secrets: 2
+    crystal-cave: true
+  11:
+    major-secrets: 1
+    flooded: true
+  12:
+    minor-secrets: 2
+    flooded: true
+  13:
+    major-secrets: 1
+  14:
+    crystal-cave: true
+    coins: 1
+  15:
+  16:
+  17:
+    minor-secrets: 2
+    flooded: true
+  18:
+    crystal-cave: true
+    artifact: 5
+  19:
+    store: true
+    minor-secrets: 2
+  20:
+    crystal-cave: true
+    heal: 1
+  21:
+    store: true
+    minor-secrets: 2
+  22:
+    major-secrets: 1
+  23:
+    major-secrets: 1
+  24:
+  25:
+    artifact: 7
+  26:
+    artifact: 10
+  27:
+    major-secrets: 1
+  28:
+    crystal-cave: true
+  29:
+    minor-secrets: 2
+    flooded: true
+  30:
+    crystal-cave: true
+    artifact: 15
+  31:
+    crystal-cave: true
+    coins: 1
+  32:
+    monkey-idols: 3
+  33:
+    coins: 1
+    flooded: true
+  34:
+    crystal-cave: true
+    flooded: true
+    artifact: 30
+  35:
+    flooded: true
+    artifact: 20
+  36:
+    major-secrets: 1
+    flooded: true
+  37:
+    minor-secrets: 2
+    flooded: true
+  38:
+    flooded: true
+    artifact: 25
+  39:
+    major-secrets: 1
+    flooded: true
+  40:
+    minor-secrets: 2
+    flooded: true
+  41:
+    major-secrets: 1
+    flooded: true

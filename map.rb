@@ -13,7 +13,7 @@ module Klank
         def initialize(game, map)
             @game = game
             @map_num = map
-            @map = YAML.load(File.read("map#{@map_num}.yml"))
+            @map = YAML.load(File.read("#{@game.sunken_treasures ? "sunken_treasures/" : ""}map#{@map_num}.yml"))
 
             # make sure every room has a hash, "secrets" defined (default 0)
             @map["rooms"].each_key do |room_num|
@@ -21,6 +21,7 @@ module Klank
                     "major-secrets" => 0,
                     "minor-secrets" => 0,
                     "monkey-idols" => 0,
+                    "coins" => 0,
                     "heal" => 0,
                     "artifact" => 0,
                     "crystal-cave" => false,
@@ -29,11 +30,12 @@ module Klank
                 }.merge(@map["rooms"][room_num] || {})
             end
 
-            # make sure every path has a hash, "move" and "attack" defined (default 1 and 0)
+            # make sure every path has a hash, "move", "attack" and "clank" defined (default 1, 0 and 0)
             @map["paths"].each_key do |key|
                 @map["paths"][key] = {
                     "move" => 1,
                     "attack" => 0,
+                    "clank" => 0,
                     "locked" => false
                 }.merge(@map["paths"][key] || {})
             end
@@ -72,15 +74,18 @@ module Klank
             loop do
                 player.output("\n#{Klank.table([{"MOVE" => player.move, "ATTACK" => player.attack}])}")
 
-                paths_out = get_paths_out(player.room_num)
+                paths_out = get_paths_out(player)
                 option = player.menu("MOVE FROM ROOM #{player.room_num}", paths_out, true)
                 if option != "N"
                     room_num = option.to_i
                     path = paths_out.find { |p| p[0] == option }[1]["NAME"]
 
-                    # get move, attack, and locked requirements and check player meets them
-                    move = @map["paths"][path]["move"]
+                    rooms = path.key.split(/-/, 2)
+                    move_between_flooded_rooms = flooded_room?(rooms[0]) and flooded_room?(rooms[1]) and !player.has_item?("Scuba")
+                    
+                    move = move_between_flooded_rooms ? 2 : @map["paths"][path]["move"]
                     attack = @map["paths"][path]["attack"]
+                    clank = @map["paths"][path]["clank"]
                     locked = @map["paths"][path]["locked"]
 
                     if player.move < move
@@ -125,6 +130,8 @@ module Klank
 
                         break if player.dead?()
 
+                        player.clank(clank)
+
                         player.move -= move
                         player.num_distance_moved += move
 
@@ -144,7 +151,7 @@ module Klank
             loop do
                 player.output("\n#{Klank.table([{"TELEPORT" => player.teleport}])}")
 
-                paths = get_paths(player.room_num)
+                paths = get_paths(player)
                 option = player.menu("TELEPORT FROM ROOM #{player.room_num}", paths, true)
                 if option != "N"
                     room_num = option.to_i
@@ -200,12 +207,16 @@ module Klank
         end
 
         def flooded?(player)
-            @map["rooms"][player.room_num]["flooded"]
+            flooded_room?(player.room_num)
+        end
+
+        def flooded_room?(room_num)
+            @map["rooms"][room_num]["flooded"]
         end
 
         def take_adjacent_secret(player)
             rooms = []
-            paths = get_paths(player.room_num)
+            paths = get_paths(player)
             paths.each do |p|
                 room_num = p[0].to_i
                 if (@map["rooms"][room_num]["minor-secrets"] > 0)
@@ -313,6 +324,8 @@ module Klank
                 @game.broadcast("#{player.name} bows down to the Monkey Idol!")
             end
 
+            player.collect_coins(@map["rooms"][player.room_num]["coins"])
+
             player.heal(@map["rooms"][player.room_num]["heal"])
 
             if (@map["rooms"][player.room_num]["artifact"] > 0) and player.hold_artifact?()
@@ -328,34 +341,38 @@ module Klank
         end
 
         # return hash of keys of all paths in or out of room number
-        def get_paths(room_num)
+        def get_paths(player)
             paths = []
             @map["paths"].each_key do |key|
-                if (key =~ /^#{room_num}-(\d+)$/) || (key =~ /^(\d+)-#{room_num}$/)
-                    paths << [$1, path_desc(key).merge(room_desc($1.to_i))]
+                if (key =~ /^#{player.room_num}-(\d+)$/) || (key =~ /^(\d+)-#{player.room_num}$/)
+                    paths << [$1, path_desc(player, key).merge(room_desc($1.to_i))]
                 end
             end
             paths
         end
 
         # return hash of keys of all paths out of room number
-        def get_paths_out(room_num)
+        def get_paths_out(player)
             paths_out = []
             @map["paths"].each_key do |key|
-                if ((key =~ /^#{room_num}-(\d+)/) ||
-                    ((key =~ /(\d+)-#{room_num}$/) && @map["paths"][key]["one-way"].nil?))
-                    paths_out << [$1, path_desc(key).merge(room_desc($1.to_i))]
+                if ((key =~ /^#{player.room_num}-(\d+)/) || ((key =~ /(\d+)-#{player.room_num}$/) && @map["paths"][key]["one-way"].nil?))
+                    paths_out << [$1, path_desc(player, key).merge(room_desc($1.to_i))]
                 end
             end
             paths_out
         end
 
-        def path_desc(key)
+        def path_desc(player, key)
             path = @map["paths"][key]
+
+            rooms = key.split(/-/, 2)
+            move_between_flooded_rooms = flooded_room?(rooms[0]) and flooded_room?(rooms[1]) and !player.has_item?("Scuba")
+
             desc = {
                 "NAME" => key,
-                "MOVE" => path.key?("move") ? path["move"] : 1,
+                "MOVE" => move_between_flooded_rooms ? 2 : (path.key?("move") ? path["move"] : 1),
                 "MONSTERS" => path.key?("attack") ? path["attack"] : 0,
+                "CLANK" => path.key?("clank") ? path["clank"] : 0
             }
 
             if path["locked"]

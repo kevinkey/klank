@@ -541,25 +541,27 @@ module Klank
         end
 
         def collect_coins(count)
-            count = [count, @game.map.bank].min
-            @game.map.bank -= count
-            @coins += count
-            @num_coins_collected += count
+            if (count > 0)
+                count = [count, @game.map.bank].min
+                @game.map.bank -= count
+                @coins += count
+                @num_coins_collected += count
 
-            extra = [@played.select { |c| c.name == "Search" }.count, @game.map.bank].min
-            @game.map.bank -= extra
-            @coins += extra
-            @num_coins_collected += extra
+                extra = [@played.select { |c| c.name == "Search" }.count, @game.map.bank].min
+                @game.map.bank -= extra
+                @coins += extra
+                @num_coins_collected += extra
 
-            if count == 0
-                @game.broadcast("#{@name} attempted to collect coins but the bank is out of coins!")
-            else
-                message = "#{@name} collects #{count} coin(s)"
-                if extra != 0
-                    message << " +#{extra} for Search"
+                if count == 0
+                    @game.broadcast("#{@name} attempted to collect coins but the bank is out of coins!")
+                else
+                    message = "#{@name} collects #{count} coin(s)"
+                    if extra != 0
+                        message << " +#{extra} for Search"
+                    end
+                    message << " and has #{@coins} coin(s) total! There are #{@game.map.bank} coin(s) in the bank!"
+                    @game.broadcast(message)
                 end
-                message << " and has #{@coins} coin(s) total! There are #{@game.map.bank} coin(s) in the bank!"
-                @game.broadcast(message)
             end
         end
 
