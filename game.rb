@@ -36,6 +36,7 @@ module Klank
         def status
             {
                 "Name" => @name,
+                "Game" => @sunken_treasures ? "Sunken Treasures" : "Base",
                 "Map" => @map_num,
                 "Players" => "#{@player.count} / #{@num}"
             }

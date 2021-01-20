@@ -80,8 +80,8 @@ module Klank
                     room_num = option.to_i
                     path = paths_out.find { |p| p[0] == option }[1]["NAME"]
 
-                    rooms = path.key.split(/-/, 2)
-                    move_between_flooded_rooms = flooded_room?(rooms[0]) and flooded_room?(rooms[1]) and !player.has_item?("Scuba")
+                    rooms = path.split(/-/, 2)
+                    move_between_flooded_rooms = flooded_room?(rooms[0]) && flooded_room?(rooms[1]) && !player.has_item?("Scuba")
                     
                     move = move_between_flooded_rooms ? 2 : @map["paths"][path]["move"]
                     attack = @map["paths"][path]["attack"]
@@ -211,7 +211,7 @@ module Klank
         end
 
         def flooded_room?(room_num)
-            @map["rooms"][room_num]["flooded"]
+            @map["rooms"][room_num.to_i]["flooded"]
         end
 
         def take_adjacent_secret(player)
@@ -366,14 +366,18 @@ module Klank
             path = @map["paths"][key]
 
             rooms = key.split(/-/, 2)
-            move_between_flooded_rooms = flooded_room?(rooms[0]) and flooded_room?(rooms[1]) and !player.has_item?("Scuba")
+            move_between_flooded_rooms = flooded_room?(rooms[0]) && flooded_room?(rooms[1]) && !player.has_item?("Scuba")
 
             desc = {
                 "NAME" => key,
                 "MOVE" => move_between_flooded_rooms ? 2 : (path.key?("move") ? path["move"] : 1),
-                "MONSTERS" => path.key?("attack") ? path["attack"] : 0,
-                "CLANK" => path.key?("clank") ? path["clank"] : 0
+                "MONSTERS" => path.key?("attack") ? path["attack"] : 0
             }
+
+            clank = path.key?("clank") ? path["clank"] : 0
+            if @game.sunken_treasures && (clank > 0)
+                desc["CLANK"] = clank
+            end
 
             if path["locked"]
                 desc["LOCK"] = "YES"
@@ -393,6 +397,8 @@ module Klank
                 status["MONKEY IDOLS"] = @map["rooms"][room_num]["monkey-idols"]
             elsif (@map["rooms"][room_num]["artifact"] > 0)
                 status["ARTIFACT"] = @map["rooms"][room_num]["artifact"]
+            elsif (@map["rooms"][room_num]["coins"] > 0)
+                status["COINS"] = @map["rooms"][room_num]["coins"]
             end
 
             players = @game.player.select{ |p| p.room_num == room_num }

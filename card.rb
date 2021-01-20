@@ -138,6 +138,9 @@ module Klank
                             break
                         end
                     end
+                when "Pipe Organ"
+                    menu = [["U", "Move the Dragon marker one space up"], ["D", "Move the Dragon marker one space down"]]
+                    @game.dragon.move_marker(player.menu("PIPE ORGAN", menu) == "U" ? 1 : -1)
                 when "Shrine"
                     menu = [
                         ["C", {"DESC" => "+1 coin", "CURRENT" => player.coins}],
@@ -150,6 +153,17 @@ module Klank
                         player.heal(1)
                     else
                         success = false
+                    end
+                when "Shrine of the Mermaid"
+                    if !@game.map.flooded(player)
+                        player.collect_coins(2)
+                    else
+                        menu = [["C", "2 coins"], ["T", "Teleport to an adjacent room"]]
+                        if player.menu("SHRINE OF THE MERMAID", menu) == "C"
+                            player.collect_coins(2)
+                        else
+                            player.teleport += 1
+                        end
                     end
                 end
 
@@ -278,23 +292,9 @@ module Klank
                 end
             when "Pickpocket"
                 @game.dungeon.pickpocket(player, 3)
-            when "Pipe Organ"
-                menu = [["U", "Move the Dragon marker one space up"], ["D", "Move the Dragon marker one space down"]]
-                @game.dragon.move_marker(player.menu("PIPE ORGAN", menu) == "U" ? 1 : -1)
             when "Rebel Brawler", "Rebel Captain", "Rebel Miner", "Rebel Scholar", "Rebel Scout", "Rebel Soldier"
                 if player.played.any? { |c| (c.type == :companion) and (c.name != @name) }
                     player.draw(1)
-                end
-            when "Shrine of the Mermaid"
-                if !@game.map.flooded(player)
-                    player.collect_coins(2)
-                else
-                    menu = [["C", "2 coins"], ["T", "Teleport to an adjacent room"]]
-                    if player.menu("SHRINE OF THE MERMAID", menu) == "C"
-                        player.collect_coins(2)
-                    else
-                        player.teleport += 1
-                    end
                 end
             when "Sleight of Hand", "Black Pearl", "Silver Pearl", "White Pearl"
                 if player.discard_card()

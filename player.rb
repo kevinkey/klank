@@ -250,6 +250,10 @@ module Klank
 
             output("\a")
 
+            if (@game.sunken_treasures)
+                @game.broadcast("#{@name} #{@air ? "has" : "does NOT have"} air!")
+            end
+
             draw(5)
 
             loop do
@@ -298,7 +302,7 @@ module Klank
                     end
 
                     if @attack > 1
-                        if @game.sunken_treasures and (@attack > 2) and @game.map.flooded(self)
+                        if @game.sunken_treasures and (@attack > 2) and @game.map.flooded?(self)
                             menu << ["GB", {"DESC" => "Kill the goblin", "COST" => 2, "BENEFIT" => "COINS: 1"}]
                             menu << ["GF", {"DESC" => "Kill the goldfish", "COST" => 3, "BENEFIT" => "COINS: 3"}]
                         else
@@ -397,7 +401,7 @@ module Klank
             reclaim_clank()
 
             if !@air and !has_item?("Scuba") and !has_played?("Mermaid")
-                @game.broadcast("#{@name} never came up for air on their turn!")
+                @game.broadcast("#{@name} never came up for air on their turn and takes 1 damage!")
                 damage(true)
             end
 
@@ -529,7 +533,7 @@ module Klank
                 end
             end
 
-            c != "N"
+            d != "N"
         end
 
         def has_item?(item)
