@@ -244,7 +244,7 @@ module Klank
             @clank_added = 0
             @clank_remove = 0
             @frozen = false
-            @air = !@game.map.flooded?(self)
+            @air = !@game.map.flooded?(self) || has_item?("Scuba")
             @num_turns += 1
             start_time = Time.now
 
@@ -347,7 +347,7 @@ module Klank
                         @game.broadcast("#{@name} bought a Mercenary! There are #{@game.reserve[:c].remaining} left!")
                     when "T"
                         tome(1)
-                        @skill -= t[0].cost
+                        @skill -= 7
                         @game.broadcast("#{@name} bought a Tome! There are #{@game.reserve[:t].remaining} left!")
                     when "D"
                         if @game.dungeon.afford?(self)
@@ -396,7 +396,7 @@ module Klank
 
             reclaim_clank()
 
-            if !@air and !has_item?("Scuba") and !has_played?("Mermaid")
+            if !@air && !has_played?("Mermaid")
                 @game.broadcast("#{@name} never came up for air on their turn and takes 1 damage!")
                 damage(true)
             end

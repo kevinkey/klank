@@ -523,7 +523,7 @@ module Klank
             end
             if hash.key?("tomes")
                 player.tome(hash["tomes"])
-                @game.broadcast("#{player.name} gained +#{[1, remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
+                @game.broadcast("#{player.name} gained +#{[hash["tomes"], remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
             end
         end
     end

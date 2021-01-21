@@ -112,8 +112,7 @@ module Klank
                 c = menu("PICKPOCKET A CARD", player, cost)
                 if c != "N"
                     card = @hand.select { |j| j.cost <= cost }[c.to_i]
-                    @hand.delete(@hand.index(card))
-                    player.deck.discard([card])
+                    acquire(player, card)
                     @game.broadcast("#{player.name} pickpocketed #{card.name} from the dungeon!")
                 end
             end
