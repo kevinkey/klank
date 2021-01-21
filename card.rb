@@ -27,12 +27,12 @@ module Klank
             @hash = hash
         end
 
-        def player_cost(player)
+        def player_cost(player, pickpocket)
             cost = 0
 
             if (@type == :gem) and player.has_played?("Gem Collector")
                 cost = @cost - 2
-            else
+            elsif !pickpocket
                 cost = @cost
             end
 
@@ -108,9 +108,9 @@ module Klank
             end
         end
 
-        def acquire(player)
+        def acquire(player, pickpocket = false)
             success = false
-            cost = player_cost(player)
+            cost = player_cost(player, pickpocket)
 
             if @type == :monster
                 player.output("Can't buy a monster!")

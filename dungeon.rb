@@ -52,16 +52,16 @@ module Klank
             view
         end
 
-        def acquire(player, card = nil)
+        def acquire(player, card = nil, pickpocket = false)
             if @hand.include? card
                 if card.type == :monster
                     if card.defeat(player)
                         card = @hand.delete_at(@hand.index(card))
                         @game.broadcast("#{player.name} killed #{card.name} in the dungeon!")
                     end
-                elsif card.acquire(player)
+                elsif card.acquire(player, pickpocket)
                     card = @hand.delete_at(@hand.index(card))
-                    @game.broadcast("#{player.name} bought #{card.name} from the dungeon!")
+                    @game.broadcast("#{player.name} acquired #{card.name} from the dungeon!")
                     if card.type != :device
                         player.deck.discard([card])
                     end
@@ -112,8 +112,7 @@ module Klank
                 c = menu("PICKPOCKET A CARD", player, cost)
                 if c != "N"
                     card = @hand.select { |j| j.cost <= cost }[c.to_i]
-                    acquire(player, card)
-                    @game.broadcast("#{player.name} pickpocketed #{card.name} from the dungeon!")
+                    acquire(player, card, true)
                 end
             end
         end
