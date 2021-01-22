@@ -1,0 +1,6 @@
+- name: Scuba
+  description: Allows you to traverse flooded rooms without coming up for air and use tunnels with a scuba icon for one move instead of two. (Also worth 5 points at the end of the game).
+  symbol: S
+  count: 2
+  cost: 7
+  points: 5

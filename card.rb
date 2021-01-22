@@ -27,12 +27,12 @@ module Klank
             @hash = hash
         end
 
-        def player_cost(player)
+        def player_cost(player, pickpocket = false)
             cost = 0
 
             if (@type == :gem) and player.has_played?("Gem Collector")
                 cost = @cost - 2
-            else
+            elsif !pickpocket
                 cost = @cost
             end
 
@@ -65,6 +65,29 @@ module Klank
                 if things >= 2
                     total += 4
                 end
+            when "Grand Plan"
+                things = 0
+                if player.has_item?("Backpack")
+                    things += 1
+                end
+                if player.has_item?("Crown (10)")
+                    things += 1
+                end
+                if player.has_item?("Crown (9)")
+                    things += 1
+                end
+                if player.has_item?("Crown (8)")
+                    things += 1
+                end
+                if player.has_item?("Master Key")
+                    things += 1
+                end
+                if player.has_item?("Scuba")
+                    things += 1
+                end
+                if things >= 3
+                    total += 7
+                end
             when "The Duke"
                 total += (player.coins / 5)
             when "Wizard"
@@ -76,18 +99,18 @@ module Klank
 
         def arrive()
             case @name
-            when "Overlord", "Watcher"
+            when "Overlord", "Watcher", "Eye-in-the-Water"
                 @game.player.each do |p|
-                    p.clank()
+                    p.clank(@name == "Eye-in-the-Water" ? 2 : 1)
                 end
             when "Shrine"
                 @game.dragon.add_dragon_cubes()
             end
         end
 
-        def acquire(player)
+        def acquire(player, pickpocket = false)
             success = false
-            cost = player_cost(player)
+            cost = player_cost(player, pickpocket)
 
             if @type == :monster
                 player.output("Can't buy a monster!")
@@ -115,6 +138,9 @@ module Klank
                             break
                         end
                     end
+                when "Pipe Organ"
+                    menu = [["U", "Move the Dragon marker one space up"], ["D", "Move the Dragon marker one space down"]]
+                    @game.dragon.move_marker(player.menu("PIPE ORGAN", menu) == "U" ? 1 : -1)
                 when "Shrine"
                     menu = [
                         ["C", {"DESC" => "+1 coin", "CURRENT" => player.coins}],
@@ -127,6 +153,17 @@ module Klank
                         player.heal(1)
                     else
                         success = false
+                    end
+                when "Shrine of the Mermaid"
+                    if !@game.map.flooded?(player)
+                        player.collect_coins(2)
+                    else
+                        menu = [["C", "2 coins"], ["T", "Teleport to an adjacent room"]]
+                        if player.menu("SHRINE OF THE MERMAID", menu) == "C"
+                            player.collect_coins(2)
+                        else
+                            player.teleport += 1
+                        end
                     end
                 end
 
@@ -153,6 +190,8 @@ module Klank
                 player.output("Must be in the depths to defeat!")
             elsif @hash.key?("crystal cave") && !@game.map.crystal_cave?(player)
                 player.output("Must be in a crystal cave to defeat!")
+            elsif @name == "Crystal Fish" && !@game.map.crystal_cave?(player) && !@game.map.flooded?(player)
+                player.output("Must be in a crystal cave or flooded room to defeat!")
             elsif player.attack >= @attack
                 success = true
 
@@ -160,7 +199,16 @@ module Klank
                 player.num_monsters_killed += 1
                 player.num_damage_dealt += @attack
 
-                if @name == "Watcher"
+                case @name
+                when "Eye-in-the-Water"
+                    menu = [["C", "-2 clank"], ["S", "+2 Coins"]]
+                    if player.menu("EYE-IN-THE-WATER", menu) == "S"
+                        player.collect_coins(2)
+                    else
+                        player.clank(-2)
+                        @game.broadcast("#{player.name} gained -2 clank from defeating Eye-in-the-Water!")
+                    end
+                when "Watcher"
                     @game.broadcast("All other players +1 clank")
                     @game.player.each do |p|
                         if p.index != player.index
@@ -181,6 +229,10 @@ module Klank
 
         def equip(player)
             case @name
+            when "Alchemist"
+                if player.has_played("Tome") or player.deck.pile.any? { |c| c.name == "Tome" }
+                    player.collect_coins(2)
+                end
             when "Apothecary"
                 if player.discard_card()
                     menu = [
@@ -202,12 +254,41 @@ module Klank
                 if player.has_item?("Monkey Idol")
                     player.skill += 2
                 end
+            when "Aspiration"
+                if player.has_item?("Crown (10)") or player.has_item?("Crown (9)") or player.has_item?("Crown (8)")
+                    player.draw(1)
+                end
+            when "Burglar's Boots"
+                menu = [["C", "-2 clank"], ["M", "+1 Move"], ["S", "+1 Coin"]]
+                case player.menu("BURGLAR'S BOOTS", menu)
+                when "C"
+                    player.clank(-2)
+                when "M"
+                    player.move += 1
+                when "S"
+                    player.collect_coins(1)
+                end
+            when "Climbing Gear"
+                if player.discard_card()
+                    player.move += 1
+                end
+            when "Deep Dive"
+                if player.discard_card(3)
+                    player.draw(5)
+                end
+            when "Fishing Pole"
+                player.draw(1)
+                player.discard_card(1, true)
             when "Kobold Merchant"
                 if player.has_artifact?()
                     player.skill += 2
                 end
             when "Master Burglar"
                 player.trash_card("Burgle")
+            when "Medic"
+                if player.discard_card()
+                    player.heal(1)
+                end
             when "Mister Whiskers"
                 @game.broadcast("#{player.name} played Mister Whiskers!")
                 menu = [["D", "Dragon Attack"], ["C", "-2 clank"]]
@@ -218,11 +299,13 @@ module Klank
                     player.clank(-2)
                     @game.broadcast("#{player.name} gained -2 clank from Mister Whiskers!")
                 end
-            when "Rebel Captain", "Rebel Miner", "Rebel Scout", "Rebel Soldier"
+            when "Pickpocket"
+                @game.dungeon.pickpocket(player, 3)
+            when "Rebel Brawler", "Rebel Captain", "Rebel Miner", "Rebel Scholar", "Rebel Scout", "Rebel Soldier"
                 if player.played.any? { |c| (c.type == :companion) and (c.name != @name) }
                     player.draw(1)
                 end
-            when "Sleight of Hand"
+            when "Sleight of Hand", "Black Pearl", "Silver Pearl", "White Pearl"
                 if player.discard_card()
                     player.draw(2)
                 end
@@ -255,7 +338,7 @@ module Klank
                     else
                         player.coins -= 7
                         @game.map.bank += 7
-                        player.deck.discard(@game.reserve[:t].draw([2, remaining].min))
+                        player.tome(2)
                         @game.broadcast("Through some Underworld Dealing, #{player.name} gained +#{[2, remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
                     end
                 end
@@ -389,6 +472,9 @@ module Klank
                 if @hash["defeat"].key?("heal")
                     desc["HEAL"] = @hash["defeat"]["heal"]
                 end
+                if @hash["defeat"].key?("tomes")
+                    desc["TOMES"] = @hash["defeat"]["tomes"]
+                end
             end
 
             if @danger
@@ -401,6 +487,10 @@ module Klank
 
             if @hash.key?("crystal cave")
                 desc["MISC"] = "CRYSTAL CAVE"
+            end
+
+            if @name == "Crystal Fish"
+                desc["MISC"] = "CRYSTAL CAVE OR FLOODED ROOM"
             end
 
             desc.merge(play_desc())
@@ -430,6 +520,10 @@ module Klank
             end
             if hash.key?("heal")
                 player.heal(hash["heal"])
+            end
+            if hash.key?("tomes")
+                player.tome(hash["tomes"])
+                @game.broadcast("#{player.name} gained +#{[hash["tomes"], remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
             end
         end
     end
