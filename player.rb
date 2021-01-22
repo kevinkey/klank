@@ -505,7 +505,7 @@ module Klank
             card != ""
         end
 
-        def discard_card(count = 1)
+        def discard_card(count = 1, fishing_pole = false)
             d = ""
 
             for j in 1..count
@@ -513,7 +513,7 @@ module Klank
                 @hand.each_with_index do |c, i|
                     cards << [i, c.play_desc]
                 end
-                d = menu("DISCARD", cards, true)
+                d = menu("DISCARD", cards, !fishing_pole)
 
                 if d != "N"
                     card = @hand.delete_at(d.to_i)

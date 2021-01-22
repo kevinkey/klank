@@ -27,7 +27,7 @@ module Klank
             @hash = hash
         end
 
-        def player_cost(player, pickpocket)
+        def player_cost(player, pickpocket = false)
             cost = 0
 
             if (@type == :gem) and player.has_played?("Gem Collector")
@@ -278,7 +278,7 @@ module Klank
                 end
             when "Fishing Pole"
                 player.draw(1)
-                player.discard_card()
+                player.discard_card(1, true)
             when "Kobold Merchant"
                 if player.has_artifact?()
                     player.skill += 2
