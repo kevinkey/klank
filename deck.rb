@@ -15,12 +15,7 @@ module Klank
             @pile = []
             @trashed = []
 
-            YAML.load(File.read(yml)).each do |c|
-                (c["count"] || 1).times do 
-                    @stack << Card.new(game, c)
-                end
-            end
-            @stack = Klank.randomize(@stack)
+            add(game, yml)
         end
 
         def remaining()
@@ -43,6 +38,15 @@ module Klank
             end
 
             hand
+        end
+
+        def add(game, yml)
+            YAML.load(File.read(yml)).each do |c|
+                (c["count"] || 1).times do 
+                    @stack << Card.new(game, c)
+                end
+            end
+            @stack = Klank.randomize(@stack)
         end
 
         def discard(hand)

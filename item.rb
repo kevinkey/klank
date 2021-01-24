@@ -63,6 +63,7 @@ module Klank
             player.item << self
 
             if @hash.key?("coins")
+                @game.map.bank += @hash["coins"]    # <-- secrets don't count towards initial bank amount
                 player.collect_coins(@hash["coins"])
             end
 

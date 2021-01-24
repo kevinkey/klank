@@ -42,6 +42,16 @@ module Klank
 
           num = player.input_num("Players", 2..4)
 
+          case player.menu("GAME SELECTION", [["1", {"DESC" => "Base Game"}], ["2", {"DESC" => "Sunken Treasures"}], ["R", {"DESC" => "Let the game randomly choose the game"}]])
+          when "1"
+            sunken_treasures = false
+          when "2"
+            sunken_treasures = true
+          when "R"
+            sunken_treasures = rand(true..false)
+            player.output("#{sunken_treasures ? "Sunken Treasures" : "Base Game"} was randomly selected!")
+          end
+
           case player.menu("MAP SELECTION", [["1", {"DESC" => "Play on Map 1"}], ["2", {"DESC" => "Play on Map 2"}], ["R", {"DESC" => "Let the game randomly choose the map"}]])
           when "1"
             map = 1
@@ -54,7 +64,7 @@ module Klank
 
           player.output("\nCreated #{name}, waiting for players...")
 
-          game = Game.new(name, num, map)
+          game = Game.new(name, num, map, sunken_treasures)
           games << game
           game.join(player)
         else

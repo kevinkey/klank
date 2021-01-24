@@ -9,6 +9,7 @@ module Klank
         attr_reader :name
         attr_reader :num
         attr_reader :map
+        attr_reader :sunken_treasures
         attr_reader :started
         attr_reader :shutdown
         attr_reader :game_over
@@ -18,10 +19,11 @@ module Klank
         attr_reader :player
         attr_reader :escalation
 
-        def initialize(name, num, map)
+        def initialize(name, num, map, sunken_treasures)
             @name = name
             @num = num
             @map_num = map
+            @sunken_treasures = sunken_treasures
             @map = Map.new(self, map)
             @player = []
             @spectator = []
@@ -34,6 +36,7 @@ module Klank
         def status
             {
                 "Name" => @name,
+                "Game" => @sunken_treasures ? "Sunken Treasures" : "Base",
                 "Map" => @map_num,
                 "Players" => "#{@player.count} / #{@num}"
             }

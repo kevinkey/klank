@@ -21,6 +21,7 @@ module Klank
         attr_accessor :frozen
         attr_accessor :artifact
         attr_accessor :health
+        attr_accessor :air
         attr_accessor :clank_remove
 
         attr_accessor :num_turns
@@ -243,10 +244,15 @@ module Klank
             @clank_added = 0
             @clank_remove = 0
             @frozen = false
+            @air = !@game.map.flooded?(self) || has_item?("Scuba")
             @num_turns += 1
             start_time = Time.now
 
             output("\a")
+
+            if (@game.sunken_treasures)
+                @game.broadcast("#{@name} #{@air ? "has" : "does NOT have"} air!")
+            end
 
             draw(5)
 
@@ -296,7 +302,12 @@ module Klank
                     end
 
                     if @attack > 1
-                        menu << ["G", {"DESC" => "Kill the goblin", "COST" => 2, "BENEFIT" => "COINS: 1"}]
+                        if @game.sunken_treasures and (@attack > 2) and @game.map.flooded?(self)
+                            menu << ["GB", {"DESC" => "Kill the goblin", "COST" => 2, "BENEFIT" => "COINS: 1"}]
+                            menu << ["GF", {"DESC" => "Kill the goldfish", "COST" => 3, "BENEFIT" => "COINS: 3"}]
+                        else
+                            menu << ["G", {"DESC" => "Kill the goblin", "COST" => 2, "BENEFIT" => "COINS: 1"}]
+                        end
                     end
 
                     if menu.length > 0
@@ -325,20 +336,19 @@ module Klank
                     when "I"
                         play()
                     when "X"
-                        @game.broadcast("#{@name} bought an Explore!")
                         x = @game.reserve[:x].draw(1)
                         @deck.discard(x)
                         @skill -= x[0].cost
+                        @game.broadcast("#{@name} bought an Explore! There are #{@game.reserve[:x].remaining} left!")
                     when "C"
-                        @game.broadcast("#{@name} bought a Mercenary!")
                         c = @game.reserve[:c].draw(1)
                         @deck.discard(c)
                         @skill -= c[0].cost
+                        @game.broadcast("#{@name} bought a Mercenary! There are #{@game.reserve[:c].remaining} left!")
                     when "T"
-                        @game.broadcast("#{@name} bought a Tome!")
-                        t = @game.reserve[:t].draw(1)
-                        @deck.discard(t)
-                        @skill -= t[0].cost
+                        tome(1)
+                        @skill -= 7
+                        @game.broadcast("#{@name} bought a Tome! There are #{@game.reserve[:t].remaining} left!")
                     when "D"
                         if @game.dungeon.afford?(self)
                             @game.dungeon.acquire(self)
@@ -353,11 +363,17 @@ module Klank
                         @game.map.teleport(self)
                     when "V"
                         @game.map.view(self)
-                    when "G"
+                    when "G", "GB"
                         @game.broadcast("#{@name} killed the Goblin!")
                         collect_coins(1)
                         @attack -= 2
                         @num_damage_dealt += 2
+                        @num_monsters_killed += 1
+                    when "GF"
+                        @game.broadcast("#{@name} killed the Goldfish!")
+                        collect_coins(3)
+                        @attack -= 3
+                        @num_damage_dealt += 3
                         @num_monsters_killed += 1
                     when "F"
                         @game.view_players(self)
@@ -378,10 +394,15 @@ module Klank
                 end
             end
 
+            reclaim_clank()
+
+            if !@air && !has_played?("Mermaid")
+                @game.broadcast("#{@name} never came up for air on their turn and takes 1 damage!")
+                damage(true)
+            end
+
             @deck.discard(@played)
             @played = []
-
-            reclaim_clank()
 
             end_time = Time.now
             turn_time = end_time - start_time
@@ -451,6 +472,10 @@ module Klank
             @num_clank_removed += actual
         end
 
+        def tome(count = 1)
+            @deck.discard(@game.reserve[:t].draw([count, @game.reserve[:t].remaining].min))
+        end
+
         def has_artifact?()
             @artifact.count > 0
         end
@@ -480,21 +505,38 @@ module Klank
             card != ""
         end
 
-        def discard_card()
-            cards = []
-            @hand.each_with_index do |c, i|
-                cards << [i, c.play_desc]
-            end
-            c = menu("DISCARD", cards, true)
+        def discard_card(count = 1, fishing_pole = false)
+            d = ""
 
-            if c != "N"
-                card = @hand.delete_at(c.to_i)
-                card.num_times_discarded += 1
-                @deck.discard([card])
-                @game.broadcast("#{@name} discarded #{card.name}!")
+            for j in 1..count
+                cards = []
+                @hand.each_with_index do |c, i|
+                    cards << [i, c.play_desc]
+                end
+                d = menu("DISCARD", cards, !fishing_pole)
+
+                if d != "N"
+                    card = @hand.delete_at(d.to_i)
+                    card.num_times_discarded += 1
+                    @deck.discard([card])
+                    @game.broadcast("#{@name} discarded #{card.name}!")
+
+                    case card.name
+                    when "Boomerang"
+                        card.equip(self)
+                    when "Coin Purse"
+                        collect_coins(5)
+                    when "Pickpocket"
+                        @game.dungeon.pickpocket(self, 6)
+                    when "Short Cut"
+                        @move += 2
+                    end
+                else
+                    break
+                end
             end
 
-            c != "N"
+            d != "N"
         end
 
         def has_item?(item)
@@ -506,16 +548,27 @@ module Klank
         end
 
         def collect_coins(count)
-            @coins += count
-            @num_coins_collected += count
+            if (count > 0)
+                count = [count, @game.map.bank].min
+                @game.map.bank -= count
+                @coins += count
+                @num_coins_collected += count
 
-            extra = @played.select { |c| c.name == "Search" }.count
-            if extra != 0
+                extra = [@played.select { |c| c.name == "Search" }.count, @game.map.bank].min
+                @game.map.bank -= extra
                 @coins += extra
                 @num_coins_collected += extra
-                @game.broadcast("#{@name} collects #{count} coin(s) +#{extra} for Search and has #{@coins} coin(s) total!")
-            else
-                @game.broadcast("#{@name} collects #{count} coin(s) and has #{@coins} coin(s) total!")
+
+                if count == 0
+                    @game.broadcast("#{@name} attempted to collect coins but the bank is out of coins!")
+                else
+                    message = "#{@name} collects #{count} coin(s)"
+                    if extra != 0
+                        message << " +#{extra} for Search"
+                    end
+                    message << " and has #{@coins} coin(s) total! There are #{@game.map.bank} coin(s) in the bank!"
+                    @game.broadcast(message)
+                end
             end
         end
 

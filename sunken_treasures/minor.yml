@@ -1,0 +1,10 @@
+- name: Potion of Strength
+  description: Use during your turn to gain 2 Swords
+  count: 1
+  attack: 2
+  
+- name: Treasure
+  description: Counts as 2 Gold
+  count: 1
+  coins: 2
+  
