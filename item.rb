@@ -16,6 +16,7 @@ module Klank
                 "Potion of Greater Healing",
                 "Greater Skill Boost",
                 "Flash of Brilliance",
+                "Potion of Heroism",
                 "Potion of Healing",
                 "Potion of Swiftness",
                 "Potion of Strength",
