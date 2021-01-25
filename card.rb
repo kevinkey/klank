@@ -230,7 +230,7 @@ module Klank
         def equip(player)
             case @name
             when "Alchemist"
-                if player.has_played("Tome") or player.deck.pile.any? { |c| c.name == "Tome" }
+                if player.has_played?("Tome") or player.deck.pile.any? { |c| c.name == "Tome" }
                     player.collect_coins(2)
                 end
             when "Apothecary"
@@ -523,7 +523,7 @@ module Klank
             end
             if hash.key?("tomes")
                 player.tome(hash["tomes"])
-                @game.broadcast("#{player.name} gained +#{[hash["tomes"], remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
+                @game.broadcast("#{player.name} gained +#{[hash["tomes"], @game.reserve[:t].remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
             end
         end
     end
