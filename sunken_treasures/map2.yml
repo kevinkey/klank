@@ -194,8 +194,10 @@ rooms:
     major-secrets: 1
   24:
   25:
+    store: true
     artifact: 7
   26:
+    store: true
     artifact: 10
   27:
     major-secrets: 1

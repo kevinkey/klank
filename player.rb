@@ -543,6 +543,10 @@ module Klank
             @item.any? { |i| i.name == item }
         end
 
+        def item_count(item)
+            @item.select { |i| i.name == item }.count
+        end
+
         def has_played?(card)
             @played.any? { |c| c.name == card }
         end

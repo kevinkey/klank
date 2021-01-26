@@ -67,24 +67,14 @@ module Klank
                 end
             when "Grand Plan"
                 things = 0
-                if player.has_item?("Backpack")
-                    things += 1
-                end
-                if player.has_item?("Crown (10)")
-                    things += 1
-                end
-                if player.has_item?("Crown (9)")
-                    things += 1
-                end
-                if player.has_item?("Crown (8)")
-                    things += 1
-                end
-                if player.has_item?("Master Key")
-                    things += 1
-                end
-                if player.has_item?("Scuba")
-                    things += 1
-                end
+                
+                things += player.item_count("Backpack")
+                things += player.item_count("Crown (10)")
+                things += player.item_count("Crown (9)")
+                things += player.item_count("Crown (8)")
+                things += player.item_count("Master Key")
+                things += player.item_count("Scuba")
+
                 if things >= 3
                     total += 7
                 end
