@@ -31,15 +31,20 @@ module Klank
             
             if @hash.key?("heal")
                 player.heal(@hash["heal"])
-            elsif @hash.key?("skill")
+            end
+            if @hash.key?("skill")
                 player.skill += @hash["skill"]
-            elsif @hash.key?("draw")
+            end
+            if @hash.key?("draw")
                 player.draw(@hash["draw"])
-            elsif @hash.key?("move")
+            end
+            if @hash.key?("move")
                 player.move += @hash["move"]
-            elsif @hash.key?("attack")
+            end
+            if @hash.key?("attack")
                 player.attack += @hash["attack"]
-            elsif @name == "Magic Spring"
+            end
+            if @name == "Magic Spring"
                 played = player.trash_card()
             end
 
