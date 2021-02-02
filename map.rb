@@ -293,7 +293,9 @@ module Klank
                 player.frozen = false
             end
 
-            if !flooded?(player)
+            if flooded?(player)
+                player.num_flooded_rooms_visited += 1
+            else
                 if !player.air
                     @game.broadcast("#{player.name} has come up for air!")
                 end
