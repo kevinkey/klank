@@ -7,6 +7,7 @@ module Klank
     class Map
 
         attr_reader :map_num
+        attr_reader :market
 
         attr_accessor :bank
 
@@ -247,6 +248,14 @@ module Klank
 
         def market?(player)
             (@map["rooms"][player.room_num]["store"]) and (@market.count > 0) and (player.coins >= 7)
+        end
+
+        def view_market(player)
+            items = []
+            @market.each do |m|
+                items << m.desc()
+            end
+            player.output("\nMARKET\n#{Klank.table(items)}")
         end
 
         def shop(player)

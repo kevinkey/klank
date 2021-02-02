@@ -320,6 +320,9 @@ module Klank
                             menu << ["D", {"DESC" => "View the dungeon"}]
                         end
                         menu << ["V", {"DESC" => "View the map"}]
+                        if !@game.map.market?(self) and (@game.map.market.count > 0)
+                            menu << ["S", {"DESC" => "View the market"}]
+                        end
                         menu << ["F", {"DESC" => "View the players"}]
                         if @deck.pile.length > 0
                             menu << ["B", {"DESC" => "View discard pile"}]
@@ -360,7 +363,11 @@ module Klank
                     when "M"
                         @game.map.move(self)
                     when "S"
-                        @game.map.shop(self)
+                        if @game.map.market?(self)
+                            @game.map.shop(self)
+                        else
+                            @game.map.view_market(self)
+                        end
                     when "P"
                         @game.map.teleport(self)
                     when "V"

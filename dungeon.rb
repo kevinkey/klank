@@ -129,7 +129,7 @@ module Klank
 
         def view(player = nil)
             dungeon = []
-            @hand.each_with_index do |c, i|
+            @hand.each do |c|
                 dungeon << c.buy_desc(false)
             end
             if (player != nil)
