@@ -34,14 +34,14 @@
   count: 1
   type: :device
   cost: 1
-  special: Move the Dragon marker one space up or down the Rage Track (your choice)
+  special: Move the Dragon marker one space up or down the Rage Track
 
 - name: Shrine of the Mermaid
   count: 2
   type: :device
   cost: 3
   danger: true
-  special: Choose +2 coins or if you're in a flooded room, teleport to an adjacent room
+  special: Choose +2 coins or teleport to an adjacent room if you're in a flooded room,
 
 - name: Alchemist
   count: 1

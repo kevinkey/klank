@@ -145,15 +145,11 @@ module Klank
                         success = false
                     end
                 when "Shrine of the Mermaid"
-                    if !@game.map.flooded?(player)
+                    menu = [["C", "2 coins"], ["T", "Teleport to an adjacent room"]]
+                    if player.menu("SHRINE OF THE MERMAID", menu) == "C"
                         player.collect_coins(2)
                     else
-                        menu = [["C", "2 coins"], ["T", "Teleport to an adjacent room"]]
-                        if player.menu("SHRINE OF THE MERMAID", menu) == "C"
-                            player.collect_coins(2)
-                        else
-                            player.teleport += 1
-                        end
+                        player.shrine_mermaid_teleport += 1
                     end
                 end
 

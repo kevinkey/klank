@@ -18,6 +18,7 @@ module Klank
         attr_accessor :move
         attr_accessor :coins
         attr_accessor :teleport
+        attr_accessor :shrine_mermaid_teleport
         attr_accessor :frozen
         attr_accessor :artifact
         attr_accessor :health
@@ -243,6 +244,7 @@ module Klank
             @move = 0
             @attack = 0
             @teleport = 0
+            @shrine_mermaid_teleport = 0
             @clank_added = 0
             @clank_remove = 0
             @frozen = false
@@ -299,7 +301,7 @@ module Klank
                         menu << ["S", {"DESC" => "Shop in the market"}]
                     end
 
-                    if @teleport > 0
+                    if (@teleport > 0) or ((@shrine_mermaid_teleport > 0) and @game.map.flooded?(self))
                         menu << ["P", {"DESC" => "Teleport"}]
                     end
 
@@ -313,7 +315,7 @@ module Klank
                     end
 
                     if menu.length > 0
-                        if @clank_remove < 0 and @game.dragon.bank.select { |c| c.to_s == @index.to_s }.count > 0
+                        if (@clank_remove < 0) and (@game.dragon.bank.select { |c| c.to_s == @index.to_s }.count > 0)
                             menu << ["R", {"DESC" => "Remove clank"}]
                         end
                         if !@game.dungeon.afford?(self)
