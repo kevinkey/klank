@@ -149,8 +149,8 @@ module Klank
         end
 
         def teleport(player)
-            loop do
-                player.output("\n#{Klank.table([{"TELEPORT" => player.teleport}])}")
+            loop do               
+                player.output("\n#{Klank.table([{"TELEPORT" => (player.teleport + (flooded?(player) ? player.shrine_mermaid_teleport : 0))}])}")
 
                 paths = get_paths(player)
                 option = player.menu("TELEPORT FROM ROOM #{player.room_num}", paths, true)
@@ -171,13 +171,17 @@ module Klank
                             end
                         end
                         
-                        player.teleport -= 1
+                        if flooded?(player) and (player.shrine_mermaid_teleport > 0)
+                            player.shrine_mermaid_teleport -= 1
+                        else
+                            player.teleport -= 1
+                        end
                         player.num_times_teleported += 1
 
                         @game.broadcast("#{player.name} teleported to room #{room_num}.")
                         enter_room(player, room_num)
 
-                        break if player.teleport == 0
+                        break if ((player.teleport + (flooded?(player) ? player.shrine_mermaid_teleport : 0)) == 0)
                     end
                 else
                     break

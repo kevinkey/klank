@@ -619,7 +619,9 @@ module Klank
             stats << {"STATISTIC" => "Distance moved", @name => @num_distance_moved}
             stats << {"STATISTIC" => "Rooms visited", @name => @num_rooms_visited}
             stats << {"STATISTIC" => "Caves visited", @name => @num_caves_visited}
-            stats << {"STATISTIC" => "Flooded rooms visited", @name => @num_flooded_rooms_visited}
+            if (@game.sunken_treasures)
+                stats << {"STATISTIC" => "Flooded rooms visited", @name => @num_flooded_rooms_visited}
+            end
             stats << {"STATISTIC" => "Times teleported", @name => @num_times_teleported}
             stats << {"STATISTIC" => "Damage dealt", @name => @num_damage_dealt}
             stats << {"STATISTIC" => "Monsters killed", @name => @num_monsters_killed}
