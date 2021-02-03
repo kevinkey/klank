@@ -253,7 +253,7 @@ module Klank
         def view_market(player)
             items = []
             @market.each do |m|
-                items << m.desc()
+                items << {"NAME" => m.name, "DESCRIPTION" => m.description}
             end
             player.output("\nMARKET\n#{Klank.table(items)}")
         end
