@@ -8,6 +8,7 @@ module Klank
         attr_reader :name
         attr_reader :index
         attr_reader :deck
+        attr_reader :hand
 
         attr_accessor :played
         attr_accessor :item
