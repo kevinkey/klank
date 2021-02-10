@@ -288,7 +288,7 @@ module Klank
             when "Pickpocket"
                 @game.dungeon.pickpocket(player, 3)
             when "Rebel Brawler", "Rebel Captain", "Rebel Miner", "Rebel Scholar", "Rebel Scout", "Rebel Soldier"
-                if player.played.concat(player.hand).any? { |c| (c.type == :companion) and (c.name != @name) }
+                if player.played.any? { |c| (c.type == :companion) and (c.name != @name) }
                     player.draw(1)
                 end
             when "Sleight of Hand", "Black Pearl", "Silver Pearl", "White Pearl"
