@@ -67,24 +67,14 @@ module Klank
                 end
             when "Grand Plan"
                 things = 0
-                if player.has_item?("Backpack")
-                    things += 1
-                end
-                if player.has_item?("Crown (10)")
-                    things += 1
-                end
-                if player.has_item?("Crown (9)")
-                    things += 1
-                end
-                if player.has_item?("Crown (8)")
-                    things += 1
-                end
-                if player.has_item?("Master Key")
-                    things += 1
-                end
-                if player.has_item?("Scuba")
-                    things += 1
-                end
+                
+                things += player.item_count("Backpack")
+                things += player.item_count("Crown (10)")
+                things += player.item_count("Crown (9)")
+                things += player.item_count("Crown (8)")
+                things += player.item_count("Master Key")
+                things += player.item_count("Scuba")
+
                 if things >= 3
                     total += 7
                 end
@@ -155,15 +145,11 @@ module Klank
                         success = false
                     end
                 when "Shrine of the Mermaid"
-                    if !@game.map.flooded?(player)
+                    menu = [["C", "2 coins"], ["T", "Teleport to an adjacent room"]]
+                    if player.menu("SHRINE OF THE MERMAID", menu) == "C"
                         player.collect_coins(2)
                     else
-                        menu = [["C", "2 coins"], ["T", "Teleport to an adjacent room"]]
-                        if player.menu("SHRINE OF THE MERMAID", menu) == "C"
-                            player.collect_coins(2)
-                        else
-                            player.teleport += 1
-                        end
+                        player.shrine_mermaid_teleport += 1
                     end
                 end
 
@@ -230,7 +216,7 @@ module Klank
         def equip(player)
             case @name
             when "Alchemist"
-                if player.has_played("Tome") or player.deck.pile.any? { |c| c.name == "Tome" }
+                if player.has_played?("Tome") or player.deck.pile.any? { |c| c.name == "Tome" }
                     player.collect_coins(2)
                 end
             when "Apothecary"
@@ -523,7 +509,7 @@ module Klank
             end
             if hash.key?("tomes")
                 player.tome(hash["tomes"])
-                @game.broadcast("#{player.name} gained +#{[hash["tomes"], remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
+                @game.broadcast("#{player.name} gained +#{[hash["tomes"], @game.reserve[:t].remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
             end
         end
     end

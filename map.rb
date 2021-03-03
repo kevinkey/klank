@@ -7,6 +7,7 @@ module Klank
     class Map
 
         attr_reader :map_num
+        attr_reader :market
 
         attr_accessor :bank
 
@@ -148,8 +149,8 @@ module Klank
         end
 
         def teleport(player)
-            loop do
-                player.output("\n#{Klank.table([{"TELEPORT" => player.teleport}])}")
+            loop do               
+                player.output("\n#{Klank.table([{"TELEPORT" => (player.teleport + (flooded?(player) ? player.shrine_mermaid_teleport : 0))}])}")
 
                 paths = get_paths(player)
                 option = player.menu("TELEPORT FROM ROOM #{player.room_num}", paths, true)
@@ -170,13 +171,17 @@ module Klank
                             end
                         end
                         
-                        player.teleport -= 1
+                        if flooded?(player) and (player.shrine_mermaid_teleport > 0)
+                            player.shrine_mermaid_teleport -= 1
+                        else
+                            player.teleport -= 1
+                        end
                         player.num_times_teleported += 1
 
                         @game.broadcast("#{player.name} teleported to room #{room_num}.")
                         enter_room(player, room_num)
 
-                        break if player.teleport == 0
+                        break if ((player.teleport + (flooded?(player) ? player.shrine_mermaid_teleport : 0)) == 0)
                     end
                 else
                     break
@@ -249,6 +254,14 @@ module Klank
             (@map["rooms"][player.room_num]["store"]) and (@market.count > 0) and (player.coins >= 7)
         end
 
+        def view_market(player)
+            items = []
+            @market.each do |m|
+                items << {"NAME" => m.name, "DESCRIPTION" => m.description}
+            end
+            player.output("\nMARKET\n#{Klank.table(items)}")
+        end
+
         def shop(player)
             loop do
                 player.output("\n#{Klank.table([{"COINS" => player.coins}])}")
@@ -293,7 +306,9 @@ module Klank
                 player.frozen = false
             end
 
-            if !flooded?(player)
+            if flooded?(player)
+                player.num_flooded_rooms_visited += 1
+            else
                 if !player.air
                     @game.broadcast("#{player.name} has come up for air!")
                 end

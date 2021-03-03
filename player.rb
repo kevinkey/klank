@@ -8,6 +8,7 @@ module Klank
         attr_reader :name
         attr_reader :index
         attr_reader :deck
+        attr_reader :hand
 
         attr_accessor :played
         attr_accessor :item
@@ -18,6 +19,7 @@ module Klank
         attr_accessor :move
         attr_accessor :coins
         attr_accessor :teleport
+        attr_accessor :shrine_mermaid_teleport
         attr_accessor :frozen
         attr_accessor :artifact
         attr_accessor :health
@@ -28,6 +30,7 @@ module Klank
         attr_accessor :num_cards_played
         attr_accessor :num_times_shuffled
         attr_accessor :num_caves_visited
+        attr_accessor :num_flooded_rooms_visited
         attr_accessor :num_rooms_visited
         attr_accessor :num_distance_moved
         attr_accessor :num_times_teleported
@@ -143,6 +146,7 @@ module Klank
             @num_times_shuffled = 0
             @num_cards_played = 0
             @num_caves_visited = 0
+            @num_flooded_rooms_visited = 0
             @num_rooms_visited = 0
             @num_distance_moved = 0
             @num_times_teleported = 0
@@ -241,6 +245,7 @@ module Klank
             @move = 0
             @attack = 0
             @teleport = 0
+            @shrine_mermaid_teleport = 0
             @clank_added = 0
             @clank_remove = 0
             @frozen = false
@@ -297,7 +302,7 @@ module Klank
                         menu << ["S", {"DESC" => "Shop in the market"}]
                     end
 
-                    if @teleport > 0
+                    if (@teleport > 0) or ((@shrine_mermaid_teleport > 0) and @game.map.flooded?(self))
                         menu << ["P", {"DESC" => "Teleport"}]
                     end
 
@@ -311,13 +316,16 @@ module Klank
                     end
 
                     if menu.length > 0
-                        if @clank_remove < 0 and @game.dragon.bank.select { |c| c.to_s == @index.to_s }.count > 0
+                        if (@clank_remove < 0) and (@game.dragon.bank.select { |c| c.to_s == @index.to_s }.count > 0)
                             menu << ["R", {"DESC" => "Remove clank"}]
                         end
                         if !@game.dungeon.afford?(self)
                             menu << ["D", {"DESC" => "View the dungeon"}]
                         end
                         menu << ["V", {"DESC" => "View the map"}]
+                        if !@game.map.market?(self) and (@game.map.market.count > 0)
+                            menu << ["S", {"DESC" => "View the market"}]
+                        end
                         menu << ["F", {"DESC" => "View the players"}]
                         if @deck.pile.length > 0
                             menu << ["B", {"DESC" => "View discard pile"}]
@@ -358,7 +366,11 @@ module Klank
                     when "M"
                         @game.map.move(self)
                     when "S"
-                        @game.map.shop(self)
+                        if @game.map.market?(self)
+                            @game.map.shop(self)
+                        else
+                            @game.map.view_market(self)
+                        end
                     when "P"
                         @game.map.teleport(self)
                     when "V"
@@ -543,6 +555,10 @@ module Klank
             @item.any? { |i| i.name == item }
         end
 
+        def item_count(item)
+            @item.select { |i| i.name == item }.count
+        end
+
         def has_played?(card)
             @played.any? { |c| c.name == card }
         end
@@ -604,6 +620,9 @@ module Klank
             stats << {"STATISTIC" => "Distance moved", @name => @num_distance_moved}
             stats << {"STATISTIC" => "Rooms visited", @name => @num_rooms_visited}
             stats << {"STATISTIC" => "Caves visited", @name => @num_caves_visited}
+            if (@game.sunken_treasures)
+                stats << {"STATISTIC" => "Flooded rooms visited", @name => @num_flooded_rooms_visited}
+            end
             stats << {"STATISTIC" => "Times teleported", @name => @num_times_teleported}
             stats << {"STATISTIC" => "Damage dealt", @name => @num_damage_dealt}
             stats << {"STATISTIC" => "Monsters killed", @name => @num_monsters_killed}

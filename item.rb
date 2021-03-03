@@ -2,11 +2,13 @@ module Klank
     class Item
 
         attr_reader :name
+        attr_reader :description
         attr_reader :symbol
         
         def initialize(game, hash)
             @game = game
             @name = hash["name"] || ""
+            @description = hash["description"] || ""
             @symbol = hash["symbol"] || ""
             @hash = hash
         end
@@ -16,6 +18,7 @@ module Klank
                 "Potion of Greater Healing",
                 "Greater Skill Boost",
                 "Flash of Brilliance",
+                "Potion of Heroism",
                 "Potion of Healing",
                 "Potion of Swiftness",
                 "Potion of Strength",
@@ -30,15 +33,20 @@ module Klank
             
             if @hash.key?("heal")
                 player.heal(@hash["heal"])
-            elsif @hash.key?("skill")
+            end
+            if @hash.key?("skill")
                 player.skill += @hash["skill"]
-            elsif @hash.key?("draw")
+            end
+            if @hash.key?("draw")
                 player.draw(@hash["draw"])
-            elsif @hash.key?("move")
+            end
+            if @hash.key?("move")
                 player.move += @hash["move"]
-            elsif @hash.key?("attack")
+            end
+            if @hash.key?("attack")
                 player.attack += @hash["attack"]
-            elsif @name == "Magic Spring"
+            end
+            if @name == "Magic Spring"
                 played = player.trash_card()
             end
 
@@ -73,7 +81,7 @@ module Klank
         end
 
         def desc()
-            "#{@name} | #{@hash["description"]}"
+            "#{@name} | #{@description}"
         end
     end
 end

@@ -48,7 +48,7 @@ module Klank
           when "2"
             sunken_treasures = true
           when "R"
-            sunken_treasures = rand(true..false)
+            sunken_treasures = [true, false].sample
             player.output("#{sunken_treasures ? "Sunken Treasures" : "Base Game"} was randomly selected!")
           end
 
