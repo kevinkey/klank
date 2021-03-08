@@ -1,0 +1,127 @@
+- name: Door to Before
+  count: 1
+  type: :device
+  cost: 3
+  dragon: true
+  special: Teleport to any room you've already been in this turn
+
+- name: Snack Table
+  count: 1
+  type: :device
+  cost: 2
+  dragon: true
+  special: Other players may pay you 1 coin for +1 heal
+  acquire:
+    heal: 1
+
+- name: Wishing Well
+  count: 1
+  type: :device
+  cost: 6
+  special: Choose two - Trash a card, +2 attack, +2 move, or +1 heal
+
+- name: Brawn vs Boots
+  count: 1
+  cost: 4
+  special: Choose +2 attack or +2 move
+  equip:
+    skill: 2
+
+- name: Dire Wolf
+  count: 1
+  type: :companion
+  cost: 2
+  points: 1
+  special: For each monster available (including Goblin), +1 clank and +1 attack
+  equip:
+    skill: 1
+    move: 1
+
+- name: Enchanted Dice
+  count: 1
+  cost: 3
+  points: 1
+  special: Reveal two cubes from the Dragon Bag, +1 coin for each Dragon cube or your colored cube
+  equip:
+    skill: 2
+    attack: 1
+    move: 1
+
+- name: Expedition Leader
+  count: 1
+  type: :companion
+  cost: 5
+  points: 2
+  special: Each time you gain coins, get +1 coin
+  equip:
+    skill: 2
+    attack: 1
+    move: 1
+
+- name: Friendly Watcher
+  count: 1
+  type: :companion
+  cost: 5
+  points: 1
+  special: ARRIVE All players +1 clank | All others +1 clank
+  equip:
+    coins: 3
+
+- name: Magic Spectacles
+  count: 1
+  cost: 4
+  points: 2
+  special: Look at the top card of your deck, put it on the top or bottom, then draw a card
+  equip:
+    skill: 2
+
+# - name: Mummy Hunters
+#   count: 1
+#   type: :companion
+#   cost: 2
+#   points: 1
+#   special: ARRIVE Roll the pyramid die | You take no curses from the Mummy this turn
+#   equip:
+#     attack: 2
+#     move: 1
+
+- name: Opal Apestone
+  count: 1
+  type: :gem
+  cost: 3
+  points: 3
+  dragon: true
+  acquire:
+    clank: 3
+  equip:
+    draw: 1
+    clank: -1
+
+- name: Siren
+  count: 1
+  type: :companion
+  cost: 3
+  points: 2
+  special: Acquire a companion card
+  equip:
+    skill: 2
+
+# - name: Trailblazer
+#   count: 1
+#   type: :companion
+#   cost: 3
+#   points: 2
+#   special: If you take a curse, enter a flooded room, mine a gold vein, or take a web token
+#   equip:
+#     skill: 1
+#     attack: 1
+#     move: 1
+#     coins: 2
+
+- name: Wand of Time
+  count: 1
+  cost: 6
+  points: 2
+  special: Take a card from your discard pile into your hand - if discard pile is empty, draw two cards
+  equip:
+    skill: 2

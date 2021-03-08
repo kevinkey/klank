@@ -51,6 +51,12 @@ module Klank
             removed
         end
 
+        def reveal(count)
+            @bag = Klank.randomize(@bag)
+
+            @bag[0..([count, @bag.count].min - 1)]
+        end
+
         def attack()
             @bag += @bank 
             @bank = []

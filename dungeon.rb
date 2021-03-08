@@ -5,6 +5,8 @@ module Klank
     class Dungeon
         COUNT = 6
 
+        attr_reader :hand
+
         def initialize(game)
             @game = game
             @deck = Deck.new(game, "dungeon.yml")
@@ -12,6 +14,10 @@ module Klank
             
             if @game.sunken_treasures
                 @deck.add(game, "sunken_treasures/dungeon.yml")
+            end
+
+            if (@game.promo)
+                @deck.add(game, "promo.yml")
             end
 
             while @hand.count < COUNT
@@ -107,11 +113,11 @@ module Klank
             @hand.find { |card| card.name == "Crystal Golem"}
         end
 
-        def pickpocket(player, cost)
-            if @hand.any? { |c| c.cost <= cost }
-                c = menu("PICKPOCKET A CARD", player, cost)
+        def pickpocket(player, cost, companion)
+            if @hand.any? { |c| (c.cost <= cost) && (!companion || c.type == :companion) }
+                c = menu("ACQUIRE A CARD", player, cost, companion)
                 if c != "N"
-                    card = @hand.select { |j| j.cost <= cost }[c.to_i]
+                    card = @hand.select { |j| (j.cost <= cost) && (!companion || j.type == :companion) }[c.to_i]
                     acquire(player, card, true)
                 end
             end
@@ -141,9 +147,9 @@ module Klank
 
         private 
 
-        def menu(title, player, max_cost = 1000000)
+        def menu(title, player, max_cost = 1000000, companion = false)
             options = []
-            @hand.select { |c| c.cost <= max_cost }.each_with_index do |c, i|
+            @hand.select { |c| (c.cost <= max_cost) && (!companion || c.type == :companion) }.each_with_index do |c, i|
                 options << [i, c.buy_desc(player.has_played?("Gem Collector"))]
             end
             card = player.menu(title, options, true)
