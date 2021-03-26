@@ -27,12 +27,7 @@ module Klank
 
             num.times do 
                 if @stack.count == 0
-                    if player != nil
-                        game.broadcast("#{player.name} is reshuffling their deck!")
-                        player.num_times_shuffled += 1
-                    end
-                    @stack = Klank.randomize(@pile)
-                    @pile = []
+                    reshuffle(player, game)
                 end 
                 hand << @stack.shift
             end
@@ -59,6 +54,15 @@ module Klank
 
         def reshuffle!()
             @stack = Klank.randomize(@stack)
+        end
+
+        def reshuffle(player = nil, game = nil)
+            if player != nil
+                game.broadcast("#{player.name} is reshuffling their deck!")
+                player.num_times_shuffled += 1
+            end
+            @stack = Klank.randomize(@pile)
+            @pile = []
         end
 
         def active_cards()

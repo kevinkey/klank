@@ -89,7 +89,7 @@ module Klank
 
         def arrive()
             case @name
-            when "Overlord", "Watcher", "Eye-in-the-Water"
+            when "Eye-in-the-Water", "Friendly Watcher", "Overlord", "Watcher"
                 @game.player.each do |p|
                     p.clank(@name == "Eye-in-the-Water" ? 2 : 1)
                 end
@@ -110,6 +110,8 @@ module Klank
                 success = true
 
                 case @name
+                when "Door to Before"
+                    player.door_before_teleport += 1
                 when "Dragon Shrine"
                     menu = [
                         ["C", {"DESC" => "+2 coins", "COINS" => player.coins}],
@@ -150,6 +152,56 @@ module Klank
                         player.collect_coins(2)
                     else
                         player.shrine_mermaid_teleport += 1
+                    end
+                when "Snack Table"
+                    @game.player.select { |p| p.coins > 0 and p != player }.each do |p|
+                        if ("Y" == p.input("Do you want to pay #{player.name} 1 coin for +1 heal? (Y: yes)").upcase)
+                            @game.broadcast("#{p.name} paid #{player.name} 1 coin for +1 heal")
+                            p.coins -= 1
+                            player.coins += 1
+                            p.heal(1)
+                        end
+                    end
+                when "Wishing Well"
+                    actions = 0
+                    menu = [
+                        ["A", {"DESC" => "+2 attack", "CURRENT" => player.attack}],
+                        ["H", {"DESC" => "+1 health", "CURRENT" => player.health}],
+                        ["M", {"DESC" => "+2 move", "CURRENT" => player.move}],
+                        ["T", {"DESC" => "Trash a card"}]
+                    ]
+                    loop do
+                        case player.menu("WISHING WELL", menu, true)
+
+                        when "A"
+                            player.attack += 2
+                            if (actions == 0)
+                                menu.delete_at(0)
+                            end
+                            actions += 1
+                        when "H"
+                            player.heal(1)
+                            if (actions == 0)
+                                menu.delete_at(1)
+                            end
+                            actions += 1
+                        when "M"
+                            player.move += 2
+                            if (actions == 0)
+                                menu.delete_at(2)
+                            end
+                            actions += 1
+                        when "T"
+                            player.trash_card()
+                            if (actions == 0)
+                                menu.delete_at(3)
+                            end
+                            actions += 1
+                        when "N"
+                            break
+                        end
+
+                        break if (actions == 2)
                     end
                 end
 
@@ -244,6 +296,13 @@ module Klank
                 if player.has_item?("Crown (10)") or player.has_item?("Crown (9)") or player.has_item?("Crown (8)")
                     player.draw(1)
                 end
+            when "Brawn vs Boots"
+                menu = [["A", "+2 Attack"], ["M", "+2 Move"]]
+                if player.menu("BRAWN VS BOOTS", menu) == "A"
+                    player.attack += 2
+                else
+                    player.move += 2
+                end
             when "Burglar's Boots"
                 menu = [["C", "-2 clank"], ["M", "+1 Move"], ["S", "+1 Coin"]]
                 case player.menu("BURGLAR'S BOOTS", menu)
@@ -262,13 +321,52 @@ module Klank
                 if player.discard_card(3)
                     player.draw(5)
                 end
+            when "Dire Wolf"
+                count = @game.dungeon.hand.select { |c| c.type == :monster }.count + 1 + (@game.sunken_treasures ? 1 : 0)  #+1 for Goblin and +1 for Goldfish
+                player.clank(count)
+                player.attack += count
+            when "Enchanted Dice"
+                @game.dragon.reveal(2).each do |c|
+                    if c.to_s == "D"
+                        @game.broadcast("A dragon cube was revealed.")
+                        player.collect_coins(1)
+                    else
+                        @game.broadcast("#{@game.player[c.to_i].name}'s cube was revealed.")
+                        if (@game.player[c.to_i] == player)
+                            player.collect_coins(1)
+                        end
+                    end
+                end
             when "Fishing Pole"
                 player.draw(1)
                 player.discard_card(1, true)
+            when "Friendly Watcher", "Tattle"
+                @game.broadcast("All other players +1 clank")
+                @game.player.each do |p|
+                    if p.index != player.index
+                        p.clank(1)
+                    end
+                end
             when "Kobold Merchant"
                 if player.has_artifact?()
                     player.skill += 2
                 end
+            when "Magic Spectacles"
+                if player.deck.remaining() == 0
+                    player.deck.reshuffle(player, @game)
+                end
+
+                player.output("\nTOP CARD OF DECK\n#{Klank.table([player.deck.peek.play_desc])}")
+
+                menu = [["T", "Keep card at top of deck"], ["B", "Move card to bottom of deck"]]
+                if player.menu("MAGIC SPECTACLES", menu) == "T"
+                    @game.broadcast("#{player.name} kept the top card of their deck at the top!")
+                else
+                    @game.broadcast("#{player.name} moved the top card of their deck to the bottom!")
+                    player.move_card_to_bottom
+                end
+
+                player.draw(1)
             when "Master Burglar"
                 player.trash_card("Burgle")
             when "Medic"
@@ -286,21 +384,16 @@ module Klank
                     @game.broadcast("#{player.name} gained -2 clank from Mister Whiskers!")
                 end
             when "Pickpocket"
-                @game.dungeon.pickpocket(player, 3)
+                @game.dungeon.pickpocket(player, 3, false)
             when "Rebel Brawler", "Rebel Captain", "Rebel Miner", "Rebel Scholar", "Rebel Scout", "Rebel Soldier"
                 if player.played.any? { |c| (c.type == :companion) and (c.name != @name) }
                     player.draw(1)
                 end
+            when "Siren"
+                @game.dungeon.pickpocket(player, 1000000, true)
             when "Sleight of Hand", "Black Pearl", "Silver Pearl", "White Pearl"
                 if player.discard_card()
                     player.draw(2)
-                end
-            when "Tattle"
-                @game.broadcast("All other players +1 clank")
-                @game.player.each do |p|
-                    if p.index != player.index
-                        p.clank(1)
-                    end
                 end
             when "The Mountain King"
                 if player.has_item?("Crown (10)") or player.has_item?("Crown (9)") or player.has_item?("Crown (8)")
@@ -331,6 +424,12 @@ module Klank
             when "Wand of Recall"
                 if player.has_artifact?()
                     player.teleport += 1
+                end
+            when "Wand of Time"
+                if player.deck.pile.count == 0
+                    player.draw(2)
+                else
+                    player.retrieve_card_from_discard()
                 end
             when "Wand of Wind"
                 loop do

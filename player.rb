@@ -20,6 +20,8 @@ module Klank
         attr_accessor :coins
         attr_accessor :teleport
         attr_accessor :shrine_mermaid_teleport
+        attr_accessor :door_before_teleport
+        attr_accessor :visited_rooms
         attr_accessor :frozen
         attr_accessor :artifact
         attr_accessor :health
@@ -246,6 +248,8 @@ module Klank
             @attack = 0
             @teleport = 0
             @shrine_mermaid_teleport = 0
+            @door_before_teleport = 0
+            @visited_rooms = [@room_num]
             @clank_added = 0
             @clank_remove = 0
             @frozen = false
@@ -302,7 +306,7 @@ module Klank
                         menu << ["S", {"DESC" => "Shop in the market"}]
                     end
 
-                    if (@teleport > 0) or ((@shrine_mermaid_teleport > 0) and @game.map.flooded?(self))
+                    if (@teleport > 0) or ((@shrine_mermaid_teleport > 0) and @game.map.flooded?(self)) or ((@door_before_teleport > 0) and (@visited_rooms.count > 1))
                         menu << ["P", {"DESC" => "Teleport"}]
                     end
 
@@ -539,7 +543,7 @@ module Klank
                     when "Coin Purse"
                         collect_coins(5)
                     when "Pickpocket"
-                        @game.dungeon.pickpocket(self, 6)
+                        @game.dungeon.pickpocket(self, 6, false)
                     when "Short Cut"
                         @move += 2
                     end
@@ -549,6 +553,24 @@ module Klank
             end
 
             d != "N"
+        end
+
+        def retrieve_card_from_discard()
+            cards = []
+            @deck.pile.each_with_index do |c, i|
+                cards << [i, c.play_desc]
+            end
+            c = menu("RETRIEVE A CARD FROM DISCARD PILE", cards, true)
+
+            if c != "N"
+                card = @deck.pile.delete_at(c.to_i)
+                @hand += [card]
+                @game.broadcast("#{@name} moved #{card.name} from their discard pile to their hand!")
+            end
+        end
+
+        def move_card_to_bottom()
+            @deck.stack.rotate!
         end
 
         def has_item?(item)
@@ -570,17 +592,21 @@ module Klank
                 @coins += count
                 @num_coins_collected += count
 
-                extra = [@played.select { |c| c.name == "Search" }.count, @game.map.bank].min
-                @game.map.bank -= extra
-                @coins += extra
-                @num_coins_collected += extra
+                search_extra = [@played.select { |c| c.name == "Search" }.count, @game.map.bank].min
+                expedition_leader_extra = [@played.select { |c| c.name == "Expedition Leader" }.count, @game.map.bank].min
+                @game.map.bank -= (search_extra + expedition_leader_extra)
+                @coins += (search_extra + expedition_leader_extra)
+                @num_coins_collected += (search_extra + expedition_leader_extra)
 
                 if count == 0
                     @game.broadcast("#{@name} attempted to collect coins but the bank is out of coins!")
                 else
                     message = "#{@name} collects #{count} coin(s)"
-                    if extra != 0
-                        message << " +#{extra} for Search"
+                    if search_extra != 0
+                        message << " +#{search_extra} for Search"
+                    end
+                    if expedition_leader_extra != 0
+                        message << " +#{expedition_leader_extra} for Expedition Leader"
                     end
                     message << " and has #{@coins} coin(s) total! There are #{@game.map.bank} coin(s) in the bank!"
                     @game.broadcast(message)

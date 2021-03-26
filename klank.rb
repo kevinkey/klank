@@ -62,9 +62,11 @@ module Klank
             player.output("Map ##{map} was randomly selected!")
           end
 
+          promo = ("Y" == player.input("Do you want to include the promotion cards? (Y: yes)").upcase)
+
           player.output("\nCreated #{name}, waiting for players...")
 
-          game = Game.new(name, num, map, sunken_treasures)
+          game = Game.new(name, num, map, sunken_treasures, promo)
           games << game
           game.join(player)
         else
