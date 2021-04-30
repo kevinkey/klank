@@ -154,7 +154,7 @@ module Klank
                         player.shrine_mermaid_teleport += 1
                     end
                 when "Snack Table"
-                    @game.player.select { |p| p.coins > 0 and p != player }.each do |p|
+                    @game.player.select { |p| p.coins > 0 and p != player and !p.dead?() and !p.mastery}.each do |p|
                         if ("Y" == p.input("Do you want to pay #{player.name} 1 coin for +1 heal? (Y: yes)").upcase)
                             @game.broadcast("#{p.name} paid #{player.name} 1 coin for +1 heal")
                             p.coins -= 1
