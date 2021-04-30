@@ -609,8 +609,9 @@ module Klank
                 player.heal(hash["heal"])
             end
             if hash.key?("tomes")
+                remaining = @game.reserve[:t].remaining
                 player.tome(hash["tomes"])
-                @game.broadcast("#{player.name} gained +#{[hash["tomes"], @game.reserve[:t].remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
+                @game.broadcast("#{player.name} gained +#{[hash["tomes"], remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
             end
         end
     end
