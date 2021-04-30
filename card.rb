@@ -320,7 +320,7 @@ module Klank
                     player.move += 1
                 end
             when "Deep Dive"
-                if player.discard_card(3)
+                if ((player.hand.length >= 3) and player.discard_card(3))
                     player.draw(5)
                 end
             when "Dire Wolf"
