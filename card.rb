@@ -174,7 +174,7 @@ module Klank
                         case player.menu("WISHING WELL", menu, true)
 
                         when "A"
-                            @game.broadcast("#{p.name} gained +2 attack!")
+                            @game.broadcast("#{player.name} gained +2 attack!")
                             player.attack += 2
                             if (actions == 0)
                                 menu.delete_at(0)
@@ -187,7 +187,7 @@ module Klank
                             end
                             actions += 1
                         when "M"
-                            @game.broadcast("#{p.name} gained +2 move!")
+                            @game.broadcast("#{player.name} gained +2 move!")
                             player.move += 2
                             if (actions == 0)
                                 menu.delete_at(2)
