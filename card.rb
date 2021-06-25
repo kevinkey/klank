@@ -154,7 +154,7 @@ module Klank
                         player.shrine_mermaid_teleport += 1
                     end
                 when "Snack Table"
-                    @game.player.select { |p| p.coins > 0 and p != player }.each do |p|
+                    @game.player.select { |p| p.coins > 0 and p != player and !p.dead?() and !p.mastery}.each do |p|
                         if ("Y" == p.input("Do you want to pay #{player.name} 1 coin for +1 heal? (Y: yes)").upcase)
                             @game.broadcast("#{p.name} paid #{player.name} 1 coin for +1 heal")
                             p.coins -= 1
@@ -174,6 +174,7 @@ module Klank
                         case player.menu("WISHING WELL", menu, true)
 
                         when "A"
+                            @game.broadcast("#{player.name} gained +2 attack!")
                             player.attack += 2
                             if (actions == 0)
                                 menu.delete_at(0)
@@ -186,6 +187,7 @@ module Klank
                             end
                             actions += 1
                         when "M"
+                            @game.broadcast("#{player.name} gained +2 move!")
                             player.move += 2
                             if (actions == 0)
                                 menu.delete_at(2)
@@ -318,7 +320,7 @@ module Klank
                     player.move += 1
                 end
             when "Deep Dive"
-                if player.discard_card(3)
+                if ((player.hand.length >= 3) and player.discard_card(3))
                     player.draw(5)
                 end
             when "Dire Wolf"
@@ -607,8 +609,9 @@ module Klank
                 player.heal(hash["heal"])
             end
             if hash.key?("tomes")
+                remaining = @game.reserve[:t].remaining
                 player.tome(hash["tomes"])
-                @game.broadcast("#{player.name} gained +#{[hash["tomes"], @game.reserve[:t].remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
+                @game.broadcast("#{player.name} gained +#{[hash["tomes"], remaining].min} Tome(s)! There are #{@game.reserve[:t].remaining} Tome(s) left!")
             end
         end
     end

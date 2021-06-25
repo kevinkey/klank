@@ -39,6 +39,7 @@ module Klank
         attr_accessor :num_monsters_killed
         attr_accessor :num_damage_dealt
         attr_accessor :num_damage_taken
+        attr_accessor :num_times_out_of_air
         attr_accessor :num_damage_healed
         attr_accessor :num_coins_collected
         attr_accessor :num_clank_added
@@ -155,6 +156,7 @@ module Klank
             @num_monsters_killed = 0
             @num_damage_dealt = 0
             @num_damage_taken = 0
+            @num_times_out_of_air = 0
             @num_damage_healed = 0
             @num_coins_collected = 0
             @num_clank_added = 0
@@ -414,6 +416,7 @@ module Klank
 
             if !@air && !has_played?("Mermaid")
                 @game.broadcast("#{@name} never came up for air on their turn and takes 1 damage!")
+                @num_times_out_of_air += 1
                 damage(true)
             end
 
@@ -654,6 +657,9 @@ module Klank
             stats << {"STATISTIC" => "Monsters killed", @name => @num_monsters_killed}
             stats << {"STATISTIC" => "Damage taken", @name => @num_damage_taken}
             stats << {"STATISTIC" => "Damage healed", @name => @num_damage_healed}
+            if (@game.sunken_treasures)
+                stats << {"STATISTIC" => "Number of times out of air", @name => @num_times_out_of_air}
+            end
             stats << {"STATISTIC" => "Clank added", @name => @num_clank_added}
             stats << {"STATISTIC" => "Clank removed", @name => @num_clank_removed}
             stats << {"STATISTIC" => "Coins collected", @name => @num_coins_collected}
