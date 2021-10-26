@@ -100,7 +100,7 @@ module Klank
                 cubes = []
                 @game.player.each_with_index do |p, i|
                     if (draw_count > 0)
-                        cubes << {"PLAYER" => p.name, "COUNT" => @bag.select { |c| c.to_s == i.to_s }.count, "EXPECTED DRAW COUNT" => calculate_expected_draw_count(i.to_s, draw_count)}
+                        cubes << {"PLAYER" => p.name, "COUNT" => @bag.select { |c| c.to_s == i.to_s }.count, "EXPECTED DRAW COUNT" => calculate_expected_draw_count(i.to_s, draw_count), "HEALTH" => p.health}
                     else
                         cubes << {"PLAYER" => p.name, "COUNT" => @bag.select { |c| c.to_s == i.to_s }.count}
                     end
@@ -116,35 +116,8 @@ module Klank
 
         private
 
-        def calculate_outcomes(player, num_draws, num_player_cubes_drawn)
-            outcome_count = 0
-
-            @bag.combination(num_draws).to_a.each do |outcome|
-                player_count = 0
-
-                outcome.each do |cube|
-                    if (cube.to_s == player)
-                        player_count += 1
-                    end
-                end
-                
-                if (player_count == num_player_cubes_drawn)
-                    outcome_count += 1
-                end
-            end
-
-            return outcome_count
-        end
-
         def calculate_expected_draw_count(player, num_draws)
-            result = 0
-            num_draws = [num_draws, @bag.count].min
-
-            @bag.select { |c| c.to_s == player }.count.times do |j|
-                result += (calculate_outcomes(player, num_draws, j + 1).to_f / Klank.get_combination(@bag.count, num_draws) * (j + 1))
-            end
-
-            return result.round(2)
+            return (@bag.select { |c| c.to_s == player }.count.to_f / @bag.count * ([num_draws, @bag.count].min)).round(2)
         end
     end
 end

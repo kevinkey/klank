@@ -79,14 +79,6 @@ module Klank
       colorize(text, "36")
   end
 
-  def self.factorial(num)
-      (1..num).inject(1){ |prod, i| prod * i } 
-  end
-
-  def self.get_combination(num1, num2)
-      factorial(num1) / (factorial(num2) * factorial(num1 - num2))
-  end
-
   private
 
   def self.colorize(text, color_code)
