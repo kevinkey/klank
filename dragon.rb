@@ -64,7 +64,7 @@ module Klank
 
             draw = DRAW[@level] + @game.dungeon.danger() + @game.escalation
 
-            view_bag()
+            view_bag(draw)
             @game.broadcast("The dragon attacks, drawing #{draw} cubes...")
             sleep(1)
 
@@ -95,15 +95,29 @@ module Klank
             @game.broadcast("#{actual} dragon cube(s) were added back to the dragon bag!")
         end
 
-        def view_bag()
+        def view_bag(draw_count = 0)
             if @bag.length > 0
                 cubes = []
                 @game.player.each_with_index do |p, i|
-                    cubes << {"PLAYER" => p.name, "COUNT" => @bag.select { |c| c.to_s == i.to_s }.count}
+                    if (draw_count > 0)
+                        cubes << {"PLAYER" => p.name, "COUNT" => @bag.select { |c| c.to_s == i.to_s }.count, "EXPECTED DRAW COUNT" => calculate_expected_draw_count(i.to_s, draw_count), "HEALTH" => p.health}
+                    else
+                        cubes << {"PLAYER" => p.name, "COUNT" => @bag.select { |c| c.to_s == i.to_s }.count}
+                    end
                 end
-                cubes << {"PLAYER" => "Dragon", "COUNT" => @bag.select { |c| c.to_s == "D" }.count}
+                if (draw_count > 0)
+                    cubes << {"PLAYER" => "Dragon", "COUNT" => @bag.select { |c| c.to_s == "D" }.count, "EXPECTED DRAW COUNT" => calculate_expected_draw_count("D", draw_count)}
+                else
+                    cubes << {"PLAYER" => "Dragon", "COUNT" => @bag.select { |c| c.to_s == "D" }.count}
+                end
                 @game.broadcast("\nDRAGON BAG\n#{Klank.table(cubes)}")
             end
+        end
+
+        private
+
+        def calculate_expected_draw_count(player, num_draws)
+            return (@bag.select { |c| c.to_s == player }.count.to_f / @bag.count * ([num_draws, @bag.count].min)).round(2)
         end
     end
 end
